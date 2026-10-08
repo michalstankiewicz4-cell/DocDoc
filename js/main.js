@@ -24,6 +24,7 @@
     }
     const ui = DD.createUI();
     const minimap = DD.createMinimap($('minimap'));
+    const netStatus = DD.createNetStatus();
 
     // układ ekranu wg roli: obie połowy albo tylko swoja
     DD.applyLayout = function (role) {
@@ -114,6 +115,7 @@
         minimap.draw(state, view);
       }
       DD.Audio.update(state.phase);
+      netStatus.update(dt);
       ui.update(state);
       requestAnimationFrame(frame);
     }

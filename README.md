@@ -20,6 +20,10 @@ Three.js (r128) ładuje się z cdnjs, więc za pierwszym razem potrzebny jest in
 
 Połączenie jest bezpośrednie (WebRTC), bez serwera gry. Publiczne serwery STUN Google pomagają tylko ustalić adresy przez routery; dane gry przez nie nie przechodzą.
 W części sieci (firmowe, niektóre mobilne) bezpośrednie połączenie bywa zablokowane — wtedy potrzebny byłby serwer pośredniczący (TURN).
+W grze na 2 osoby w prawym dolnym rogu jest wskaźnik połączenia: kolor (dobre, słabe, brak danych), ping i liczba paczek stanu na sekundę.
+Klawisz `I` albo kliknięcie otwiera szczegóły: rolę, trasę (sieć lokalna, internet, serwer pośredniczący), ping, zgubione paczki i przesłane dane.
+Po 2 s bez danych pojawia się ostrzeżenie z odliczaniem, po 6 s ekran rozłączenia. Gdy drugi gracz zamknie kartę, gra pokazuje „Drugi gracz opuścił grę”.
+
 Tryb sieciowy działa z GitHub Pages i z lokalnego pliku; nie działa w podglądzie artefaktu claude.ai, który blokuje WebRTC.
 
 ## Sterowanie
@@ -57,6 +61,7 @@ js/flow.js            pole przepływu krwi zależne od fazy cyklu serca + turbul
 js/state.js           stan gry, komendy, krok symulacji, kolizje
 js/input.js           klawiatura -> komendy
 js/net.js             WebRTC: kody zaproszenia/odpowiedzi, kanały, wysyłanie i odtwarzanie stanu
+js/net-status.js      wskaźnik połączenia, ostrzeżenie, panel szczegółów
 js/lobby.js           ekran tworzenia i dołączania do gry
 js/minimap.js         minimapa bakterii (sylwetka z SDF)
 js/audio.js           bicie serca w Web Audio

@@ -221,11 +221,37 @@
 <!-- Zerwane połączenie -->
 <div id="net-lost" class="overlay" hidden>
   <div class="overlay-card overlay-card-small">
-    <h2 class="end-title">Połączenie zerwane</h2>
-    <p>Drugi gracz zamknął grę albo sieć przerwała połączenie. Żeby zagrać znowu, wróćcie do menu i wymieńcie nowe kody.</p>
+    <h2 id="net-lost-title" class="end-title">Połączenie zerwane</h2>
+    <p id="net-lost-text">Od 6 sekund nie przychodzą dane od drugiego gracza. Mógł stracić internet albo jego komputer przestał odpowiadać. Żeby zagrać znowu, wróćcie do menu i wymieńcie nowe kody.</p>
     <button id="net-lost-reload" class="primary" type="button">Wróć do menu</button>
   </div>
 </div>
+
+<!-- Stan połączenia (tylko gra na 2 osoby) -->
+<div id="net-weak" class="net-weak" role="status" hidden>
+  Słabe połączenie z drugim graczem. Czekam na dane, rozłączenie za <b id="net-weak-t">4</b> s.
+</div>
+<button id="net-badge" class="net-badge" type="button" aria-expanded="false" aria-controls="net-details" hidden data-q="good">
+  <span class="nb-dot" aria-hidden="true"></span>
+  <span id="nb-label">Dobre połączenie</span>
+  <span id="nb-ping" class="nb-num">— ms</span>
+  <span id="nb-rate" class="nb-num">0/s</span>
+  <kbd>I</kbd>
+</button>
+<section id="net-details" class="net-details" aria-label="Szczegóły połączenia" hidden>
+  <h2>Szczegóły połączenia</h2>
+  <dl>
+    <div><dt>Twoja rola</dt><dd id="nd-role">—</dd></div>
+    <div><dt>Trasa</dt><dd id="nd-route">—</dd></div>
+    <div><dt>Ping (w obie strony)</dt><dd id="nd-ping">—</dd></div>
+    <div><dt>Ostatnie dane</dt><dd id="nd-silence">—</dd></div>
+    <div><dt>Paczki stanu</dt><dd id="nd-rate">—</dd></div>
+    <div><dt>Zgubione paczki stanu</dt><dd id="nd-lost">—</dd></div>
+    <div><dt>Wysłane</dt><dd id="nd-sent">—</dd></div>
+    <div><dt>Odebrane</dt><dd id="nd-recv">—</dd></div>
+  </dl>
+  <p class="nd-note">Zgubione paczki stanu to normalne zjawisko: kanał stanu ich nie powtarza, bo za chwilę przychodzi nowsza.</p>
+</section>
 
 <!-- Koniec gry -->
 <div id="end" class="overlay overlay-end" hidden>
@@ -253,6 +279,7 @@
 <script src="js/doctor-ui.js"></script>
 <script src="js/net.js"></script>
 <script src="js/lobby.js"></script>
+<script src="js/net-status.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

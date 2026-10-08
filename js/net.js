@@ -85,20 +85,56 @@
     });
     return pc;
   }
-  function lost() {
+  // reason: 'left' (drugi gracz zamknął grę i zdążył się pożegnać) albo 'lost' (cisza / błąd sieci)
+  function lost(reason) {
     if (!N.connected) return;
     N.connected = false;
     clearInterval(pingTimer);
-    N.onClosed();
+    N.onClosed(reason === 'left' ? 'left' : 'lost');
   }
   function wire(ch) {
     if (ch.label === 'cmd') N.chCmd = ch; else N.chSt = ch;
     ch.addEventListener('open', checkOpen);
-    ch.addEventListener('close', lost);
+    ch.addEventListener('close', () => lost('lost'));
     ch.addEventListener('message', (e) => onMessage(ch.label, e.data));
   }
-  // sygnał "żyję": bez wiadomości przez 6 s uznajemy połączenie za zerwane
+  // ---------- statystyki połączenia ----------
+  // ping co sekundę (pong wraca z tym samym znacznikiem czasu -> RTT),
+  // licznik paczek stanu na sekundę, zgubione paczki (numery sekwencyjne), typ trasy i bajty z getStats()
+  const S = N.stats = {
+    rtt: null, silence: 0, snapRate: 0, snapCount: 0, sentSnaps: 0, recvSnaps: 0,
+    lostSnaps: 0, lastSeq: 0, route: '—', bytesSent: 0, bytesRecv: 0, msgsSent: 0, msgsRecv: 0
+  };
+  const WEAK_MS = 2000, LOST_MS = 6000;
   let lastRecv = 0, pingTimer = null;
+  N.quality = function () {
+    if (!N.connected) return 'lost';
+    if (S.silence > WEAK_MS) return 'stalled';
+    if (S.rtt == null || S.rtt > 250 || S.silence > 1000) return 'weak';
+    return 'good';
+  };
+  function routeName(local, remote) {
+    const t = [local && local.candidateType, remote && remote.candidateType];
+    if (t.includes('relay')) return 'przez serwer pośredniczący (TURN)';
+    if (t[0] === 'host' && t[1] === 'host') return 'bezpośrednie w sieci lokalnej';
+    if (t.includes('srflx') || t.includes('prflx')) return 'bezpośrednie przez internet';
+    return t.filter(Boolean).join(' / ') || '—';
+  }
+  async function pollStats() {
+    if (!N.pc || !N.pc.getStats) return;
+    try {
+      const rep = await N.pc.getStats();
+      let pair = null, bs = 0, br = 0, ms = 0, mr = 0;
+      const byId = new Map();
+      rep.forEach((r) => {
+        byId.set(r.id, r);
+        if (r.type === 'candidate-pair' && (r.nominated || r.selected) && r.state === 'succeeded') pair = r;
+        if (r.type === 'data-channel') { bs += r.bytesSent || 0; br += r.bytesReceived || 0; ms += r.messagesSent || 0; mr += r.messagesReceived || 0; }
+      });
+      S.bytesSent = bs; S.bytesRecv = br; S.msgsSent = ms; S.msgsRecv = mr;
+      if (pair) S.route = routeName(byId.get(pair.localCandidateId), byId.get(pair.remoteCandidateId));
+    } catch (e) { /* statystyki niedostępne */ }
+  }
   function checkOpen() {
     if (!N.connected && N.chCmd && N.chSt && N.chCmd.readyState === 'open' && N.chSt.readyState === 'open') {
       N.connected = true;
@@ -106,12 +142,19 @@
       clearInterval(pingTimer);
       pingTimer = setInterval(() => {
         if (!N.connected) { clearInterval(pingTimer); return; }
-        N.sendReliable({ m: 'ping' });
-        if (performance.now() - lastRecv > 6000) lost();
+        N.sendReliable({ m: 'ping', t: performance.now() });
+        S.snapRate = S.snapCount; S.snapCount = 0;
+        pollStats();
+        if (performance.now() - lastRecv > LOST_MS) lost('lost');
       }, 1000);
       N.onConnected();
     }
   }
+  // cisza liczona na bieżąco (do ostrzeżenia o słabym połączeniu)
+  N.updateSilence = function () { S.silence = N.connected ? performance.now() - lastRecv : 0; };
+
+  // pożegnanie przy zamknięciu karty — drugi gracz zobaczy "opuścił grę", a nie "zerwane"
+  window.addEventListener('pagehide', () => { if (N.connected) N.sendReliable({ m: 'bye' }); });
 
   N.sendReliable = function (obj) {
     if (N.chCmd && N.chCmd.readyState === 'open') N.chCmd.send(JSON.stringify(obj));
@@ -157,7 +200,23 @@
   function onMessage(label, data) {
     lastRecv = performance.now();
     let m; try { m = JSON.parse(data); } catch (e) { return; }
-    if (label === 'st') { if (N.mode === 'guest') { snap = m; snapAt = performance.now(); } return; }
+    if (label === 'st') {
+      if (N.mode !== 'guest') return;
+      S.recvSnaps++; S.snapCount++;
+      // kanał nieuporządkowany: starsze paczki odrzucamy, dziury liczymy jako zgubione
+      if (m.q <= S.lastSeq) return;
+      if (S.lastSeq && m.q > S.lastSeq + 1) S.lostSnaps += m.q - S.lastSeq - 1;
+      S.lastSeq = m.q;
+      snap = m; snapAt = performance.now();
+      return;
+    }
+    if (m.m === 'ping') { N.sendReliable({ m: 'pong', t: m.t }); return; }
+    if (m.m === 'pong') {
+      const rtt = performance.now() - m.t;
+      S.rtt = S.rtt == null ? rtt : S.rtt * 0.7 + rtt * 0.3;
+      return;
+    }
+    if (m.m === 'bye') { lost('left'); return; }
     if (m.m === 'cmd' && N.mode === 'host') {
       if (m.c && typeof m.c.type === 'string' && N.allowed(m.c, N.otherRole(N.role))) DD.CommandBus.push(m.c);
     } else if (m.m === 'log' && N.mode === 'guest') {
@@ -175,7 +234,7 @@
     const c = [];
     for (const x of s.colonies) c.push(r2(x.x), r2(x.y), r2(x.nx), r2(x.ny), r2(x.born), x.seed);
     return {
-      t: s.time, run: s.running ? 1 : 0, ov: s.over, org: s.organ,
+      q: ++seq, t: s.time, run: s.running ? 1 : 0, ov: s.over, org: s.organ,
       b: [r2(b.x), r2(b.y), r2(b.vx), r2(b.vy), r2(b.dir), r2(b.hp), r2(b.infection), r2(b.slowT), r2(b.slowMul),
         r2(b.hitFlash), b.contact ? 1 : 0, r2(b.resist.antibodies), r2(b.resist.fever), r2(b.resist.slow)],
       tr: b.transit ? [b.transit.to === 'lungs' ? 1 : 2, r2(b.transit.t), b.transit.total] : 0,
@@ -184,13 +243,16 @@
       a, c
     };
   }
-  let sendAcc = 0, sentLogLen = -1, sentLogT = -1;
+  let sendAcc = 0, sentLogLen = -1, sentLogT = -1, seq = 0;
   N.hostTick = function (s, dt) {
     if (N.mode !== 'host' || !N.connected) return;
     sendAcc += dt;
     if (sendAcc >= 1 / SNAP_HZ) {
-      sendAcc = 0;
-      if (N.chSt && N.chSt.readyState === 'open' && N.chSt.bufferedAmount < 64000) N.chSt.send(JSON.stringify(encode(s)));
+      sendAcc = Math.min(sendAcc - 1 / SNAP_HZ, 1 / SNAP_HZ);
+      if (N.chSt && N.chSt.readyState === 'open' && N.chSt.bufferedAmount < 64000) {
+        N.chSt.send(JSON.stringify(encode(s)));
+        S.sentSnaps++; S.snapCount++;
+      }
     }
     const lt = s.log.length ? s.log[s.log.length - 1].t : -1;
     if (s.log.length !== sentLogLen || lt !== sentLogT) {

@@ -294,3 +294,33 @@ body[data-role="doc"] .half-doc {
 .organ-pick { display: grid; gap: 10px; }
 .organ-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 @media (max-width: 900px) { .modes { grid-template-columns: 1fr; } }
+
+/* ---------- stan połączenia ---------- */
+.net-badge {
+  position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 6;
+  display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 7px 12px; border-radius: 999px; font-size: 13px;
+  background: rgba(16, 48, 42, 0.92); color: #eef6f2; border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.net-badge kbd { opacity: 0.6; margin: 0; }
+.nb-num { font-variant-numeric: tabular-nums; color: #b9d3ca; }
+.nb-dot { width: 9px; height: 9px; border-radius: 50%; background: #4fd39a; box-shadow: 0 0 8px #4fd39a; }
+.net-badge[data-q="weak"] .nb-dot { background: #f0b03e; box-shadow: 0 0 8px #f0b03e; }
+.net-badge[data-q="stalled"] .nb-dot, .net-badge[data-q="lost"] .nb-dot { background: #ff5a48; box-shadow: 0 0 8px #ff5a48; }
+.net-details {
+  position: fixed; right: 16px; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: 6;
+  width: min(380px, calc(100vw - 32px)); padding: 16px 18px; border-radius: var(--r-m);
+  background: var(--paper); color: var(--ink); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+.net-details h2 { margin: 0 0 10px; font-size: 16px; }
+.net-details dl { margin: 0; display: grid; gap: 6px; font-size: 13px; }
+.net-details dl > div { display: grid; grid-template-columns: 150px 1fr; gap: 10px; }
+.net-details dt { color: var(--muted); }
+.net-details dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 0; }
+.nd-note { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+.net-weak {
+  position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 7;
+  max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: var(--r-m);
+  background: #5a1610; color: #ffe9e4; font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}

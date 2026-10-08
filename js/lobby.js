@@ -88,7 +88,11 @@
           $('wait').hidden = false;
         }
       };
-      N.onClosed = () => {
+      N.onClosed = (reason) => {
+        if (reason === 'left') {
+          $('net-lost-title').textContent = 'Drugi gracz opuścił grę';
+          $('net-lost-text').textContent = 'Drugi gracz zamknął kartę z grą. Żeby zagrać znowu, wróćcie do menu i wymieńcie nowe kody.';
+        }
         $('net-lost').hidden = false;
       };
       $('net-lost-reload').addEventListener('click', () => location.reload());
