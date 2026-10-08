@@ -17,7 +17,7 @@ index.html              układ ekranu, nakładki (start, lobby, koniec gry), kol
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (jasna karta lekarza)
 js/version.js           DD.VERSION
 js/config.js            wszystkie liczby balansu i ustawienia (tętno, leki, kamera, podgląd)
-js/heart-shape.js       geometria serca: SDF z elips i naczyń + dokładna transformata odległości
+js/heart-shape.js       geometria serca, wątroby i nerki (SDF, maski narządów, nazwy miejsc, wyjścia z mapy): SDF z elips i naczyń + dokładna transformata odległości
 js/flow.js              pole przepływu (3 pola bazowe mieszane wg fazy cyklu) + curl noise
 js/tissue-cells.js      kardiomiocyty w ścianie serca (proceduralne, deterministyczne): kolizje i render
 js/state.js             stan gry, komendy, krok symulacji, kolizje, szyna komend
@@ -60,9 +60,12 @@ Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, w
 
 ## Geometria i przepływ
 
-- **SDF serca** (`heart-shape.js`): elipsy komór i przedsionków + naczynia jako łamane z promieniem, łączone gładkim minimum. Maska jest liczona analitycznie, a potem dokładną transformatą odległości (Felzenszwalb). `d < 0` to krew, `d > 0` tkanka. Ta sama siatka 512×512 służy do kolizji i renderu (tekstura half-float).
+- **SDF** (`heart-shape.js`): elipsy komór i przedsionków + naczynia jako łamane z promieniem, łączone gładkim minimum, plus strefa zrazików wątroby (elipsa minus płytki hepatocytów). Naczynia nerki (łuk, międzypłatowe, kłębuszki) są generowane z `KIDNEY`, płytki wątroby z `LIVER`. Maska jest liczona analitycznie, a potem dokładną transformatą odległości (Felzenszwalb). `d < 0` to krew, `d > 0` tkanka. Siatka `NX × NY` (komórka `config.sdfCell`) służy do kolizji i renderu (tekstura half-float).
+- **Świat:** serce na górze (`HEART_BOX`), jama brzuszna pod nim (`ABDOMEN_BOX`). `H.organAt(x, y)` zwraca `heart` / `liver` / `kidney` / `abdomen`.
+- **Maski narządów:** tekstura RGBA (`H.organ`): R wątroba, G nerka (0,5 kora, 1 rdzeń), B pęcherzyk żółciowy, A miedniczka i moczowód. Shader tkanki nie opuszcza w narządzie powierzchni w ciemność i barwi miąższ.
 - **Zastawki:** punkt na kanale i kierunek prądu. Szerokość pierścienia mierzona po SDF przy starcie. Płatki to odcinki obracane wg otwarcia (`flow.valveOpen`).
-- **Przepływ** (`flow.js`): trzy pola bazowe (żylne stałe, rozkurcz, skurcz) budowane z torów prądu, dyfundowane w świetle naczyń i mieszane wg fazy cyklu. Do tego curl noise dla zawirowań.
+- **Przepływ** (`flow.js`): trzy pola bazowe (żylne stałe, rozkurcz, skurcz) budowane z torów prądu, dyfundowane w świetle naczyń i mieszane wg fazy cyklu. Do tego curl noise dla zawirowań. W zrazikach wątroby i w nerce (`POTENTIAL`) pole żylne to przepływ potencjalny: ciśnienie z równania Laplace'a (SOR) między wlotami a wylotami, prędkość = −grad p.
+- **Drogi poza mapą:** `EXITS` (płuca, głowa i ręce, nogi, jelita) → `INLETS`; nazwy w `ROUTES`.
 
 ## Sieć (`js/net.js`)
 
@@ -77,7 +80,7 @@ Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `gue
 
 ## Render
 
-- **Tkanka:** płaszczyzna 480×464 segmentów, wysokość z SDF w vertex shaderze. Normalne, beleczki, włókna i tłuszcz liczone w fragment shaderze. Kolory i światło są liniowe (HDR), a mapowanie tonów robi post-process.
+- **Tkanka:** 4 pasy płaszczyzny (segment 0,25 j., poza kadrem pomijane), wysokość z SDF w vertex shaderze. Normalne, beleczki, włókna i tłuszcz liczone w fragment shaderze. Kolory i światło są liniowe (HDR), a mapowanie tonów robi post-process.
 - **Światło „endoskopu”** przy kamerze: wrap diffuse, rozpraszanie podpowierzchniowe, dwa płaty odblasku, pochłanianie we krwi.
 - **Komórki** żyją w oknie wokół kamery i są niesione tym samym polem przepływu.
 - **Uniformy wspólne** (`DD.SHARED`) ustawia każdy widok tuż przed własnym renderem, więc dwa widoki (gra i podgląd lekarza) mogą działać naraz.

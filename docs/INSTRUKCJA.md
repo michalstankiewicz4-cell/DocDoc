@@ -82,7 +82,13 @@ Rodzaje w obrębie bakterii albo wirusów różnią się tylko wyglądem i wraż
 - **Prąd krwi** zmienia się z rytmem serca (72/min). W rozkurczu krew płynie z przedsionków do komór, w skurczu jest wyrzucana do pnia płucnego i aorty. Pod prąd płynie się trudno, więc warto wyczuć rytm.
 - **Zastawki** otwierają się i zamykają w rytmie serca: trójdzielna i mitralna w rozkurczu, pnia płucnego i aorty w skurczu.
 - **Struny ścięgniste** w komorach są przeszkodami.
-- **Krwiobieg:** wypłynięcie pniem płucnym przenosi patogen przez płuca do lewego przedsionka, a aortą przez krążenie duże z powrotem do prawego przedsionka.
+- **Krwiobieg:** wypłynięcie pniem płucnym przenosi patogen przez płuca do lewego przedsionka, a górą aorty (głowa i ręce) do żyły głównej górnej.
+- **Jama brzuszna:** od łuku aorty odchodzi aorta zstępująca, która okrąża serce i schodzi pod przeponę. Stamtąd:
+  - **tętnica wątrobowa** prowadzi do **wątroby**: zraziki z płytkami hepatocytów ułożonymi promieniście wokół żyły centralnej, dalej żyły wątrobowe do żyły głównej dolnej,
+  - **tętnica krezkowa górna** prowadzi przez jelita do **żyły wrotnej**, która też wpływa do wątroby,
+  - **tętnica nerkowa** prowadzi do **nerki**: tętnice międzypłatowe między piramidami, tętnica łukowata na granicy kory i rdzenia, kłębuszki w korze, dalej żyły międzypłatowe i żyła nerkowa do żyły głównej dolnej,
+  - dół aorty brzusznej prowadzi przez nogi do żyły głównej dolnej, która płynie w górę przez wątrobę do prawego przedsionka.
+  - W jamie brzusznej można zakładać kolonie i żerować, ale nie można wnikać w ścianę (`Q` działa tylko w sercu). Echo serca nie widzi kolonii w jamie brzusznej.
 - **Żerowanie:** gdy patogen dotyka ściany serca, odzyskuje życie.
 - **Kolonie:** przy ścianie `E` zakłada kolonię za 25 punktów życia. Kolonia rośnie sama, a suma rozmiarów kolonii to kolonizacja, która obciąża pacjenta.
   - Antybiotyk wstrzymuje wzrost kolonii, a gorączka go spowalnia.
@@ -106,7 +112,7 @@ Rodzaje w obrębie bakterii albo wirusów różnią się tylko wyglądem i wraż
 
 ### Ekran
 - **Lewy dolny róg:** życie, kolonizacja, stan pacjenta, pożywienie, liczba kolonii i kopii oraz aktywne efekty (gorączka, antybiotyk, przyczepione przeciwciała, oporność).
-- **Prawy górny róg:** minimapa. PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie, przyciemnione kropki to kopie patogenu.
+- **Prawy górny róg:** minimapa serca albo jamy brzusznej (przełącza się sama, gdy patogen przepłynie pod przeponę). PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie, przyciemnione kropki to kopie patogenu.
 
 ## Lekarz
 
@@ -134,7 +140,7 @@ Każdą akcję można też kliknąć w panelu.
    | --- | --- | --- |
    | CRP | 4 s | poziom stanu zapalnego (przybliżony, z szumem pomiaru); monitor pokazuje z niego szacunek zakażenia „≈” |
    | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek bakterii we krwi (patogen i jego kopie) i zdjęcie miejsca, w którym był patogen |
-   | Echo serca | 8 s | obraz serca w stylu USG: kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
+   | Echo serca | 8 s | obraz samego serca w stylu USG (bez jamy brzusznej): kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
    | Mikroskop | 6 s | obraz próbki krwi i rodzaj patogenu (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym) z podpowiedzią leczenia; pusty, gdy w chwili pobrania patogen, jego kopie ani kolonie na ścianach naczyń nie były we krwi |
 

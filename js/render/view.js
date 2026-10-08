@@ -14,7 +14,7 @@
     const camera = new THREE.PerspectiveCamera(C.camera.fov, 1, 0.1, 300);
 
     const sdfTex = DD.makeSdfTexture(renderer);
-    const tissue = DD.createTissue(sdfTex);
+    const tissue = DD.createTissue(sdfTex, DD.makeOrganTexture());
     scene.add(tissue);
     const cells = DD.createCells(opts.maxCells);
     scene.add(cells.mesh); scene.add(cells.specks);

@@ -3,10 +3,10 @@
 window.DD = window.DD || {};
 
 DD.CONFIG = {
-  // Granice świata (jednostki gry). Serce ~110 x 110.
-  world: { minX: -60, maxX: 60, minY: -58, maxY: 58 },
-  sdfRes: 512,        // rozdzielczość mapy odległości (kolizje + render)
-  flowRes: 160,       // rozdzielczość pola przepływu
+  // Granice świata (jednostki gry). Serce ~110 x 110 na górze, pod nim jama brzuszna z wątrobą i nerką.
+  world: { minX: -60, maxX: 76, minY: -236, maxY: 58 },
+  sdfCell: 0.235,     // rozmiar komórki mapy odległości (kolizje + render)
+  flowCell: 0.5,      // rozmiar komórki pola przepływu
   bpm: 72,            // tętno
   fixedDt: 1 / 60,    // krok symulacji
 
@@ -39,7 +39,7 @@ DD.CONFIG = {
       abg:     { duration: 18, cooldown: 30 },              // antybiogram: wrażliwość na leczenie (po dodatnim posiewie)
       micro:   { duration: 6,  cooldown: 15 }               // mikroskop: rodzaj patogenu w próbce krwi
     },
-    antibodies: { cooldown: 18, count: 36, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
+    antibodies: { cooldown: 18, count: 56, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },
     abxA:       { cooldown: 22, duration: 8, dps: 2.6, colonyShrink: 0.025 },  // β-laktam: bakteriobójczy
     abxB:       { cooldown: 22, duration: 10, speedMul: 0.45 },               // makrolid: bakteriostatyczny
@@ -109,7 +109,7 @@ DD.CONFIG = {
 
   // pożywienie we krwi: patogen zjada je, wpływając w nie; pełny pasek pożywienia pozwala się rozmnożyć (R)
   food: {
-    count: 110, eatRadius: 0.6,
+    count: 170, eatRadius: 0.6, maxAge: 90,
     kinds: { glucose: 10, amino: 15, lipid: 25 },  // ile pożywienia daje każdy rodzaj
     lipidHp: 4,          // lipidy dodatkowo leczą (życie)
     aminoPoints: 0.15    // aminokwasy dodatkowo dają punkty mutacji

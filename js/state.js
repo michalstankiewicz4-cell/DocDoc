@@ -139,7 +139,8 @@
         const b = s.bact, Tt = C.tissue;
         if (b.dead || b.transit || b.inTissue) return;
         if (b.burrowT > 0) { b.burrowT = 0; return; }            // drugie Q przerywa
-        if (b.contact) b.burrowT = Tt.burrow[s.kind] || Tt.burrow.bacteria;
+        // wnikanie tylko w mięsień sercowy (w jamie brzusznej ściany naczyń nie prowadzą do mięśnia)
+        if (b.contact && H.organAt(b.x, b.y) === 'heart') b.burrowT = Tt.burrow[s.kind] || Tt.burrow.bacteria;
         return;
       }
       case 'doc.test': orderTest(s, cmd.kind || 'culture'); return;
@@ -235,7 +236,8 @@
     }
     if (kind === 'echo') {
       // kolonie w mięśniu widać tylko jako niewyraźne zgrubienie ściany w przybliżonym miejscu
-      return { colonies: s.colonies.map((c) => {
+      const HB = H.HEART_BOX;   // echo serca widzi tylko serce
+      return { colonies: s.colonies.filter((c) => c.y > HB.minY).map((c) => {
         const j = (c.inTissue ? 2.5 : 0) + (tox ? 4 : 0);
         return [Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0];
       }) };
@@ -287,12 +289,13 @@
   const FOOD_KINDS = ['glucose', 'amino', 'lipid'];
   function placeFood(s, f) {
     const W = C.world;
-    for (let t = 0; t < 40; t++) {
+    for (let t = 0; t < 120; t++) {
       f.x = W.minX + rnd(s) * (W.maxX - W.minX); f.y = W.minY + rnd(s) * (W.maxY - W.minY);
       if (H.sample(f.x, f.y) < -1.0 && f.y < 50) break;
     }
     f.z = (rnd(s) - 0.5) * 1.6;
     f.kind = FOOD_KINDS[Math.floor(rnd(s) * 3)];
+    f.age = rnd(s) * C.food.maxAge * 0.5;
     f.id = s.nextId++;
     return f;
   }
@@ -343,11 +346,11 @@
   }
 
   function spawnAntibodies(s, eff) {
-    // lek podany dożylnie miesza się z krwią: przeciwciała pojawiają się w całym krwiobiegu serca
+    // lek podany dożylnie miesza się z krwią: przeciwciała pojawiają się w całym krwiobiegu (serce i jama brzuszna)
     const W = C.world;
     for (let i = 0; i < D.antibodies.count; i++) {
       let x = 0, y = 0;
-      for (let t = 0; t < 40; t++) {
+      for (let t = 0; t < 120; t++) {
         x = W.minX + rnd(s) * (W.maxX - W.minX); y = W.minY + rnd(s) * (W.maxY - W.minY);
         if (H.sample(x, y) < -1.0) break;
       }
@@ -642,7 +645,7 @@
       if (!b.inTissue) for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
         if (ex.to === 'lungs') ST.lungsTrips++; else ST.bodyTrips++;
-        log(s, 'sys', ex.to === 'lungs' ? 'Patogen płynie przez krążenie płucne.' : 'Patogen płynie przez krążenie duże.');
+        log(s, 'sys', `Patogen płynie: ${H.ROUTES[ex.to].name.toLowerCase()}.`);
       }
       b.place = b.inTissue ? 'Mięsień sercowy' : H.placeName(b.x, b.y);
       if (b.place && !ST.places.includes(b.place)) ST.places.push(b.place);
@@ -655,6 +658,9 @@
     while (s.food.length < FD.count) s.food.push(placeFood(s, {}));
     const canEat = !b.dead && !b.transit && !b.inTissue && !b.hidden;
     for (const f of s.food) {
+      // pożywienie, które długo nie zostało zjedzone (np. utknęło w zaułku), pojawia się w innym miejscu
+      f.age = (f.age || 0) + dt;
+      if (f.age > FD.maxAge) { placeFood(s, f); continue; }
       F.velocity(f.x, f.y, s.time, s.phase, fv);
       f.x += fv[0] * 0.95 * dt; f.y += fv[1] * 0.95 * dt;
       const fdd = H.sample(f.x, f.y);
@@ -680,7 +686,7 @@
       c.x += (c.vx + fv[0] * B.flowCoupling) * dt; c.y += (c.vy + fv[1] * B.flowCoupling) * dt;
       if (Math.hypot(c.vx, c.vy) > 0.3) c.dir = Math.atan2(c.vy, c.vx);
       collideLeaflets(s, c, B.radius); collideWalls(c, B.radius);
-      for (const ex of H.EXITS) if (ex.test(c.x, c.y)) { const p = H.INLETS[ex.to][Math.floor(rnd(s) * 2)]; c.x = p.x; c.y = p.y; }
+      for (const ex of H.EXITS) if (ex.test(c.x, c.y)) { const L = H.INLETS[ex.to], p = L[Math.floor(rnd(s) * L.length)]; c.x = p.x; c.y = p.y; }
     }
 
     const A = D.antibodies;
@@ -742,7 +748,7 @@
       collideLeaflets(s, a, 0.2);
       collideWalls(a, 0.25);
       for (const ex of H.EXITS) if (ex.test(a.x, a.y)) {
-        const p = H.INLETS[ex.to][Math.floor(rnd(s) * 2)]; a.x = p.x; a.y = p.y;
+        const L = H.INLETS[ex.to], p = L[Math.floor(rnd(s) * L.length)]; a.x = p.x; a.y = p.y;
       }
       if (alive && dist < B.radius + 0.4) {
         a.stuck = true; a.ox = a.x - b.x; a.oy = a.y - b.y; a.life = Math.min(a.life, 8);

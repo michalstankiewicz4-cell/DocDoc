@@ -11,6 +11,20 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-10-09
+### Dodane
+- **Jama brzuszna: wątroba i nerka.** Mapa sięga pod przeponę. Aorta zstępująca odchodzi od łuku aorty, okrąża serce i schodzi do brzucha; żyła główna dolna płynie od nerki przez wątrobę do prawego przedsionka.
+- **Wątroba:** zraziki (płytki hepatocytów wokół żyły centralnej), tętnica wątrobowa, żyła wrotna (wlot z jelit przez tętnicę krezkową górną), żyły wątrobowe, pęcherzyk żółciowy. Czerwonobrązowy miąższ z siateczką zrazików.
+- **Nerka:** kora (ziarnista, z kłębuszkami), piramidy rdzenia (prążkowane), tętnice i żyły międzypłatowe, tętnica łukowata, tętnica i żyła nerkowa, miedniczka i moczowód.
+- Nazwy nowych miejsc w HUD (np. „Zraziki wątroby”, „Tętnica łukowata”, „Kłębuszek nerkowy”), nowe drogi poza mapą: kończyny dolne, jelita.
+- Minimapa przełącza się między sercem a jamą brzuszną.
+- Prąd krwi w zrazikach i nerce liczony z rozkładu ciśnienia (opływa przeszkody).
+### Zmienione
+- Wnikanie w ścianę (`Q`) działa tylko w sercu. Echo pokazuje tylko kolonie w sercu.
+- Wyjście górą aorty prowadzi do żyły głównej górnej (żyła główna dolna dostaje krew z nóg i nerki).
+- Więcej pożywienia (170) i przeciwciał na dawkę (56), bo krwiobieg jest większy; pożywienie, które nie zostało zjedzone przez 90 s, pojawia się w innym miejscu.
+- Płaszczyzna tkanki podzielona na 4 pasy pomijane poza kadrem.
+
 ## [0.21.0] - 2026-10-09
 ### Dodane
 - **Rodzaje patogenów na starcie:** bakterie — gronkowiec złocisty (MRSA, grona ziarenkowców), paciorkowiec (łańcuszek), pałeczka okrężnicy (pałeczka z witkami); wirusy — grypa (kulisty z kolcami), Coxsackie B (mały dwudziestościan), adenowirus (dwudziestościan z włóknami). Każdy ma własny wygląd 3D.
@@ -188,7 +202,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.21.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.22.0...HEAD
+[0.22.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.18.0...v0.19.0

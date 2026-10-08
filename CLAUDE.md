@@ -42,6 +42,7 @@ Aktualna wersja: zobacz `js/version.js` i `CHANGELOG.md`.
 
 Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
 - Serce w przekroju (SDF), prąd krwi zależny od cyklu serca, zastawki, struny ścięgniste, krążenie płucne i duże.
+- Jama brzuszna: aorta zstępująca i brzuszna, żyła główna dolna, wątroba (zraziki, żyła wrotna, żyły wątrobowe), nerka (kora, piramidy, kłębuszki).
 - Patogen: 3 bakterie i 3 wirusy (`config.species`, wybór ukryty przed lekarzem, rozpoznawany mikroskopem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
   wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0), toksyny (T),
   pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
@@ -75,6 +76,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Mecz z zamianą ról
 - [x] Pożywienie we krwi, rozmnożenie, przeciwciała atakują kopie (v0.19.0)
 - [x] Rodzaje bakterii i wirusów na start, mikroskop dla lekarza (v0.21.0)
+- [x] Układ krążenia rozszerzony o wątrobę i nerkę (v0.22.0)
 - [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
 Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
@@ -106,4 +108,9 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
   Gronkowiec MRSA oporny na β-laktam, E. coli na makrolid, paciorkowiec bez oporności; lek przeciwwirusowy: grypa 1,0, adenowirus 0,6, Coxsackie 0,2.
   Mikroskop (6 s, odnowienie 15 s) wykrywa rodzaj, gdy patogen płynie we krwi albo są kopie lub kolonie poza mięśniem; podaje podpowiedź leczenia.
   Dawne wartości 'bacteria' / 'virus' w komendach i localStorage mapują się na E. coli / adenowirusa.
+- Wątroba i nerka (v0.22.0): świat x −60..76, y −236..58; nerka prawa (pod wątrobą), żyła wrotna zasilana z jelit (tętnica krezkowa).
+  Wnikanie Q tylko w sercu; echo tylko serce; kolonie w wątrobie/nerce nie dają objawów (regiony 'liver'/'kidney'/'abdomen').
+  Wyjście górą aorty → żyła główna górna; dół aorty → nogi → żyła główna dolna; tętnica krezkowa → jelita → żyła wrotna.
+  Pożywienie 170, przeciwciała 56 na dawkę, pożywienie po 90 s bez zjedzenia przenosi się w inne miejsce.
+  Głębokość kanałów w narządach mniejsza (dno −1,8, wierzch 1,4) niż w sercu.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk).

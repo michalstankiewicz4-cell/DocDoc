@@ -77,7 +77,7 @@
     const echoC = $('res-echo-c'), echoCtx = echoC.getContext('2d');
     let echoBg = null;
     function drawEcho(res) {
-      const W = C.world, H = DD.Heart;
+      const H = DD.Heart, W = H.HEART_BOX;   // echo serca: tylko serce
       const w = 240, h = 232, pr = Math.min(2, window.devicePixelRatio || 1);
       echoC.width = w * pr; echoC.height = h * pr; echoC.style.width = w + 'px'; echoC.style.height = h + 'px';
       const ctx = echoCtx; ctx.setTransform(pr, 0, 0, pr, 0, 0);
@@ -447,7 +447,7 @@
       // HUD patogenu
       { const sp = C.species[s.species]; const nm = sp ? sp.name.charAt(0).toLowerCase() + sp.name.slice(1) : (s.kind === 'virus' ? 'wirus' : 'bakteria');
         document.querySelectorAll('.js-kind-name').forEach((el) => { if (el.textContent !== nm) el.textContent = nm; }); }
-      $('h-place').textContent = b.transit ? (b.transit.to === 'lungs' ? 'Krążenie płucne' : 'Krążenie duże') : b.place;
+      $('h-place').textContent = b.transit ? (DD.Heart.ROUTES[b.transit.to] || DD.Heart.ROUTES.body).name : b.place;
       $('h-hp').style.transform = `scaleX(${b.hp / C.bacteria.hp})`;
       $('h-hp-val').textContent = Math.ceil(b.hp);
       $('h-inf').style.transform = `scaleX(${b.infection / 100})`;
@@ -462,7 +462,7 @@
         } else if (b.burrowT > 0) {
           $('h-contact').textContent = `Wnikanie w ścianę: ${b.burrowT.toFixed(1).replace('.', ',')} s. Nie odpływaj od ściany. Q przerywa.`;
         } else {
-          $('h-contact').textContent = (b.feeding ? 'Żerujesz na tkance, życie wraca. ' : 'Przy ścianie. ') + colTxt + ' Q: wnikanie w ścianę.';
+          $('h-contact').textContent = (b.feeding ? 'Żerujesz na tkance, życie wraca. ' : 'Przy ścianie. ') + colTxt + (DD.Heart.organAt(b.x, b.y) === 'heart' ? ' Q: wnikanie w ścianę.' : '');
         }
       }
       $('s-colonies-n').textContent = s.colonies.length;
@@ -504,7 +504,7 @@
       $('s-res').hidden = res.length === 0;
       $('s-res').textContent = 'Oporność: ' + res.join(', ');
       $('transit').hidden = !b.transit;
-      if (b.transit) $('transit-text').textContent = b.transit.to === 'lungs' ? 'Przez płuca do lewego przedsionka' : 'Przez krążenie duże do prawego przedsionka';
+      if (b.transit) $('transit-text').textContent = (DD.Heart.ROUTES[b.transit.to] || DD.Heart.ROUTES.body).text;
 
       // koniec gry
       const end = $('end');

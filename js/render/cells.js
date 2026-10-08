@@ -106,7 +106,10 @@
       for (let t = 0; t < 12; t++) {
         const x = cx + (Math.random() * 2 - 1) * hx, y = cy + (Math.random() * 2 - 1) * hy;
         if (H.sample(x, y) < -0.6) {
-          arr[i * stride] = x; arr[i * stride + 1] = y; arr[i * stride + 2] = Z0 + Math.random() * (Z1 - Z0);
+          // w narządach jamy brzusznej kanały są płytsze
+          const flat = y < -60 && H.organAt(x, y) !== 'abdomen';
+          const z0 = flat ? -1.4 : Z0, z1 = flat ? 1.1 : Z1;
+          arr[i * stride] = x; arr[i * stride + 1] = y; arr[i * stride + 2] = z0 + Math.random() * (z1 - z0);
           return true;
         }
       }

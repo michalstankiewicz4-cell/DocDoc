@@ -9,9 +9,9 @@
   const mix = (a, b, k) => a.map((v, i) => lerp(v, b[i], clamp(k, 0, 1)));
   const rgb = (c) => `rgb(${c.map(Math.round).join(',')})`;
 
-  // masa kolonii w obszarach serca (liczone z kolonii — działa też u gościa)
+  // masa kolonii w obszarach (serce, wątroba, nerka, reszta jamy brzusznej) (liczone z kolonii — działa też u gościa)
   DD.symptomMasses = function (s) {
-    const m = { right: 0, left: 0, legs: 0 };
+    const m = { right: 0, left: 0, legs: 0, liver: 0, kidney: 0, abdomen: 0 };
     for (const c of s.colonies) { if (!c.region) c.region = DD.Heart.regionOf(c.x, c.y); m[c.region] += c.size || 0; }
     return m;
   };

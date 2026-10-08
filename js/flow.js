@@ -7,14 +7,34 @@
 (function () {
   const C = DD.CONFIG, H = DD.Heart;
 
+  // tory prądu nerki liczone z geometrii: zatoka -> dolne tętnice międzypłatowe -> tętnica łukowata -> górne -> żyła nerkowa
+  const K = H.KIDNEY, deg = Math.PI / 180;
+  const KP = (a) => [K.c[0] + Math.cos(a * deg) * K.arc[0], K.c[1] + Math.sin(a * deg) * K.arc[1]];
+  // (wnętrze nerki i zrazików liczy przepływ potencjalny — patrz POTENTIAL niżej)
+
   const PATHS = {
     ven: [
       { s: 5,   pts: [[-30, 58], [-29, 24], [-28, 8]] },
-      { s: 5,   pts: [[-46, -60], [-41, -28], [-36, -6], [-28, 4]] },
-      { s: 5,   pts: [[62, 29.5], [42, 24], [34, 20]] },
-      { s: 5,   pts: [[62, 10.5], [42, 15], [34, 19]] },
+      // żyła główna dolna: od nerki przez wątrobę do prawego przedsionka
+      { s: 5,   pts: [[-38, -158], [-44, -130], [-47, -95], [-46, -62], [-41, -28], [-36, -6], [-28, 4]] },
+      { s: 5,   pts: [[55, 29.5], [42, 24], [34, 20]] },
+      { s: 5,   pts: [[55, 10.5], [42, 15], [34, 19]] },
       { s: 5,   pts: [[-4.4, 4], [-6, 14], [-8, 34], [-10, 60]] },
-      { s: 5,   pts: [[10.2, 14], [9, 22], [9, 40], [10, 60]] }
+      { s: 5,   pts: [[10.2, 14], [9, 22], [9, 40], [10, 60]] },
+      // aorta zstępująca i brzuszna
+      { s: 5,   pts: [[9, 32], [18, 45], [34, 50], [52, 48], [64, 38], [67, 10], [67, -40], [58, -66], [44, -90], [38, -112], [36, -140], [36, -226]] },
+      // tętnica krezkowa (do jelit), tętnica wątrobowa i żyła wrotna (do wątroby)
+      { s: 6,   pts: [[36, -150], [50, -157], [64, -160]] },
+      { s: 4,   pts: [[37, -114], [20, -114], [6, -114], [-1, -111], [-4, -104]] },
+      { s: 6,   pts: [[2, -154], [0, -130], [-2, -114], [-4, -104]] },
+      // zatoki wątroby -> żyły wątrobowe -> żyła główna dolna
+      { s: 3,   pts: [[-4, -104], [-10, -97], [-16, -90], [-20, -88], [-30, -84], [-44, -76]] },
+      { s: 3,   pts: [[-4, -104], [-14, -100], [-24, -99], [-32, -101], [-45, -98]] },
+      { s: 3,   pts: [[-2, -104], [6, -98], [2, -88], [-8, -86], [-18, -88]] },
+      { s: 3,   pts: [[-4, -104], [-8, -106], [-16, -105], [-24, -99]] },
+      // tętnica nerkowa -> nerka -> żyła nerkowa
+      { s: 6,   pts: [[36, -210], [6, -214], [-14, -212], [-24, -208]] },
+      { s: 6,   pts: [[-24, -192], [-26, -178], [-38, -161]] }
     ],
     dia: [
       { s: 12,  pts: [[-30, 10], [-27, -3], [-23, -14], [-17, -24], [-10, -30]] },
@@ -22,7 +42,9 @@
     ],
     sys: [
       { s: 22,  pts: [[-24, -30], [-12, -27], [-5, -16], [-4, -4], [-6, 14], [-8, 34], [-10, 60]] },
-      { s: 24,  pts: [[24, -34], [19, -18], [15, -6], [11, 6], [9, 22], [9, 40], [10, 60]] }
+      { s: 24,  pts: [[24, -34], [19, -18], [15, -6], [11, 6], [9, 22], [9, 40], [10, 60]] },
+      // fala tętna w aorcie zstępującej i brzusznej
+      { s: 9,   pts: [[9, 32], [18, 45], [34, 50], [52, 48], [64, 38], [67, 10], [67, -40], [58, -66], [44, -90], [38, -112], [36, -140], [36, -226]] }
     ]
   };
 
@@ -39,30 +61,116 @@
     return [best, tx, ty];
   }
 
-  function buildField(paths, R) {
+  // ramki torów: tor wpływa tylko na punkty bliżej niż ~3 sigma
+  function pathBox(p) {
+    const m = 20;
+    return [Math.min(...p.pts.map((q) => q[0])) - m, Math.min(...p.pts.map((q) => q[1])) - m, Math.max(...p.pts.map((q) => q[0])) + m, Math.max(...p.pts.map((q) => q[1])) + m];
+  }
+  // Przepływ potencjalny w gęstych sieciach (zraziki wątroby, nerka): ciśnienie z równania Laplace'a w świetle naczyń,
+  // prędkość = -grad p. Prąd opływa płytki hepatocytów i nie ma ślepych zaułków.
+  const POTENTIAL = [
+    { box: [-30.5, -109, 17, -77], inlets: [[-3.8, -107.6]], outlets: [[-29, -84.4], [-29.5, -100.6]], speed: 4 },
+    { box: [-58, -230, -19, -171.5], inlets: [[-24.5, -207.5]], outlets: [[-30, -172.5]], speed: 3.5 }
+  ];
+  function solvePotential(P) {
+    const h = 0.4, [x0, y0, x1, y1] = P.box;
+    const nx = Math.ceil((x1 - x0) / h), ny = Math.ceil((y1 - y0) / h), n = nx * ny;
+    const lum = new Uint8Array(n), fix = new Int8Array(n), p = new Float32Array(n).fill(0.5);
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+      const x = x0 + (i + 0.5) * h, y = y0 + (j + 0.5) * h, k = j * nx + i;
+      lum[k] = H.sample(x, y) < -0.05 ? 1 : 0;
+      for (const q of P.inlets) if (Math.hypot(x - q[0], y - q[1]) < 1.8) { fix[k] = 1; p[k] = 1; }
+      for (const q of P.outlets) if (Math.hypot(x - q[0], y - q[1]) < 1.8) { fix[k] = -1; p[k] = 0; }
+    }
+    // SOR; ściany = brak przepływu (pomijamy sąsiadów poza światłem)
+    for (let it = 0; it < 2500; it++) {
+      for (let j = 1; j < ny - 1; j++) for (let i = 1; i < nx - 1; i++) {
+        const k = j * nx + i;
+        if (!lum[k] || fix[k]) continue;
+        let s = 0, c = 0;
+        if (lum[k - 1]) { s += p[k - 1]; c++; } if (lum[k + 1]) { s += p[k + 1]; c++; }
+        if (lum[k - nx]) { s += p[k - nx]; c++; } if (lum[k + nx]) { s += p[k + nx]; c++; }
+        if (c) p[k] += 1.9 * (s / c - p[k]);
+      }
+    }
+    // gradient -> prędkość, skala tak, by typowa prędkość = speed
+    const vx = new Float32Array(n), vy = new Float32Array(n), mags = [];
+    for (let j = 1; j < ny - 1; j++) for (let i = 1; i < nx - 1; i++) {
+      const k = j * nx + i; if (!lum[k]) continue;
+      const pl = lum[k - 1] ? p[k - 1] : p[k], pr = lum[k + 1] ? p[k + 1] : p[k];
+      const pd = lum[k - nx] ? p[k - nx] : p[k], pu = lum[k + nx] ? p[k + nx] : p[k];
+      vx[k] = -(pr - pl); vy[k] = -(pu - pd);
+      const m = Math.hypot(vx[k], vy[k]); if (m > 0) mags.push(m);
+    }
+    mags.sort((a, b) => a - b);
+    const med = mags[Math.floor(mags.length * 0.5)] || 1;
+    const dead = new Uint8Array(n);
+    for (let k = 0; k < n; k++) {
+      const m = Math.hypot(vx[k], vy[k]);
+      // martwe strefy (za wlotem / wylotem w obrębie ramki): prąd z torów naczyń
+      if (m < med * 0.03) { dead[k] = 1; continue; }
+      const sc = P.speed * Math.min(1.8, Math.max(0.5, m / med)) / m;
+      vx[k] *= sc; vy[k] *= sc;
+    }
+    Object.assign(P, { h, nx, ny, vx, vy, lum, fix, dead });
+  }
+  function potentialAt(x, y) {
+    for (const P of POTENTIAL) {
+      const [x0, y0, x1, y1] = P.box;
+      if (x < x0 || x > x1 || y < y0 || y > y1) continue;
+      const i = Math.floor((x - x0) / P.h), j = Math.floor((y - y0) / P.h);
+      if (i < 0 || j < 0 || i >= P.nx || j >= P.ny) continue;
+      const k = j * P.nx + i;
+      if (P.fix[k] || P.dead[k]) return null;   // wlot / wylot / martwa strefa: prąd z torów naczyń
+      return P.lum[k] ? [P.vx[k], P.vy[k]] : [0, 0];
+    }
+    return null;
+  }
+
+  // strefa zrazików wątroby: szerszy prąd (wiele kanałów między płytkami)
+  const Z = H.LIVER.zone;
+  const inZone = (x, y) => ((x - Z.c[0]) / (Z.r[0] + 2)) ** 2 + ((y - Z.c[1]) / (Z.r[1] + 2)) ** 2 < 1;
+  function buildField(paths, RX, RY) {
     const W = C.world;
-    const sx = (W.maxX - W.minX) / R, sy = (W.maxY - W.minY) / R;
-    const f = new Float32Array(R * R * 2);
+    const sx = (W.maxX - W.minX) / RX, sy = (W.maxY - W.minY) / RY;
+    const R = RX;
+    const f = new Float32Array(RX * RY * 2);
     const sigma = 6.5;
-    for (let j = 0; j < R; j++) for (let i = 0; i < R; i++) {
+    for (const p of paths) p.bb = p.bb || pathBox(p);
+    for (let j = 0; j < RY; j++) for (let i = 0; i < RX; i++) {
       const x = W.minX + (i + 0.5) * sx, y = W.minY + (j + 0.5) * sy;
       const d = H.sample(x, y);
       if (d > 0) continue;
       let vx = 0, vy = 0;
+      if (paths === PATHS.ven) {
+        const pv = potentialAt(x, y);
+        if (pv) { f[(j * R + i) * 2] = pv[0]; f[(j * R + i) * 2 + 1] = pv[1]; continue; }
+      }
       for (const p of paths) {
+        if (x < p.bb[0] || x > p.bb[2] || y < p.bb[1] || y > p.bb[3]) continue;
+        // w jamie brzusznej tory są blisko siebie i w wąskich naczyniach — węższy zasięg
+        const sg = y >= -60 ? sigma : inZone(x, y) ? 5 : 2.6;
         const [dist, tx, ty] = nearestOnPath(x, y, p.pts);
-        const w = Math.exp(-(dist / sigma) * (dist / sigma));
+        const w = Math.exp(-(dist / sg) * (dist / sg));
         vx += tx * p.s * w; vy += ty * p.s * w;
       }
-      const damp = Math.min(1, Math.max(0, -d / 1.6));
+      // w drobnych naczyniach jamy brzusznej prąd sięga bliżej ściany
+      const damp = Math.min(1, Math.max(0, -d / (y < -60 ? 0.6 : 1.6)));
       f[(j * R + i) * 2] = vx * damp; f[(j * R + i) * 2 + 1] = vy * damp;
     }
     // dyfuzja w obrębie światła — wygładza przejścia między strumieniami
     for (let it = 0; it < 6; it++) {
       const g = new Float32Array(f);
-      for (let j = 1; j < R - 1; j++) for (let i = 1; i < R - 1; i++) {
+      for (let j = 1; j < RY - 1; j++) for (let i = 1; i < RX - 1; i++) {
         const k = (j * R + i) * 2;
         if (f[k] === 0 && f[k + 1] === 0) continue;
+        if (W.minY + (j + 0.5) * sy < -60) {
+          // jama brzuszna: średnia tylko z sąsiadów w świetle naczynia (ściany nie wygaszają prądu w wąskich kanałach)
+          let n = 0, ax = 0, ay = 0;
+          for (const o of [2, -2, R * 2, -R * 2]) if (f[k + o] !== 0 || f[k + o + 1] !== 0) { ax += f[k + o]; ay += f[k + o + 1]; n++; }
+          if (n) { g[k] = f[k] * 0.5 + ax / n * 0.5; g[k + 1] = f[k + 1] * 0.5 + ay / n * 0.5; }
+          continue;
+        }
         for (let c = 0; c < 2; c++) {
           g[k + c] = f[k + c] * 0.5 + (f[k + 2 + c] + f[k - 2 + c] + f[k + R * 2 + c] + f[k - R * 2 + c]) * 0.125;
         }
@@ -98,11 +206,13 @@
   };
 
   F.init = function () {
-    const R = C.flowRes;
-    F.R = R;
-    F.ven = buildField(PATHS.ven, R);
-    F.dia = buildField(PATHS.dia, R);
-    F.sys = buildField(PATHS.sys, R);
+    const W = C.world;
+    const RX = Math.ceil((W.maxX - W.minX) / C.flowCell), RY = Math.ceil((W.maxY - W.minY) / C.flowCell);
+    F.RX = RX; F.RY = RY;
+    for (const P of POTENTIAL) solvePotential(P);
+    F.ven = buildField(PATHS.ven, RX, RY);
+    F.dia = buildField(PATHS.dia, RX, RY);
+    F.sys = buildField(PATHS.sys, RX, RY);
     return F;
   };
 
@@ -125,9 +235,9 @@
   F.noise = vnoise;
 
   function sampleField(f, x, y, out) {
-    const W = C.world, R = F.R;
-    let fx = (x - W.minX) / (W.maxX - W.minX) * R - 0.5, fy = (y - W.minY) / (W.maxY - W.minY) * R - 0.5;
-    if (fx < 0 || fy < 0 || fx >= R - 1 || fy >= R - 1) { out[0] = 0; out[1] = 0; return out; }
+    const W = C.world, R = F.RX;
+    let fx = (x - W.minX) / (W.maxX - W.minX) * F.RX - 0.5, fy = (y - W.minY) / (W.maxY - W.minY) * F.RY - 0.5;
+    if (fx < 0 || fy < 0 || fx >= F.RX - 1 || fy >= F.RY - 1) { out[0] = 0; out[1] = 0; return out; }
     const i = fx | 0, j = fy | 0, tx = fx - i, ty = fy - j;
     for (let c = 0; c < 2; c++) {
       const k = (j * R + i) * 2 + c;
@@ -150,7 +260,7 @@
     const s = 0.11, e = 0.5, tz = t * 0.35;
     const n0 = vnoise(x * s, y * s, tz);
     const nx = vnoise((x + e) * s, y * s, tz), ny = vnoise(x * s, (y + e) * s, tz);
-    const amp = (1.6 + 0.3 * Math.hypot(vx, vy)) * 6;
+    const amp = (1.6 + 0.3 * Math.hypot(vx, vy)) * (y < -60 ? 2 : 6);   // w drobnych naczyniach brzucha mniej wirów
     const d = H.sample(x, y);
     const wall = Math.min(1, Math.max(0, -d / 1.2));
     vx += (ny - n0) / e * amp * wall;
