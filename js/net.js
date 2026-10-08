@@ -64,7 +64,7 @@
       return JSON.parse(await new Response(stream).text());
     }
     if (v === 'DD0.') return JSON.parse(new TextDecoder().decode(bytes));
-    throw new Error('To nie wygląda na kod DocDoc. Skopiuj go jeszcze raz w całości.');
+    throw new Error('To nie wygląda na kod PatientZero. Skopiuj go jeszcze raz w całości.');
   }
 
   function waitIce(pc) {

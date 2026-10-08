@@ -1,4 +1,4 @@
-# DocDoc
+# PatientZero
 
 Asymetryczna gra na dwie osoby: **bakteria** próbuje zainfekować ciało, **lekarz** diagnozuje i leczy.
 Jedna arena (serce). Dwa tryby: deweloperski (jeden gracz na obu połówkach ekranu) i gra na 2 osoby przez sieć.

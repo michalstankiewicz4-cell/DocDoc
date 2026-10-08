@@ -4,7 +4,7 @@
 // Wszystko przechodzi przez filtr dolnoprzepustowy — słyszymy serce "od środka", przez krew.
 (function () {
   const A = { ctx: null, on: true, master: null, out: null, lastPhase: 0 };
-  try { A.on = localStorage.getItem('docdoc-sound') !== 'off'; } catch (e) { /* brak dostępu */ }
+  try { A.on = localStorage.getItem('patientzero-sound') !== 'off'; } catch (e) { /* brak dostępu */ }
 
   // przeglądarki pozwalają włączyć dźwięk dopiero po geście użytkownika
   A.init = function () {
@@ -59,7 +59,7 @@
 
   A.toggle = function () {
     A.on = !A.on;
-    try { localStorage.setItem('docdoc-sound', A.on ? 'on' : 'off'); } catch (e) { /* brak dostępu */ }
+    try { localStorage.setItem('patientzero-sound', A.on ? 'on' : 'off'); } catch (e) { /* brak dostępu */ }
     if (A.on) A.init();
     if (A.master) A.master.gain.setTargetAtTime(A.on ? 0.9 : 0, A.ctx.currentTime, 0.05);
     return A.on;
