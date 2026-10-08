@@ -110,6 +110,11 @@
     const t = A.ctx.currentTime + 0.02;
     [523, 659, 784].forEach((f, i) => tone(f, t + i * 0.2, 0.15, 0.11, 'triangle'));
   }
+  // alarm wysokiego priorytetu: szybkie pięć tonów (stan krytyczny pacjenta)
+  function criticalAlarm() {
+    const t = A.ctx.currentTime + 0.02;
+    [988, 784, 988, 784, 988].forEach((f, i) => tone(f, t + i * 0.13, 0.1, 0.13, 'square'));
+  }
   function resultChime() {
     const t = A.ctx.currentTime + 0.02;
     tone(988, t, 0.12, 0.12); tone(1319, t + 0.13, 0.22, 0.1);
@@ -152,7 +157,8 @@
 
     if (hearRoom && s.running) {
       alarmT -= dt;
-      if (s.doctor.temp >= 39 && alarmT <= 0) { feverAlarm(); alarmT = 6; }
+      if (s.patient.cond < 30 && alarmT <= 0) { criticalAlarm(); alarmT = 3; }
+      else if (s.doctor.temp >= 39 && alarmT <= 0) { feverAlarm(); alarmT = 6; }
       if (resultNow) resultChime();
     }
   };

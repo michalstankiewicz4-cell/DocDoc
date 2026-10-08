@@ -114,13 +114,21 @@
     // EKG
     const ecg = $('ecg'), ctx = ecg.getContext('2d');
     const trace = new Float32Array(400); let head = 0, lastPhase = 0;
+    // pobudzenia przedwczesne (szeroki QRS), gdy kolonie siedzą w lewym sercu — objaw dla lekarza
+    let beat = 0, prevP = 0, ectopicChance = 0;
+    const beatHash = (n) => { const x = Math.sin(n * 127.1 + 31.7) * 43758.5453; return x - Math.floor(x); };
     function ecgValue(ph) {
+      if (ph < prevP) beat++;
+      prevP = ph;
       const g = (c, w, a) => a * Math.exp(-((ph - c) * (ph - c)) / (2 * w * w));
-      return g(0.03, 0.018, 0.12) + g(0.125, 0.006, -0.12) + g(0.14, 0.007, 1.0) + g(0.155, 0.007, -0.28) + g(0.38, 0.04, 0.26);
+      let v = g(0.03, 0.018, 0.12) + g(0.125, 0.006, -0.12) + g(0.14, 0.007, 1.0) + g(0.155, 0.007, -0.28) + g(0.38, 0.04, 0.26);
+      if (beatHash(beat) < ectopicChance) v += g(0.66, 0.022, -0.55) + g(0.7, 0.03, 0.75) + g(0.8, 0.05, -0.2);
+      return v;
     }
     function drawEcg(s) {
       const w = ecg.clientWidth, h = ecg.clientHeight, pr = window.devicePixelRatio || 1;
       if (ecg.width !== Math.round(w * pr)) { ecg.width = Math.round(w * pr); ecg.height = Math.round(h * pr); }
+      ectopicChance = Math.max(0, Math.min(0.6, (DD.symptomMasses(s).left - 0.35) * 0.8));
       // przesuwaj zapis proporcjonalnie do czasu
       let ph = s.phase; if (ph < lastPhase) ph += 1;
       const steps = Math.max(1, Math.round((ph - lastPhase) * 160));

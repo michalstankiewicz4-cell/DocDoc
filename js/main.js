@@ -27,6 +27,7 @@
     const minimap = DD.createMinimap($('minimap'));
     const netStatus = DD.createNetStatus();
     const docCam = DD.createDoctorCam(state);
+    const room = DD.createPatientRoom();
 
     // układ ekranu wg roli: obie połowy albo tylko swoja
     DD.applyLayout = function (role) {
@@ -137,6 +138,7 @@
       DD.Audio.update(state, N.role, dt);
       netStatus.update(dt);
       docCam.update(state, dt);
+      if (N.role !== 'bact') room.draw(state, dt);
       ui.update(state);
       requestAnimationFrame(frame);
     }

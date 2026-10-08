@@ -129,8 +129,19 @@ Każdą akcję można też kliknąć w panelu.
    - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie.
    - **Operacja zastawki** trwa 10 s i obciąża pacjenta (stan −15). Po zakończeniu usuwa wszystkie ogniska w promieniu kilku milimetrów od wybranej zastawki, także w ścianie, a patogen w pobliżu traci 40 życia. Kolejna operacja jest możliwa po 60 s. Dobrze ją połączyć z echem serca, które pokazuje, gdzie są ogniska.
 3. **Oporność nabyta:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Na przycisku widać siłę następnej dawki i jej koszt dla pacjenta. Rzeczywiste działanie zależy jeszcze od rodzaju patogenu i jego naturalnej oporności.
-4. **Podgląd pacjenta** pokazuje grę patogenu z 5-sekundowym opóźnieniem.
-5. **Dziennik** zapisuje badania, wyniki i podane leki.
+4. **Sala z pacjentem i objawy:** na górze panelu widać pacjenta na łóżku. Objawy wynikają z tego, gdzie są kolonie:
+
+   | Objaw | Co znaczy |
+   | --- | --- |
+   | kaszel, duszność | kolonie w prawym sercu (krążenie płucne) albo zły stan pacjenta |
+   | zaburzenia rytmu (dodatkowe, szerokie pobudzenia na EKG) | kolonie w lewym sercu |
+   | obrzęk nóg | kolonie przy żyle głównej dolnej |
+   | gorączka i poty | temperatura od 37,8 °C |
+   | bladość, sinica | stan pacjenta poniżej 55% / 25% |
+
+   W czasie badań na stole w sali widać laboratorium (wirówka, szalka z posiewem, antybiogram, USG). Kroplówka kapie, gdy lek jest we krwi. Przy stanie poniżej 30% albo gorączce od 39 °C monitor pulsuje na czerwono i gra alarm.
+5. **Podgląd pacjenta** pokazuje grę patogenu z 5-sekundowym opóźnieniem.
+6. **Dziennik** zapisuje badania, wyniki i podane leki.
 
 ## Koniec rundy
 

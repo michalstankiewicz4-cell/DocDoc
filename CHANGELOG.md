@@ -11,6 +11,15 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-10-08
+### Dodane
+- **Sala z pacjentem** w panelu lekarza (rysowana na żywo): pacjent na łóżku oddycha w tempie zależnym od stanu, gorączki i kolonii w prawym sercu, kaszle, poci się przy gorączce, blednieje i sinieje przy złym stanie; kroplówka kapie, gdy lek jest we krwi; monitor na ścianie miga przy alarmie.
+- **Objawy jako wskazówki** wynikające z położenia kolonii: prawe serce → kaszel i duszność, lewe serce → pobudzenia przedwczesne na EKG (zaburzenia rytmu), żyła główna dolna → obrzęk nóg; do tego gorączka, bladość, sinica. Lista objawów pod salą.
+- **Laboratorium**: w czasie badań kręci się wirówka (CRP), na szalce rosną kolonie (posiew; przy wirusie nic nie rośnie), krążki antybiogramu dostają strefy zahamowania, a głowica USG leży na klatce pacjenta (echo).
+- **Alarmy monitora**: przy stanie pacjenta poniżej 30% albo gorączce od 39 °C karta monitora pulsuje na czerwono; przy stanie krytycznym gra alarm wysokiego priorytetu (pięć szybkich tonów co 3 s).
+### Zmienione
+- Kaszel zależy głównie od kolonii w prawym sercu (krążenie płucne), a mniej od ogólnej kolonizacji.
+
 ## [0.16.0] - 2026-10-08
 ### Dodane
 - **Operacja zastawki** (`H` trójdzielna, `J` mitralna, `K` pnia płucnego, `L` aorty albo przyciski): zabieg trwa 10 s, obciąża pacjenta (stan −15) i po zakończeniu usuwa wszystkie ogniska w promieniu 5 j. od zastawki, także w ścianie. Patogen w pobliżu traci 40 życia. Kolejna operacja po 60 s.
@@ -151,7 +160,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.13.0...v0.14.0

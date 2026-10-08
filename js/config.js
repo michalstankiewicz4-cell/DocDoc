@@ -55,7 +55,7 @@ DD.CONFIG = {
   preview: { delay: 5, history: 30, rate: 20, maxCells: 700 },
 
   // kaszel pacjenta: szansa na sekundę = base + perInfection * kolonizacja(%)
-  cough: { base: 0.004, perInfection: 0.0011 },
+  cough: { base: 0.004, perInfection: 0.0007, perRightMass: 0.035 },
 
   // stan pacjenta (0..100). Na sekundę: -infectionDrain * kolonizacja, -feverDrain * gorączka,
   // +regen dopóki kolonizacja < regenStopsAt (%). sideEffect = jednorazowy koszt dawki leku.

@@ -65,7 +65,8 @@
         mutations: 0, toxins: 0, hiddenTime: 0
       },
       valveSide: H.VALVES.map(() => 0),
-      coughs: 0          // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
+      coughs: 0,         // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
+      symptoms: { right: 0, left: 0, legs: 0 }   // masa kolonii w obszarach serca (objawy u pacjenta)
     };
   }
 
@@ -423,8 +424,12 @@
     const targetT = d.feverT > 0 ? D.fever.temp : 36.6;
     d.temp += (targetT - d.temp) * Math.min(1, dt * 0.35);
     const feverK = Math.max(0, Math.min(1, (d.temp - 37.2) / (D.fever.temp - 37.2)));
-    // kaszel: tym częstszy, im większe zakażenie
-    if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection) * dt) s.coughs++;
+    // objawy z położenia kolonii: masa kolonii w prawym sercu, lewym sercu i przy żyle głównej dolnej
+    const sym = s.symptoms;
+    sym.right = sym.left = sym.legs = 0;
+    for (const c of s.colonies) { if (!c.region) c.region = H.regionOf(c.x, c.y); sym[c.region] += c.size; }
+    // kaszel: tym częstszy, im większe zakażenie, zwłaszcza w prawym sercu (krążenie płucne)
+    if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection + C.cough.perRightMass * sym.right) * dt) s.coughs++;
 
     // --- stan pacjenta ---
     {

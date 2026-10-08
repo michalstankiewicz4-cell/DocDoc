@@ -191,5 +191,14 @@
     return best ? best.name : '';
   };
 
+  // obszar serca dla objawów: 'right' (prawe serce i krążenie płucne), 'left' (lewe serce), 'legs' (żyła główna dolna)
+  const REGION = { RA: 'right', RV: 'right', SVC: 'right', TV: 'right', PT: 'right', LA: 'left', LV: 'left', MV: 'left', AO: 'left', PV1: 'left', PV2: 'left', IVC: 'legs' };
+  H.regionOf = function (x, y) {
+    let best = null, bd = 1e9;
+    for (const e of ELLIPSES) { const d = Math.abs(sdEllipse(x, y, e)); if (d < bd) { bd = d; best = e.id; } }
+    for (const v of VESSELS) { const d = Math.abs(sdVessel(x, y, v)); if (d < bd) { bd = d; best = v.id; } }
+    return REGION[best] || 'right';
+  };
+
   DD.Heart = H;
 })();

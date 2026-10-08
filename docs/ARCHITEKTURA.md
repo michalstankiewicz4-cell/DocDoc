@@ -28,6 +28,7 @@ js/lobby.js             ekran tworzenia i dołączania do gry
 js/minimap.js           minimapa patogenu
 js/audio.js             dźwięk (Web Audio, synteza bez plików)
 js/doctor-ui.js         panel lekarza i HUD patogenu
+js/patient-room.js      sala z pacjentem (canvas 2D), objawy z położenia kolonii, laboratorium, alarm monitora
 js/doctor-cam.js        podgląd lekarza z opóźnieniem i zdjęcie z badania
 js/main.js              pętla gry, tryby (lokalny / host / gość), wybór trybu
 js/render/glsl.js       wspólne shadery: szum, światło mokrej tkanki, pochłanianie we krwi, kaustyki

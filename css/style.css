@@ -431,3 +431,15 @@ body[data-role="doc"] .half-doc {
 .surg-btn:disabled { cursor: default; opacity: 0.5; border-color: var(--line); color: var(--muted); }
 .surg-btn[data-active="1"] { opacity: 1; background: var(--alert); color: #fff; border-color: var(--alert); }
 @media (max-width: 640px) { .surgery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- sala z pacjentem ---------- */
+.room-block { display: grid; gap: 8px; }
+.room { display: block; width: 100%; border-radius: var(--r-m); border: 1px solid var(--line); background: #e6eeeb; }
+.symptoms { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; }
+.symptoms li { padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); }
+.symptoms li[data-level="warm"] { border-color: var(--amber); color: var(--amber); font-weight: 700; }
+.symptoms li[data-level="high"] { border-color: var(--alert); color: var(--alert); font-weight: 700; }
+.symptoms li[data-level="ok"] { color: var(--muted); }
+.monitor[data-alarm="on"] { animation: alarm-pulse 0.9s ease-in-out infinite; }
+@keyframes alarm-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176, 54, 42, 0); border-color: var(--line); } 50% { box-shadow: 0 0 0 4px rgba(176, 54, 42, 0.35); border-color: var(--alert); } }
+@media (prefers-reduced-motion: reduce) { .monitor[data-alarm="on"] { animation: none; border-color: var(--alert); } }
