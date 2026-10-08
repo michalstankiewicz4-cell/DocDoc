@@ -46,7 +46,8 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | Klawisz | Działanie |
 | --- | --- |
 | `W` `A` `S` `D` | ruch |
-| `E` | załóż kolonię (przy ścianie, kosztuje 25 życia) |
+| `E` | załóż kolonię (przy ścianie albo w mięśniu, kosztuje 25 życia) |
+| `Q` | wnikanie w ścianę serca (przy ścianie; drugie `Q` przerywa) |
 | kółko myszy | przybliżenie i oddalenie kamery |
 | `M` | dźwięk włącz/wyłącz |
 
@@ -69,6 +70,11 @@ Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie w
 - **Kolonie:** przy ścianie `E` zakłada kolonię za 25 punktów życia. Kolonia rośnie sama, a suma rozmiarów kolonii to kolonizacja, która obciąża pacjenta.
   - Antybiotyk wstrzymuje wzrost kolonii, a gorączka go spowalnia.
   - Przeciwciała, które nie mają w pobliżu patogenu, atakują kolonie.
+- **Mięsień sercowy:** przy ścianie `Q` rozpoczyna wnikanie (bakteria 2,5 s, wirus 1 s; trzeba zostać przy ścianie). W mięśniu:
+  - nie ma prądu krwi, ruch jest wolniejszy, a kardiomiocyty są przeszkodami,
+  - przeciwciała cię nie dosięgną, a antybiotyki i lek przeciwwirusowy działają o połowę słabiej,
+  - patogen stale żeruje, a `E` zakłada **ukrytą kolonię** — echo pokazuje ją tylko jako niewyraźne zgrubienie ściany,
+  - do krwi wracasz, podpływając do ściany naczynia.
 - **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii, która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
 
 ### Ekran
@@ -99,7 +105,7 @@ Każdą akcję można też kliknąć w panelu.
    | --- | --- | --- |
    | CRP | 4 s | poziom stanu zapalnego (przybliżony, z szumem pomiaru); monitor pokazuje z niego szacunek zakażenia „≈” |
    | Posiew krwi | 12 s | dokładną kolonizację i zdjęcie miejsca, w którym był patogen |
-   | Echo serca | 8 s | obraz serca w stylu USG, kolonie jako jasne ogniska (położenie i wielkość) |
+   | Echo serca | 8 s | obraz serca w stylu USG: kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
 
 2. **Leczenie:**

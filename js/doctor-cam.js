@@ -23,7 +23,7 @@
       const b = s.bact;
       hist.push({
         t: s.time,
-        b: { x: b.x, y: b.y, vx: b.vx, vy: b.vy, dir: b.dir, hp: b.hp, slowT: b.slowT, hitFlash: b.hitFlash, dead: b.dead,
+        b: { x: b.x, y: b.y, vx: b.vx, vy: b.vy, dir: b.dir, hp: b.hp, slowT: b.slowT, hitFlash: b.hitFlash, dead: b.dead, inTissue: b.inTissue, z: b.z,
           transit: b.transit ? { to: b.transit.to, t: b.transit.t, total: b.transit.total } : null },
         ab: s.antibodies.map((a) => ({ x: a.x, y: a.y, z: a.z, stuck: a.stuck, ox: a.ox, oy: a.oy, rot: a.rot, life: a.life, eff: a.eff })),
         temp: s.doctor.temp

@@ -20,6 +20,7 @@
       bact: {
         x: B.start.x, y: B.start.y, vx: 0, vy: 0, fx: 0, fy: 0, dir: -Math.PI / 2,
         ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
+        inTissue: false, burrowT: 0, z: 0,   // patogen w ścianie serca (mięśniu), wnikanie, wysokość do renderu
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
         resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
@@ -115,6 +116,13 @@
     if (!s.running || s.over) return;
     switch (cmd.type) {
       case 'bact.colony': foundColony(s); return;
+      case 'bact.burrow': {
+        const b = s.bact, Tt = C.tissue;
+        if (b.dead || b.transit || b.inTissue) return;
+        if (b.burrowT > 0) { b.burrowT = 0; return; }            // drugie Q przerywa
+        if (b.contact) b.burrowT = Tt.burrow[s.kind] || Tt.burrow.bacteria;
+        return;
+      }
       case 'doc.test': orderTest(s, cmd.kind || 'culture'); return;
       case 'doc.antibodies':
         if (!d.unlocked || d.cd.antibodies > 0) return;
@@ -144,11 +152,16 @@
   // założenie kolonii przy ścianie kosztem życia patogenu
   function foundColony(s) {
     const b = s.bact, K = C.colony;
-    if (b.dead || b.transit || !b.contact || b.colonyCd > 0 || b.hp <= K.cost + 1) return;
+    if (b.dead || b.transit || !(b.contact || b.inTissue) || b.colonyCd > 0 || b.hp <= K.cost + 1) return;
     b.hp -= K.cost; b.colonyCd = K.cooldown;
     H.grad(b.x, b.y, g2);
-    const sd = H.sample(b.x, b.y);
-    s.colonies.push({ id: s.nextColonyId++, x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize });
+    if (b.inTissue) {
+      // kolonia w mięśniu: w miejscu patogenu, ukryta przed przeciwciałami
+      s.colonies.push({ id: s.nextColonyId++, x: b.x, y: b.y, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize, inTissue: true });
+    } else {
+      const sd = H.sample(b.x, b.y);
+      s.colonies.push({ id: s.nextColonyId++, x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize });
+    }
     s.stats.coloniesFounded++;
   }
 
@@ -180,7 +193,13 @@
     }
     // posiew wyhodowuje tylko bakterie — przy wirusie wynik jest ujemny
     if (kind === 'culture') return { positive: s.kind === 'bacteria', infection: Math.round(b.infection) };
-    if (kind === 'echo') return { colonies: s.colonies.map((c) => [Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, Math.round(c.size * 100) / 100]) };
+    if (kind === 'echo') {
+      // kolonie w mięśniu widać tylko jako niewyraźne zgrubienie ściany w przybliżonym miejscu
+      return { colonies: s.colonies.map((c) => {
+        const j = c.inTissue ? 2.5 : 0;
+        return [Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0];
+      }) };
+    }
     if (kind === 'abg') {
       const out = {};
       for (const k of ['antibodies', 'fever', 'abxA', 'abxB']) out[k] = (1 - b.resist[k]) * susceptibility(s, k);
@@ -205,7 +224,8 @@
         d.estInfection = r.infection; d.estT = T.sampleT; d.estExact = true;
       }
     } else if (kind === 'echo') {
-      text = r.colonies.length ? `Echo serca: zmiany na ścianach (${r.colonies.length}).` : 'Echo serca bez zmian.';
+      const nW = r.colonies.filter((c) => !c[3]).length, nT = r.colonies.length - nW;
+      text = r.colonies.length ? `Echo serca: ogniska na ścianach ${nW}` + (nT ? `, niewyraźne zgrubienia ściany ${nT}.` : '.') : 'Echo serca bez zmian.';
     } else if (kind === 'abg') {
       text = 'Antybiogram gotowy.';
     }
@@ -351,12 +371,14 @@
 
     // --- kolonie: rosną same; leki wstrzymują wzrost, gorączka go spowalnia, β-laktam je kurczy ---
     const K = C.colony;
-    const grow = K.growth * (s.kind === 'virus' ? C.virus.growthMul : 1) * (1 - halt)
+    const grow0 = K.growth * (s.kind === 'virus' ? C.virus.growthMul : 1)
       * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul));
+    const pen = C.tissue.drugPenetration;
     let mass = 0;
     for (let i = s.colonies.length - 1; i >= 0; i--) {
       const c = s.colonies[i];
-      c.size = Math.min(1, c.size + (grow - D.abxA.colonyShrink * effA) * dt);
+      const pk = c.inTissue ? pen : 1;   // leki słabiej docierają do kolonii w mięśniu
+      c.size = Math.min(1, c.size + (grow0 * (1 - halt * pk) - D.abxA.colonyShrink * effA * pk) * dt);
       if (c.size <= 0.02) { s.colonies.splice(i, 1); s.stats.coloniesLost++; continue; }
       mass += c.size;
     }
@@ -372,7 +394,9 @@
       if (b.dead === 0 && s.colonies.length) {
         let best = s.colonies[0];
         for (const c of s.colonies) if (c.size > best.size) best = c;
-        b.x = best.x - best.nx * 0.6; b.y = best.y - best.ny * 0.6; b.vx = b.vy = 0;
+        if (best.inTissue) { b.x = best.x; b.y = best.y; b.inTissue = true; b.z = C.tissue.z; }
+        else { b.x = best.x - best.nx * 0.6; b.y = best.y - best.ny * 0.6; b.inTissue = false; b.z = 0; }
+        b.vx = b.vy = 0; b.burrowT = 0;
         b.hp = K.respawnHp * (s.kind === 'virus' ? C.virus.hp / B.hp : 1); b.transit = null;
         best.size -= K.respawnCost;
         if (best.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(best), 1); s.stats.coloniesLost++; }
@@ -394,17 +418,55 @@
       b.vx *= dragK; b.vy *= dragK;
       const sp = Math.hypot(b.vx, b.vy), cap = B.maxSpeed * mul;
       if (sp > cap) { b.vx *= cap / sp; b.vy *= cap / sp; }
-      F.velocity(b.x, b.y, s.time, s.phase, fv);
-      b.fx = fv[0]; b.fy = fv[1];
-      // przy ścianie prąd słabnie (warstwa przyścienna) — tam bakteria może się trzymać
+      const Tt = C.tissue;
       const ox = b.x, oy = b.y;
-      b.x += (b.vx + fv[0] * B.flowCoupling) * dt;
-      b.y += (b.vy + fv[1] * B.flowCoupling) * dt;
-      if (Math.hypot(b.vx, b.vy) > 0.4) b.dir = Math.atan2(b.vy, b.vx);
+      if (b.inTissue) {
+        // w mięśniu: bez prądu krwi, wolniej, między komórkami
+        const tm = Tt.speedMul[s.kind] || Tt.speedMul.bacteria;
+        b.fx = b.fy = 0;
+        b.x += b.vx * tm * dt; b.y += b.vy * tm * dt;
+        if (Math.hypot(b.vx, b.vy) > 0.4) b.dir = Math.atan2(b.vy, b.vx);
+        DD.TissueCells.collide(b, B.radius * 0.8);
+        const dd = H.sample(b.x, b.y);
+        if (dd > Tt.maxD) { H.grad(b.x, b.y, g2); b.x -= g2[0] * (dd - Tt.maxD); b.y -= g2[1] * (dd - Tt.maxD); }
+        b.z += (Tt.z - b.z) * Math.min(1, dt * 6);
+        b.contact = false;
+        if (dd < Tt.exitD) {
+          // wypłynięcie z mięśnia do krwi
+          H.grad(b.x, b.y, g2);
+          b.x -= g2[0] * (dd + 0.7); b.y -= g2[1] * (dd + 0.7);
+          b.inTissue = false; b.z = 0;
+          log(s, 'sys', 'Patogen wraca do krwi.');
+        }
+      } else {
+        F.velocity(b.x, b.y, s.time, s.phase, fv);
+        b.fx = fv[0]; b.fy = fv[1];
+        // przy ścianie prąd słabnie (warstwa przyścienna) — tam bakteria może się trzymać
+        b.x += (b.vx + fv[0] * B.flowCoupling) * dt;
+        b.y += (b.vy + fv[1] * B.flowCoupling) * dt;
+        if (Math.hypot(b.vx, b.vy) > 0.4) b.dir = Math.atan2(b.vy, b.vx);
 
-      collideChords(s, b, B.radius);
-      collideLeaflets(s, b, B.radius);
-      b.contact = collideWalls(b, B.radius + 0.05) || H.sample(b.x, b.y) > -(B.radius + 0.3);
+        collideChords(s, b, B.radius);
+        collideLeaflets(s, b, B.radius);
+        b.contact = collideWalls(b, B.radius + 0.05) || H.sample(b.x, b.y) > -(B.radius + 0.3);
+
+        // wnikanie w ścianę: trwa, dopóki patogen przy niej jest
+        if (b.burrowT > 0) {
+          if (!b.contact) b.burrowT = 0;
+          else {
+            b.burrowT = Math.max(0, b.burrowT - dt);
+            b.z = Tt.z * (1 - b.burrowT / (Tt.burrow[s.kind] || Tt.burrow.bacteria)) * 0.5;
+            if (b.burrowT === 0) {
+              H.grad(b.x, b.y, g2);
+              const dd = H.sample(b.x, b.y);
+              b.x += g2[0] * (Tt.enterD - dd); b.y += g2[1] * (Tt.enterD - dd);
+              b.inTissue = true; b.vx = b.vy = 0;
+              s.stats.tissueEntries = (s.stats.tissueEntries || 0) + 1;
+              log(s, 'sys', 'Patogen wniknął w ścianę serca.');
+            }
+          }
+        } else b.z += (0 - b.z) * Math.min(1, dt * 6);
+      }
 
       const ST = s.stats;
       ST.distance += Math.hypot(b.x - ox, b.y - oy);
@@ -419,18 +481,18 @@
       if (b.contact) ST.contactTime += dt;
       // żerowanie na tkance odnawia życie
       const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
-      b.feeding = b.contact && b.hp < maxHp;
+      b.feeding = (b.contact || b.inTissue) && b.hp < maxHp;
       if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
       if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * dt; b.hp -= fd; ST.dmgFever += fd; }
       // leki bójcze: β-laktam (bakteria), przeciwwirusowy (wirus)
       { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
 
-      for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
+      if (!b.inTissue) for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
         if (ex.to === 'lungs') ST.lungsTrips++; else ST.bodyTrips++;
         log(s, 'sys', ex.to === 'lungs' ? 'Patogen płynie przez krążenie płucne.' : 'Patogen płynie przez krążenie duże.');
       }
-      b.place = H.placeName(b.x, b.y);
+      b.place = b.inTissue ? 'Mięsień sercowy' : H.placeName(b.x, b.y);
       if (b.place && !ST.places.includes(b.place)) ST.places.push(b.place);
       ST.minHp = Math.min(ST.minHp, b.hp);
     }
@@ -444,13 +506,14 @@
       if (a.stuck) { a.x = b.x + a.ox; a.y = b.y + a.oy; continue; }
       F.velocity(a.x, a.y, s.time, s.phase, fv);
       let vx = fv[0] * 0.9, vy = fv[1] * 0.9;
-      const alive = !b.transit && !b.dead;
+      const alive = !b.transit && !b.dead && !b.inTissue;
       const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy);
       // cel: patogen, a jeśli go nie ma w pobliżu — najbliższa kolonia
       let tx = 0, ty = 0, td = 1e9, col = null;
       if (alive && dist < A.homingRadius) { tx = dx; ty = dy; td = dist; }
       else {
         for (const c of s.colonies) {
+          if (c.inTissue) continue;   // przeciwciała nie docierają do kolonii w mięśniu
           const cx = c.x - a.x, cy = c.y - a.y, cd = Math.hypot(cx, cy);
           if (cd < A.homingRadius && cd < td) { tx = cx; ty = cy; td = cd; col = c; }
         }

@@ -66,11 +66,12 @@
       // wachlarz głowicy
       ctx.beginPath(); ctx.moveTo(w / 2, -30); ctx.arc(w / 2, -30, h * 1.2, Math.PI * 0.16, Math.PI * 0.84); ctx.closePath(); ctx.clip();
       ctx.drawImage(echoBg, 0, 0);
-      for (const [x, y, size] of res.colonies) {
+      for (const [x, y, size, inT] of res.colonies) {
         const px = (x - W.minX) / (W.maxX - W.minX) * w, py = (W.maxY - y) / (W.maxY - W.minY) * h;
-        const r = 2.5 + size * 5;
+        const r = inT ? 7 + size * 6 : 2.5 + size * 5;      // zgrubienie ściany: większe i bledsze
+        const a = inT ? 0.45 : 1;
         const g = ctx.createRadialGradient(px, py, 0, px, py, r * 1.8);
-        g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.5, 'rgba(255,255,255,0.7)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+        g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.5, `rgba(255,255,255,${a * 0.6})`); g.addColorStop(1, 'rgba(255,255,255,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, r * 1.8, 0, 6.283); ctx.fill();
       }
       ctx.restore();
@@ -140,6 +141,7 @@
           ['Odrodzenia', String(S.deaths || 0)],
           ['Czas przy ścianie', num(S.contactTime) + ' s'],
           ['Przejścia przez zastawki', String(S.valveCrossings || 0)],
+          ['Wniknięcia w ścianę serca', String(S.tissueEntries || 0)],
           ['Krążenie płucne / duże', `${S.lungsTrips || 0} / ${S.bodyTrips || 0}`],
           ['Odwiedzone jamy serca', `${seen} z ${chambers.length}`],
           ['Najmniej życia', Math.max(0, Math.ceil(S.minHp ?? 0)) + ' pkt']
@@ -190,8 +192,8 @@
       if (T.echo.res) {
         $('res-echo').hidden = false; time($('res-echo'), T.echo);
         drawEcho(T.echo.res);
-        const n = T.echo.res.colonies.length;
-        $('res-echo-l').textContent = n ? `Ogniska na ścianach: ${n}` : 'Bez widocznych zmian';
+        const nT = T.echo.res.colonies.filter((c) => c[3]).length, nW = T.echo.res.colonies.length - nT;
+        $('res-echo-l').textContent = (nW || nT) ? `Ogniska na ścianach: ${nW}` + (nT ? `. Niewyraźne zgrubienia ściany: ${nT}` : '') : 'Bez widocznych zmian';
       } else $('res-echo').hidden = true;
       if (T.abg.res) {
         $('res-abg').hidden = false; time($('res-abg'), T.abg);
@@ -287,11 +289,17 @@
       $('h-inf').style.transform = `scaleX(${b.infection / 100})`;
       $('h-inf-val').textContent = Math.floor(b.infection) + '%';
       const K = C.colony;
-      const canFound = b.contact && !b.transit && !b.dead;
+      const canFound = (b.contact || b.inTissue) && !b.transit && !b.dead;
       $('h-contact').hidden = !canFound;
       if (canFound) {
-        $('h-contact').textContent = (b.feeding ? 'Żerujesz na tkance, życie wraca. ' : 'Przy ścianie. ')
-          + (b.colonyCd > 0 ? `Kolonia możliwa za ${Math.ceil(b.colonyCd)} s.` : b.hp > K.cost + 1 ? `E zakłada kolonię (−${K.cost} życia).` : 'Za mało życia na kolonię.');
+        const colTxt = b.colonyCd > 0 ? `Kolonia możliwa za ${Math.ceil(b.colonyCd)} s.` : b.hp > K.cost + 1 ? `E zakłada kolonię (−${K.cost} życia).` : 'Za mało życia na kolonię.';
+        if (b.inTissue) {
+          $('h-contact').textContent = 'W mięśniu sercowym: przeciwciała cię tu nie dosięgną, leki działają słabiej. ' + colTxt + ' Do krwi wracasz, podpływając do ściany naczynia.';
+        } else if (b.burrowT > 0) {
+          $('h-contact').textContent = `Wnikanie w ścianę: ${b.burrowT.toFixed(1).replace('.', ',')} s. Nie odpływaj od ściany. Q przerywa.`;
+        } else {
+          $('h-contact').textContent = (b.feeding ? 'Żerujesz na tkance, życie wraca. ' : 'Przy ścianie. ') + colTxt + ' Q: wnikanie w ścianę.';
+        }
       }
       $('s-colonies-n').textContent = s.colonies.length;
       $('respawn').hidden = !(b.dead > 0);

@@ -216,7 +216,7 @@
       const isVirus = s.kind === 'virus';
       virus.visible = isVirus && !b.transit && !b.dead;
       if (isVirus) {
-        virus.position.set(b.x, b.y, 0);
+        virus.position.set(b.x, b.y, b.z || 0);
         virus.rotation.set(animT * 0.7, animT * 0.45, animT * 0.3);
         capsidMat.uniforms.uTimeL.value = animT;
         capsidMat.uniforms.uFlash.value = b.hitFlash;
@@ -229,7 +229,7 @@
         u.uAlbedo.value.set(L.albedo); u.uSssCol.value.set(L.sssCol); u.uRimCol.value.set(L.rimCol); u.uEmit.value.set(L.emit);
       }
       bact.visible = !isVirus && !b.transit && !b.dead;
-      bact.position.set(b.x, b.y, 0);
+      bact.position.set(b.x, b.y, b.z || 0);
       bact.rotation.set(0, 0, b.dir - Math.PI / 2);
       bact.rotateY(Math.sin(animT * 3) * 0.25);
       const sp = Math.hypot(b.vx, b.vy);
@@ -265,7 +265,8 @@
           const h2 = Math.sin(c.seed * 37.1 + k * 78.233) * 12345.678, r2 = h2 - Math.floor(h2);
           const ang = r1 * 6.283, rad = r2 * 0.55;
           const tx = -c.ny, ty = c.nx;
-          v.set(c.x + tx * Math.cos(ang) * rad - c.nx * 0.05, c.y + ty * Math.cos(ang) * rad - c.ny * 0.05, Math.sin(ang) * rad * 1.6);
+          if (c.inTissue) v.set(c.x + Math.cos(ang) * rad * 1.3, c.y + Math.sin(ang) * rad * 1.3, C.tissue.z + 0.05 + r2 * 0.12);
+          else v.set(c.x + tx * Math.cos(ang) * rad - c.nx * 0.05, c.y + ty * Math.cos(ang) * rad - c.ny * 0.05, Math.sin(ang) * rad * 1.6);
           s3.setScalar(grow * (0.6 + r2 * 0.9) * (1 + 0.06 * Math.sin(animT * 2 + k)));
           m4.compose(v, q.identity(), s3); colMesh.setMatrixAt(n++, m4);
         }

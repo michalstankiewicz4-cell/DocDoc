@@ -232,12 +232,12 @@
     const a = [];
     for (const x of s.antibodies) a.push(r2(x.x), r2(x.y), r2(x.z), x.stuck ? 1 : 0, r2(x.ox), r2(x.oy), r2(x.rot), r2(x.life), r2(x.eff ?? 1));
     const c = [];
-    for (const x of s.colonies) c.push(r2(x.x), r2(x.y), r2(x.nx), r2(x.ny), r2(x.born), x.seed, r2(x.size), x.id);
+    for (const x of s.colonies) c.push(r2(x.x), r2(x.y), r2(x.nx), r2(x.ny), r2(x.born), x.seed, r2(x.size), x.id, x.inTissue ? 1 : 0);
     return {
       q: ++seq, t: s.time, run: s.running ? 1 : 0, ov: s.over, org: s.organ,
       b: [r2(b.x), r2(b.y), r2(b.vx), r2(b.vy), r2(b.dir), r2(b.hp), r2(b.infection), r2(b.slowT), r2(b.slowMul),
         r2(b.hitFlash), b.contact ? 1 : 0, 0, 0, 0,
-        r2(b.dead), r2(b.colonyCd), b.feeding ? 1 : 0],
+        r2(b.dead), r2(b.colonyCd), b.feeding ? 1 : 0, b.inTissue ? 1 : 0, r2(b.burrowT), r2(b.z)],
       tr: b.transit ? [b.transit.to === 'lungs' ? 1 : 2, r2(b.transit.t), b.transit.total] : 0,
       d: [0, 0, 0, d.unlocked ? 1 : 0, d.knownInfection ?? -1,
         d.resultTime ?? -1, 0, 0, 0, r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT), r2(s.patient.cond)],
@@ -290,7 +290,7 @@
       b.hp = v[5]; b.infection = v[6]; b.slowT = v[7]; b.slowMul = v[8]; b.hitFlash = Math.max(b.hitFlash - dt * 2.5, v[9]);
       b.contact = !!v[10];
       if (snap.rs) { b.resist = snap.rs; b.natural = snap.nr; s.kind = snap.k; s.drugs = snap.dg; d0.cd = snap.cdd; }
-      b.dead = v[14]; b.colonyCd = v[15]; b.feeding = !!v[16];
+      b.dead = v[14]; b.colonyCd = v[15]; b.feeding = !!v[16]; b.inTissue = !!v[17]; b.burrowT = v[18]; b.z = v[19];
       b.transit = snap.tr ? { to: snap.tr[0] === 1 ? 'lungs' : 'body', t: snap.tr[1], total: snap.tr[2] } : null;
       b.place = H.placeName(b.x, b.y);
       { const f = F.velocity(b.x, b.y, s.time, (s.time * C.bpm / 60) % 1); b.fx = f[0]; b.fy = f[1]; }
@@ -310,11 +310,11 @@
         x.z = A[o + 2]; x.stuck = !!A[o + 3]; x.ox = A[o + 4]; x.oy = A[o + 5]; x.rot = A[o + 6]; x.life = A[o + 7]; x.eff = A[o + 8];
         if (x.stuck) { x.x = b.x + x.ox; x.y = b.y + x.oy; }
       }
-      const Cc = snap.c, m = Cc.length / 8;
+      const Cc = snap.c, m = Cc.length / 9;
       s.colonies.length = m;
       for (let i = 0; i < m; i++) {
-        const o = i * 8;
-        s.colonies[i] = { x: Cc[o], y: Cc[o + 1], nx: Cc[o + 2], ny: Cc[o + 3], born: Cc[o + 4], seed: Cc[o + 5], size: Cc[o + 6], id: Cc[o + 7] };
+        const o = i * 9;
+        s.colonies[i] = { x: Cc[o], y: Cc[o + 1], nx: Cc[o + 2], ny: Cc[o + 3], born: Cc[o + 4], seed: Cc[o + 5], size: Cc[o + 6], id: Cc[o + 7], inTissue: !!Cc[o + 8] };
       }
     } else {
       s.time += dt;

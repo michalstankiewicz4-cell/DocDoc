@@ -19,6 +19,7 @@ js/version.js           DD.VERSION
 js/config.js            wszystkie liczby balansu i ustawienia (tętno, leki, kamera, podgląd)
 js/heart-shape.js       geometria serca: SDF z elips i naczyń + dokładna transformata odległości
 js/flow.js              pole przepływu (3 pola bazowe mieszane wg fazy cyklu) + curl noise
+js/tissue-cells.js      kardiomiocyty w ścianie serca (proceduralne, deterministyczne): kolizje i render
 js/state.js             stan gry, komendy, krok symulacji, kolizje, szyna komend
 js/input.js             klawiatura -> komendy
 js/net.js               WebRTC: kody, kanały, synchronizacja stanu, statystyki połączenia
@@ -33,6 +34,7 @@ js/render/glsl.js       wspólne shadery: szum, światło mokrej tkanki, pochła
 js/render/tissue.js     tkanka: gęsta siatka przemieszczana z tekstury SDF
 js/render/cells.js      krwinki (instancing, kształt Evansa–Funga) i drobiny osocza
 js/render/actors.js     patogen, przeciwciała, kolonie, zastawki, struny, mięśnie brodawkowate
+js/render/biome.js      biom mięśnia: kardiomiocyty (prążkowanie, jądra, wstawki), kolagen
 js/render/post.js       post-processing: bloom, głębia ostrości, aberracja, ACES, winieta, ziarno
 js/render/view.js       widok 3D: kamera, światło, łańcuch renderu
 tools/bump.js           zmiana wersji

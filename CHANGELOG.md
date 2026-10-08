@@ -11,6 +11,16 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-08
+### Dodane
+- Nowy biom: **mięsień sercowy**. Przy ścianie `Q` rozpoczyna wnikanie (bakteria 2,5 s, wirus 1 s); odpłynięcie od ściany albo drugie `Q` je przerywa.
+- W mięśniu: ruch bez prądu krwi, wolniejszy, między kardiomiocytami (komórki są przeszkodami); kamera zbliża się do przekroju ściany.
+- Grafika biomu: kardiomiocyty z prążkowaniem poprzecznym, jądrami i wstawkami, włókna kolagenu; krew z krwinkami widoczna obok przekroju.
+- Ukryte kolonie w mięśniu: przeciwciała do nich nie docierają, antybiotyki i lek przeciwwirusowy działają na nie o połowę słabiej. Patogen odradza się w nich także po śmierci.
+- Echo serca pokazuje kolonie w mięśniu tylko jako niewyraźne zgrubienia ściany w przybliżonym miejscu.
+- Patogen w mięśniu stale żeruje (odzyskuje życie) i jest niewidoczny dla przeciwciał.
+- Statystyka „Wniknięcia w ścianę serca”; kolonie w mięśniu na minimapie jako pierścienie.
+
 ## [0.13.0] - 2026-10-08
 ### Dodane
 - Wybór patogenu: **bakteria** albo **wirus** (gracz patogenu wybiera przed startem; lekarz nie wie, który). Wirus: kapsyd z wypustkami, mniej życia, wolniejszy, szybciej namnażające się kolonie (fioletowe skupiska zakażonych komórek).
@@ -127,7 +137,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.10.0...v0.11.0

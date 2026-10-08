@@ -19,6 +19,7 @@
     const cells = DD.createCells(opts.maxCells);
     scene.add(cells.mesh); scene.add(cells.specks);
     const actors = DD.createActors(scene, state);
+    const biome = DD.createBiome(scene);
     const post = DD.createPost(renderer);
 
     const V = { renderer, camera, zoom: C.camera.zoomStart, tx: state.bact.x, ty: state.bact.y, shake: 0, pr: 1 };
@@ -55,9 +56,13 @@
       lastBeat = s.contraction;
       V.shake *= Math.exp(-dt * 6);
       const sh = V.shake * 0.05 * V.zoom / 17;
-      const z = V.zoom;
-      camera.position.set(V.tx + Math.sin(s.time * 40) * sh, V.ty - z * 0.3 + Math.cos(s.time * 37) * sh, z);
-      camera.lookAt(V.tx, V.ty + 0.4, 0);
+      // w mięśniu kamera zbliża się do powierzchni przekroju ściany
+      const tz = b.z || 0;
+      V.zMul = V.zMul ?? 1;
+      V.zMul += ((b.inTissue ? 0.6 : 1) - V.zMul) * (o && o.snap ? 1 : 1 - Math.exp(-dt * 3));
+      const z = V.zoom * V.zMul;
+      camera.position.set(V.tx + Math.sin(s.time * 40) * sh, V.ty - z * 0.3 + Math.cos(s.time * 37) * sh, z + tz);
+      camera.lookAt(V.tx, V.ty + 0.4, tz);
 
       const SH = DD.SHARED;
       SH.uTime.value = s.time;
@@ -71,10 +76,11 @@
       const viewH = 2 * z * Math.tan(C.camera.fov * Math.PI / 360);
       cells.update(Math.min(dt, 0.05), s, V.tx, V.ty, viewH, camera.aspect);
       actors.update(s, dt);
+      biome.update(s, V.tx, V.ty, viewH, camera.aspect);
 
       const fade = b.transit ? Math.min(1, Math.sin(Math.PI * (1 - b.transit.t / b.transit.total)) * 1.4) : 0;
       post.render(scene, camera, {
-        time: s.time, focus: camera.position.distanceTo(new THREE.Vector3(V.tx, V.ty, 0)),
+        time: s.time, focus: camera.position.distanceTo(new THREE.Vector3(V.tx, V.ty, tz)),
         fever: feverK, hit: b.hitFlash, fade, slow: b.slowT > 0 ? Math.min(1, b.slowT) : 0
       });
     };

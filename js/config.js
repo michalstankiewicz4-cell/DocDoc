@@ -63,6 +63,17 @@ DD.CONFIG = {
   // wirus: mniej życia, wolniejszy (bez wici), szybciej namnażające się kolonie, mniejszy
   virus: { hp: 70, speedMul: 0.8, growthMul: 1.3, radius: 0.26 },
 
+  // ściana serca (mięsień): wnikanie klawiszem Q przy ścianie, ruch między komórkami
+  tissue: {
+    minD: 1.2, maxD: 7.2,          // pas mięśnia w jednostkach SDF (odległość od światła naczynia)
+    enterD: 2.0, exitD: 1.35,      // gdzie patogen pojawia się po wniknięciu / kiedy wypada do krwi
+    z: 3.3,                        // wysokość płaszczyzny ruchu (powierzchnia przekroju mięśnia)
+    burrow: { bacteria: 2.5, virus: 1.0 },   // czas wnikania (s)
+    speedMul: { bacteria: 0.35, virus: 0.45 },
+    grid: 1.55, cellLength: 2.3, cellRadius: 0.36,
+    drugPenetration: 0.5           // ułamek działania antybiotyków / leku przeciwwirusowego na kolonie w tkance
+  },
+
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 
   cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }

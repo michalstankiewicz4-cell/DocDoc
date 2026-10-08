@@ -48,7 +48,11 @@
 
       // kolonie
       ctx.fillStyle = '#c6e66a';
-      for (const c of s.colonies) { ctx.beginPath(); ctx.arc(toX(c.x), toY(c.y), 1.6 + 2.6 * (c.size ?? 1), 0, 6.283); ctx.fill(); }
+      ctx.strokeStyle = '#c6e66a'; ctx.lineWidth = 1.5;
+      for (const c of s.colonies) {
+        ctx.beginPath(); ctx.arc(toX(c.x), toY(c.y), 1.6 + 2.6 * (c.size ?? 1), 0, 6.283);
+        if (c.inTissue) ctx.stroke(); else ctx.fill();   // w mięśniu: pierścień
+      }
 
       // kadr kamery
       if (view) {
