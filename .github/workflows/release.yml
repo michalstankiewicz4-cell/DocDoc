@@ -1,0 +1,48 @@
+# Automatyczne wydania: gdy zmieni się js/version.js, tworzy tag vX.Y.Z
+# i Release na GitHubie z opisem z sekcji CHANGELOG.md dla tej wersji.
+name: Wersja i wydanie
+
+on:
+  push:
+    branches: [main]
+    paths: ['js/version.js', 'tools/history-tags.txt']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tagi dla wcześniejszych wersji
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          grep -v '^#' tools/history-tags.txt | while read -r v sha; do
+            [ -z "$v" ] && continue
+            if ! git rev-parse -q --verify "refs/tags/v$v" >/dev/null; then
+              git tag -a "v$v" "$sha" -m "v$v"
+              git push origin "v$v"
+            fi
+          done
+
+      - name: Odczytaj wersję
+        id: v
+        run: echo "version=$(grep -oP "DD\.VERSION = '\K[^']+" js/version.js)" >> "$GITHUB_OUTPUT"
+
+      - name: Tag i wydanie
+        env:
+          GH_TOKEN: ${{ github.token }}
+          V: ${{ steps.v.outputs.version }}
+        run: |
+          if gh release view "v$V" >/dev/null 2>&1; then
+            echo "Wydanie v$V już istnieje"; exit 0
+          fi
+          awk -v v="$V" 'index($0, "## [" v "]") == 1 {f=1; next} /^## \[/ {if (f) exit} f' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "Zobacz CHANGELOG.md" > notes.md
+          gh release create "v$V" --target "$GITHUB_SHA" --title "v$V" --notes-file notes.md

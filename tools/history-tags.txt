@@ -1,0 +1,7 @@
+# Wcześniejsze wersje (przed automatem wydań): wersja commit
+0.1.0 207e97b
+0.2.0 7869578
+0.3.0 776abf5
+0.3.1 06c471a
+0.4.0 b5ad767
+0.5.0 c056ce0
