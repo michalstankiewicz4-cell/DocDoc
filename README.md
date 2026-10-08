@@ -15,7 +15,7 @@ Aktualna wersja jest na ekranie startowym gry i w [CHANGELOG.md](CHANGELOG.md).
    - **Gra na 2 osoby** — każdy na swoim komputerze; łączycie się, wymieniając dwa kody przez komunikator.
 3. Wybierz narząd startowy (na razie serce).
 
-Sterowanie w skrócie: patogen `W` `A` `S` `D`, kółko myszy przybliża; lekarz `B` badanie, `1` `2` `3` leczenie.
+Sterowanie w skrócie: patogen `W` `A` `S` `D`, kółko myszy lekko reguluje przybliżenie; lekarz `B` badanie, `1` `2` `3` leczenie.
 Pełne zasady i sterowanie: [docs/INSTRUKCJA.md](docs/INSTRUKCJA.md).
 
 ## Dokumentacja

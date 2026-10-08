@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-10-09
+### Zmienione
+- **Zoom kamery prawie stały:** kółko myszy reguluje przybliżenie tylko delikatnie (zakres 14–21 zamiast 7–75, domyślnie 17).
+
 ## [0.26.0] - 2026-10-09
 ### Dodane
 - **USG jamy brzusznej** (`G`, 8 s, odnowienie 25 s): obraz w stylu USG z wątrobą, nerką i naczyniami brzucha; kolonie jako jasne ogniska, w wyniku liczba ognisk w wątrobie, nerce i naczyniach. W sali głowica USG ląduje na brzuchu pacjenta.
@@ -227,7 +231,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.26.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.27.0...HEAD
+[0.27.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.23.0...v0.24.0

@@ -54,7 +54,7 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `R` | rozmnożenie: kopia patogenu (przy pełnym pasku pożywienia) |
 | `7` `8` `9` `0` | mutacje: szybkość, odporność na gorączkę, otoczka, toksyny |
 | `T` | toksyny (po mutacji) |
-| kółko myszy | przybliżenie i oddalenie kamery |
+| kółko myszy | delikatna regulacja przybliżenia (w wąskim zakresie) |
 | `M` | dźwięk włącz/wyłącz |
 
 ### Wybór patogenu

@@ -22,7 +22,7 @@
     const biome = DD.createBiome(scene);
     const post = DD.createPost(renderer);
 
-    const V = { renderer, camera, zoom: C.camera.zoomStart, tx: state.bact.x, ty: state.bact.y, shake: 0, pr: 1 };
+    const V = { renderer, camera, zoom: C.camera.zoom, tx: state.bact.x, ty: state.bact.y, shake: 0, pr: 1 };
 
     function resize() {
       const w = container.clientWidth, h = container.clientHeight;
@@ -38,9 +38,10 @@
     if (window.ResizeObserver) new ResizeObserver(() => resize()).observe(container);
     resize();
 
+    // delikatna regulacja zoomu kółkiem myszy (wąski zakres wokół C.camera.zoom)
     container.addEventListener('wheel', (e) => {
       e.preventDefault();
-      V.zoom = Math.max(C.camera.zoomMin, Math.min(C.camera.zoomMax, V.zoom * Math.exp(e.deltaY * 0.0012)));
+      V.zoom = Math.max(C.camera.zoomMin, Math.min(C.camera.zoomMax, V.zoom * Math.exp(e.deltaY * 0.0006)));
     }, { passive: false });
 
     let lastBeat = 0;
