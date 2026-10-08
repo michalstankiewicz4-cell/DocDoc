@@ -66,18 +66,20 @@ DD.CONFIG = {
 
   // rodzaje patogenów do wyboru na starcie. natural = klasa antybiotyku, na którą bakteria jest naturalnie oporna;
   // antiviral = skuteczność leku przeciwwirusowego na danego wirusa. Lekarz rozpoznaje rodzaj pod mikroskopem.
+  // Drobne różnice w rozgrywce (mnożniki ponad różnice bakteria / wirus): speed = szybkość ruchu,
+  // growth = wzrost kolonii, biofilm = ile kolonii zabiera jedno przeciwciało (mniej = mocniejszy biofilm).
   species: {
-    staph:     { kind: 'bacteria', name: 'Gronkowiec złocisty', latin: 'Staphylococcus aureus, szczep MRSA', natural: 'abxA',
+    staph:     { kind: 'bacteria', name: 'Gronkowiec złocisty', latin: 'Staphylococcus aureus, szczep MRSA', natural: 'abxA', speed: 0.85, growth: 1.0, biofilm: 0.6,
                  micro: 'Gram-dodatnie ziarenkowce w gronach.', treat: 'Szczep oporny na β-laktamy, wrażliwy na makrolidy.' },
-    strep:     { kind: 'bacteria', name: 'Paciorkowiec', latin: 'Streptococcus pyogenes', natural: null,
+    strep:     { kind: 'bacteria', name: 'Paciorkowiec', latin: 'Streptococcus pyogenes', natural: null, speed: 1.0, growth: 1.25, biofilm: 1.0,
                  micro: 'Gram-dodatnie ziarenkowce w łańcuszkach.', treat: 'Wrażliwy na β-laktamy i makrolidy.' },
-    ecoli:     { kind: 'bacteria', name: 'Pałeczka okrężnicy', latin: 'Escherichia coli', natural: 'abxB',
+    ecoli:     { kind: 'bacteria', name: 'Pałeczka okrężnicy', latin: 'Escherichia coli', natural: 'abxB', speed: 1.15, growth: 1.0, biofilm: 1.0,
                  micro: 'Gram-ujemne pałeczki z witkami.', treat: 'Naturalnie oporna na makrolidy, wrażliwa na β-laktamy.' },
-    flu:       { kind: 'virus', name: 'Wirus grypy', latin: 'Influenza A', antiviral: 1.0,
+    flu:       { kind: 'virus', name: 'Wirus grypy', latin: 'Influenza A', antiviral: 1.0, speed: 1.1, growth: 1.0, biofilm: 1.0,
                  micro: 'Kuliste wiriony z otoczką i gęstymi kolcami białkowymi.', treat: 'Lek przeciwwirusowy działa w pełni.' },
-    coxsackie: { kind: 'virus', name: 'Wirus Coxsackie B', latin: 'Enterovirus B', antiviral: 0.2,
+    coxsackie: { kind: 'virus', name: 'Wirus Coxsackie B', latin: 'Enterovirus B', antiviral: 0.2, speed: 0.9, growth: 1.25, biofilm: 1.0,
                  micro: 'Bardzo małe, gładkie wiriony bez otoczki.', treat: 'Brak swoistego leku: lek przeciwwirusowy działa słabo (20%).' },
-    adeno:     { kind: 'virus', name: 'Adenowirus', latin: 'Adenoviridae', antiviral: 0.6,
+    adeno:     { kind: 'virus', name: 'Adenowirus', latin: 'Adenoviridae', antiviral: 0.6, speed: 1.0, growth: 0.9, biofilm: 0.75,
                  micro: 'Wiriony w kształcie dwudziestościanu z długimi włóknami.', treat: 'Lek przeciwwirusowy działa częściowo (60%).' }
   },
   defaultSpecies: { bacteria: 'ecoli', virus: 'adeno' },

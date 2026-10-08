@@ -81,6 +81,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Objawy: żółtaczka (wątroba), krew w moczu (nerka) (v0.25.0)
 - [x] USG jamy brzusznej (v0.26.0)
 - [x] Zoom prawie stały, delikatna regulacja kółkiem (v0.27.0)
+- [x] Drobne różnice w rozgrywce między rodzajami patogenów (v0.28.0)
 - [x] Bez podglądu z opóźnieniem; zdjęcie przy mikroskopie; szukanie patogenu na preparacie (v0.23.0)
 - [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
@@ -110,7 +111,7 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
   Patogen nie je w mięśniu ani w ukryciu.
   Od v0.20.0: lipidy +4 życia, aminokwasy +0,15 pkt mutacji; kopia żyje 40 s (maleje przez ostatnie 4 s);
   posiew podaje liczbę komórek we krwi (oryginał we krwi + kopie), tylko przy bakterii (posiew wirusa jest ujemny).
-- Rodzaje patogenów (`config.species`): w obrębie bakterii / wirusów różnią się tylko wyglądem i wrażliwością na leki.
+- Rodzaje patogenów (`config.species`): wygląd, wrażliwość na leki i od v0.28.0 mnożniki speed / growth / biofilm (gronkowiec 0,85 / 1 / 0,6; paciorkowiec 1 / 1,25 / 1; E. coli 1,15 / 1 / 1; grypa 1,1 / 1 / 1; Coxsackie 0,9 / 1,25 / 1; adeno 1 / 0,9 / 0,75).
   Gronkowiec MRSA oporny na β-laktam, E. coli na makrolid, paciorkowiec bez oporności; lek przeciwwirusowy: grypa 1,0, adenowirus 0,6, Coxsackie 0,2.
   Mikroskop (6 s, odnowienie 15 s) wykrywa rodzaj, gdy patogen płynie we krwi albo są kopie lub kolonie poza mięśniem; podaje podpowiedź leczenia.
   Dawne wartości 'bacteria' / 'virus' w komendach i localStorage mapują się na E. coli / adenowirusa.

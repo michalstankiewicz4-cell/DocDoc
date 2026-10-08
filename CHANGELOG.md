@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.28.0] - 2026-10-09
+### Dodane
+- **Różnice w rozgrywce między rodzajami patogenów:** gronkowiec wolniejszy z mocnym biofilmem (przeciwciała niszczą jego kolonie o 40% słabiej), paciorkowiec z szybciej rosnącymi koloniami, pałeczka okrężnicy szybsza; wirus grypy szybszy, Coxsackie B wolniejszy z szybciej rosnącymi koloniami, adenowirus z wolniejszymi, ale odporniejszymi koloniami.
+
 ## [0.27.0] - 2026-10-09
 ### Zmienione
 - **Zoom kamery prawie stały:** kółko myszy reguluje przybliżenie tylko delikatnie (zakres 14–21 zamiast 7–75, domyślnie 17).
@@ -231,7 +235,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.27.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.28.0...HEAD
+[0.28.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.24.0...v0.25.0

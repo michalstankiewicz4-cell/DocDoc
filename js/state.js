@@ -520,7 +520,8 @@
 
     // --- kolonie: rosną same; leki wstrzymują wzrost, gorączka go spowalnia, β-laktam je kurczy ---
     const K = C.colony;
-    const grow0 = K.growth * (s.kind === 'virus' ? C.virus.growthMul : 1)
+    const SPc = C.species[s.species] || {};
+    const grow0 = K.growth * (s.kind === 'virus' ? C.virus.growthMul : 1) * (SPc.growth ?? 1)
       * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul));
     const pen = C.tissue.drugPenetration;
     let mass = 0;
@@ -576,7 +577,7 @@
       }
     } else {
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck += (a.eff ?? 1);
-      const mul = b.slowMul * Math.max(0.3, 1 - stuck * 0.08) * (s.kind === 'virus' ? C.virus.speedMul : 1)
+      const mul = b.slowMul * Math.max(0.3, 1 - stuck * 0.08) * (s.kind === 'virus' ? C.virus.speedMul : 1) * ((C.species[s.species] || {}).speed ?? 1)
         * (1 + C.mutations.speed.step * b.mut.speed);
       const il = Math.hypot(b.ix, b.iy) || 1;
       b.vx += (b.ix / il) * B.accel * mul * dt * (b.ix || b.iy ? 1 : 0);
@@ -750,7 +751,7 @@
         continue;
       }
       if (col && td < 0.6 + col.size * 0.5) {
-        col.size -= K.abDamage * (a.eff ?? 1);
+        col.size -= K.abDamage * (a.eff ?? 1) * ((C.species[s.species] || {}).biofilm ?? 1);   // biofilm gronkowca chroni kolonie
         s.stats.abHits++;
         if (col.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(col), 1); s.stats.coloniesLost++; }
         s.antibodies.splice(i, 1);

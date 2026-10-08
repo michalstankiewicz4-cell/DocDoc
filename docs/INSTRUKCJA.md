@@ -69,16 +69,16 @@ Przed startem gracz patogenu wybiera jedną z trzech bakterii albo jeden z trzec
 | Kolonie | biofilm, wzrost normalny | zakażone komórki, wzrost o 30% szybszy |
 | Działają na nie | przeciwciała, gorączka, antybiotyki | przeciwciała, gorączka, lek przeciwwirusowy |
 
-| Rodzaj | Wygląd | Leczenie |
-| --- | --- | --- |
-| Gronkowiec złocisty (MRSA) | złociste ziarenkowce w gronach | oporny na β-laktamy (20%), makrolid działa |
-| Paciorkowiec | ziarenkowce w łańcuszku | wrażliwy na β-laktamy i makrolidy |
-| Pałeczka okrężnicy (E. coli) | pałeczka z witkami | oporna na makrolidy (20%), β-laktam działa |
-| Wirus grypy | kulisty, gęste kolce | lek przeciwwirusowy 100% |
-| Wirus Coxsackie B | mały, gładki dwudziestościan | lek przeciwwirusowy tylko 20% |
-| Adenowirus | dwudziestościan z włóknami | lek przeciwwirusowy 60% |
+| Rodzaj | Wygląd | Leczenie | Rozgrywka |
+| --- | --- | --- | --- |
+| Gronkowiec złocisty (MRSA) | złociste ziarenkowce w gronach | oporny na β-laktamy (20%), makrolid działa | wolniejszy (−15%), mocny biofilm: przeciwciała niszczą jego kolonie o 40% słabiej |
+| Paciorkowiec | ziarenkowce w łańcuszku | wrażliwy na β-laktamy i makrolidy | kolonie rosną o 25% szybciej |
+| Pałeczka okrężnicy (E. coli) | pałeczka z witkami | oporna na makrolidy (20%), β-laktam działa | szybsza (+15%) dzięki witkom |
+| Wirus grypy | kulisty, gęste kolce | lek przeciwwirusowy 100% | szybszy (+10%) |
+| Wirus Coxsackie B | mały, gładki dwudziestościan | lek przeciwwirusowy tylko 20% | wolniejszy (−10%), kolonie rosną o 25% szybciej |
+| Adenowirus | dwudziestościan z włóknami | lek przeciwwirusowy 60% | kolonie rosną o 10% wolniej, ale przeciwciała niszczą je o 25% słabiej |
 
-Rodzaje w obrębie bakterii albo wirusów różnią się tylko wyglądem i wrażliwością na leki.
+Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej.
 
 ### Jak grać
 - **Prąd krwi** zmienia się z rytmem serca (72/min). W rozkurczu krew płynie z przedsionków do komór, w skurczu jest wyrzucana do pnia płucnego i aorty. Pod prąd płynie się trudno, więc warto wyczuć rytm.
