@@ -16,6 +16,22 @@
     return m;
   };
 
+  // objawy wynikające ze stanu gry: [nazwa, poziom, obszar ciała] (obszar podświetla sylwetka w panelu lekarza)
+  DD.symptomList = function (s, m) {
+    m = m || DD.symptomMasses(s);
+    const d = s.doctor, cond = s.patient.cond, list = [];
+    if (d.temp >= 37.8) list.push(['Gorączka, poty', 'warm', 'body']);
+    if (m.right > 0.35 || cond < 45) list.push(['Duszność', m.right > 0.8 || cond < 30 ? 'high' : 'warm', 'lungs']);
+    if (m.right > 0.2) list.push(['Kaszel', 'warm', 'lungs']);
+    if (m.left > 0.35) list.push(['Zaburzenia rytmu serca', m.left > 0.9 ? 'high' : 'warm', 'heart']);
+    if (m.legs > 0.25) list.push(['Obrzęk nóg', 'warm', 'legs']);
+    if (m.liver > 0.3) list.push(['Żółtaczka', m.liver > 0.9 ? 'high' : 'warm', 'liver']);
+    if (m.kidney > 0.3) list.push(['Krew w moczu', m.kidney > 0.9 ? 'high' : 'warm', 'kidney']);
+    if (cond < 55) list.push(['Bladość', cond < 30 ? 'high' : 'warm', 'skin']);
+    if (cond < 25) list.push(['Sinica', 'high', 'skin']);
+    return list;
+  };
+
   DD.createPatientRoom = function () {
     const cv = $('room'), ctx = cv.getContext('2d');
     let t = 0, lastCoughs = 0, coughT = 0, breath = 0;
@@ -27,20 +43,6 @@
       if (cv.width !== Math.round(w * pr)) { cv.width = Math.round(w * pr); cv.height = Math.round(h * pr); }
       cv.style.height = h + 'px';
       return { sc: (w / W) * pr };
-    }
-
-    function symptomsOf(s, m) {
-      const d = s.doctor, cond = s.patient.cond, list = [];
-      if (d.temp >= 37.8) list.push(['Gorączka, poty', 'warm']);
-      if (m.right > 0.35 || cond < 45) list.push(['Duszność', m.right > 0.8 || cond < 30 ? 'high' : 'warm']);
-      if (m.right > 0.2) list.push(['Kaszel', 'warm']);
-      if (m.left > 0.35) list.push(['Zaburzenia rytmu serca', m.left > 0.9 ? 'high' : 'warm']);
-      if (m.legs > 0.25) list.push(['Obrzęk nóg', 'warm']);
-      if (m.liver > 0.3) list.push(['Żółtaczka', m.liver > 0.9 ? 'high' : 'warm']);
-      if (m.kidney > 0.3) list.push(['Krew w moczu', m.kidney > 0.9 ? 'high' : 'warm']);
-      if (cond < 55) list.push(['Bladość', cond < 30 ? 'high' : 'warm']);
-      if (cond < 25) list.push(['Sinica', 'high']);
-      return list;
     }
 
     let lastSym = '';
@@ -207,8 +209,8 @@
         } }
 
       // objawy (tylko gdy lista się zmieniła)
-      const sym = s.running ? symptomsOf(s, m) : [];
-      const key = sym.map((x) => x.join(':')).join('|');
+      const sym = s.running ? DD.symptomList(s, m) : [];
+      const key = sym.map((x) => x[0] + ':' + x[1]).join('|');
       if (key !== lastSym) {
         lastSym = key;
         $('symptoms').innerHTML = sym.length ? sym.map(([n, lv]) => `<li data-level="${lv}">${n}</li>`).join('') : '<li data-level="ok">Bez objawów</li>';

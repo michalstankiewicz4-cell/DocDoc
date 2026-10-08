@@ -118,6 +118,17 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
 
 ## Lekarz
 
+### Ekran lekarza
+Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
+- **Monitor:** EKG i odczyty w kolorach kanałów (tętno zielone, temperatura żółta, stan pacjenta błękitny, zakażenie różowe). Przy alarmie dioda i ramka ekranu świecą na czerwono.
+- **Pompa infuzyjna z kroplówką:** pokazuje leki, które są teraz we krwi (przeciwciała, antybiotyki, lek przeciwwirusowy, gorączka), z pozostałym czasem; krople kapią szybciej w czasie wlewu.
+- **Objawy na sylwetce:** schemat ciała na siatce; obszary z objawami świecą (bursztynowo, a przy nasilonych objawach na czerwono): płuca, serce, wątroba, nerka, nogi. Gorączka ociepla obrys ciała, bladość i sinica go wybielają.
+- **Kamera w sali:** pacjent na łóżku i lista objawów.
+- **Konsola zleceń:** trzy rozwijane menu — Badania, Leczenie, Operacja. Wybór pozycji od razu ją zleca (klawisze działają jak wcześniej). Pod menu lampki badań: zielona gotowe, żółta w toku, szara odnowienie.
+- **Mikroskop:** osobne urządzenie z preparatem do przeszukania.
+- **Drukarka wyników:** każdy wynik wysuwa się jako wydruk na papierze termicznym (najnowszy pierwszy); obrazy echa i USG są drukowane w odcieniach szarości.
+- **Dziennik** jako terminal.
+
 ### Sterowanie
 | Klawisz | Działanie |
 | --- | --- |

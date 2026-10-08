@@ -83,6 +83,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Zoom prawie stały, delikatna regulacja kółkiem (v0.27.0)
 - [x] Drobne różnice w rozgrywce między rodzajami patogenów (v0.28.0)
 - [x] Start w wątrobie, strzałka-podpowiedź w mikroskopie, zdjęcie po znalezieniu (v0.29.0)
+- [x] Rework ekranu lekarza: aparatura OIOM-u, rozwijane menu, pompa, sylwetka, drukarka (v0.30.0)
 - [x] Bez podglądu z opóźnieniem; zdjęcie przy mikroskopie; szukanie patogenu na preparacie (v0.23.0)
 - [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
@@ -123,5 +124,6 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
   Głębokość kanałów w narządach mniejsza (dno −1,8, wierzch 1,4) niż w sercu.
 - Start w nerce (`Heart.START.kidney`): punkt na tętnicy łukowatej (kąt 2,1 rad). Start w wątrobie (`START.liver`): żyła centralna środkowego zrazika. Strzałka w mikroskopie po 15 s (`HINT_AFTER`); zdjęcie patogenu widoczne dopiero po znalezieniu.
 - Minimapa patogenu ukryta na prośbę Michała (nie usuwać kodu): `config.ui.minimap = false`.
+- Ekran lekarza (v0.30.0, styl wybrany przez Michała: „ciemny monitor medyczny” + sylwetka): kolory kanałów w `.half-doc` (CSS), wybór z menu od razu zleca, przeciwciała widać na pompie 8 s po podaniu, sylwetka podświetla obszary z `DD.symptomList` (prawa nerka pacjenta).
 - Zoom (`config.camera`): 17, kółkiem 14–21 (Michał: „tylko delikatna regulacja”). W mięśniu kamera nadal zbliża się automatycznie (×0,6).
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk; wątroba > 0,3 żółtaczka; nerka > 0,3 krew w moczu; > 0,9 objaw nasilony).

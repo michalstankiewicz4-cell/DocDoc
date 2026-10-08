@@ -13,22 +13,56 @@
   ];
   const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, abxA: D.abxA.cooldown, abxB: D.abxB.cooldown, antiviral: D.antiviral.cooldown };
   const TESTS = [
-    { kind: 'crp', key: 'Z', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
-    { kind: 'culture', key: 'X', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
-    { kind: 'echo', key: 'C', name: 'Echo serca', desc: 'Położenie i wielkość kolonii na ścianach.' },
-    { kind: 'usg', key: 'G', name: 'USG jamy brzusznej', desc: 'Kolonie w wątrobie, nerce i naczyniach brzucha.' },
-    { kind: 'abg', key: 'V', name: 'Antybiogram', desc: 'Wrażliwość na leczenie. Wymaga dodatniego posiewu.' },
-    { kind: 'micro', key: 'N', name: 'Mikroskop', desc: 'Próbka krwi pod mikroskopem: rodzaj bakterii albo wirusa.' }
+    { kind: 'crp', key: 'Z', short: 'CRP', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
+    { kind: 'culture', key: 'X', short: 'Posiew', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
+    { kind: 'echo', key: 'C', short: 'Echo', name: 'Echo serca', desc: 'Położenie i wielkość kolonii na ścianach.' },
+    { kind: 'usg', key: 'G', short: 'USG', name: 'USG jamy brzusznej', desc: 'Kolonie w wątrobie, nerce i naczyniach brzucha.' },
+    { kind: 'abg', key: 'V', short: 'Antybiogram', name: 'Antybiogram', desc: 'Wrażliwość na leczenie. Wymaga dodatniego posiewu.' },
+    { kind: 'micro', key: 'N', short: 'Mikroskop', name: 'Mikroskop', desc: 'Próbka krwi pod mikroskopem: rodzaj bakterii albo wirusa.' }
   ];
 
+  // ikony (obrys 24 × 24) dla pozycji menu
+  const ICON = {
+    antibodies: '<path d="M12 21v-8M12 13 6 6M12 13l6-7"/><circle cx="5" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/>',
+    fever: '<path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0Z"/><path d="M12 9v7"/>',
+    abxA: '<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-35 12 12)"/><path d="m9.5 8.4 5 7.2"/>',
+    abxB: '<circle cx="12" cy="12" r="7"/><path d="M5 12h14"/>',
+    antiviral: '<path d="m14 4 6 6M17 7l-9 9-4 1 1-4 9-9M4 20l3-3"/><path d="m11 10 3 3"/>',
+    crp: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 14h9"/>',
+    culture: '<ellipse cx="12" cy="13" rx="9" ry="5"/><path d="M3 13v2c0 2.8 4 5 9 5s9-2.2 9-5v-2"/><circle cx="9" cy="12" r="1"/><circle cx="14" cy="14" r="1"/>',
+    echo: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
+    usg: '<path d="M4 20 12 6l8 14Z"/><path d="M9 3h6v3H9z"/>',
+    abg: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="2"/><circle cx="15" cy="9" r="2"/><circle cx="12" cy="16" r="2"/>',
+    micro: '<path d="M6 21h12M9 21v-3h6M14 4l-4 9 3 1.5 4-9zM12 18a6 6 0 0 0 6-6"/>',
+    surgery: '<path d="M3 21 14 10M14 10l3-7 4 4-7 3"/>'
+  };
+  const svg = (k) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
+
   DD.createUI = function () {
+    // rozwijane menu konsoli: jedno otwarte naraz, Esc i kliknięcie obok zamykają
+    const menus = [...document.querySelectorAll('.menu')];
+    function closeMenus(except) {
+      for (const m of menus) if (m !== except) { m.querySelector('.menu-btn').setAttribute('aria-expanded', 'false'); m.querySelector('.menu-list').hidden = true; m.dataset.open = '0'; }
+    }
+    for (const m of menus) {
+      const btn = m.querySelector('.menu-btn'), list = m.querySelector('.menu-list');
+      btn.addEventListener('click', () => {
+        const open = list.hidden;
+        closeMenus(m);
+        list.hidden = !open; btn.setAttribute('aria-expanded', String(open)); m.dataset.open = open ? '1' : '0';
+      });
+    }
+    document.addEventListener('click', (e) => { if (!e.target.closest('.menu')) closeMenus(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenus(); });
+    const pick = () => closeMenus();   // po wyborze pozycji menu się zamyka
+
     const actionsEl = $('actions');
     const btns = {};
     for (const a of ACTIONS) {
       const b = document.createElement('button');
-      b.className = 'action'; b.id = 'act-' + a.cd; b.type = 'button';
-      b.innerHTML = `<span class="action-cd"></span><span class="action-head"><span class="action-name">${a.name}</span><kbd>${a.key}</kbd></span><span class="action-desc">${a.desc}</span><span class="action-foot"><span class="action-state"></span><span class="action-eff"></span></span>`;
-      b.addEventListener('click', () => DD.send({ type: a.cmd }));
+      b.className = 'action'; b.id = 'act-' + a.cd; b.type = 'button'; b.setAttribute('role', 'menuitem');
+      b.innerHTML = `<span class="action-cd"></span>${svg(a.cd)}<span class="action-head"><span class="action-name">${a.name}</span><kbd>${a.key}</kbd></span><span class="action-desc">${a.desc}</span><span class="action-foot"><span class="action-state"></span><span class="action-eff"></span></span>`;
+      b.addEventListener('click', () => { DD.send({ type: a.cmd }); pick(); });
       actionsEl.appendChild(b);
       btns[a.cd] = b;
     }
@@ -58,20 +92,24 @@
     const surgBtns = {};
     for (const v of SURG) {
       const b = document.createElement('button');
-      b.className = 'surg-btn'; b.type = 'button';
-      b.innerHTML = `<span>${v.name}</span><kbd>${v.key}</kbd>`;
-      b.addEventListener('click', () => DD.send({ type: 'doc.surgery', valve: v.valve }));
+      b.className = 'surg-btn'; b.type = 'button'; b.setAttribute('role', 'menuitem');
+      b.innerHTML = `${svg('surgery')}<span>Zastawka ${v.name.toLowerCase()}</span><kbd>${v.key}</kbd>`;
+      b.addEventListener('click', () => { DD.send({ type: 'doc.surgery', valve: v.valve }); pick(); });
       $('surgery').appendChild(b); surgBtns[v.valve] = b;
     }
 
-    const testBtns = {};
+    const testBtns = {}, lampEls = {};
     for (const t of TESTS) {
       const b = document.createElement('button');
-      b.className = 'test-btn'; b.id = 'test-' + t.kind; b.type = 'button';
-      b.innerHTML = `<span class="test-bar" aria-hidden="true"><span></span></span><span class="test-row"><span class="test-name">${t.name}</span><kbd>${t.key}</kbd></span><span class="test-desc">${t.desc}</span><span class="test-state"></span>`;
-      b.addEventListener('click', () => DD.send({ type: 'doc.test', kind: t.kind }));
+      b.className = 'test-btn'; b.id = 'test-' + t.kind; b.type = 'button'; b.setAttribute('role', 'menuitem');
+      b.innerHTML = `<span class="test-bar" aria-hidden="true"><span></span></span>${svg(t.kind)}<span class="test-row"><span class="test-name">${t.name}</span><kbd>${t.key}</kbd></span><span class="test-desc">${t.desc}</span><span class="test-state"></span>`;
+      b.addEventListener('click', () => { DD.send({ type: 'doc.test', kind: t.kind }); pick(); });
       $('tests').appendChild(b);
       testBtns[t.kind] = b;
+      // lampka badania na konsoli (widać stan bez otwierania menu)
+      const li = document.createElement('li');
+      li.className = 'lamp'; li.innerHTML = `<span class="lamp-dot"></span><span class="lamp-name">${t.short || t.name}</span>`;
+      $('lamps').appendChild(li); lampEls[t.kind] = li;
     }
 
     // obraz USG (echo serca albo jama brzuszna): wycinek wachlarza, ściany z SDF jasne, kolonie jako jasne ogniska
@@ -431,7 +469,20 @@
       if (d.resultSeq === shownSeq) return;
       shownSeq = d.resultSeq;
       const T = d.tests;
-      $('results-block').hidden = !(T.crp.res || T.culture.res || T.echo.res || T.abg.res || (T.micro && T.micro.res) || (T.usg && T.usg.res));
+      // drukarka: nowy wydruk wysuwa się na górę stosu
+      const anyPrint = !!(T.crp.res || T.culture.res || T.echo.res || T.abg.res || (T.usg && T.usg.res));
+      $('print-empty').hidden = anyPrint;
+      const slips = document.querySelector('.slips');
+      for (const k of ['crp', 'culture', 'echo', 'usg', 'abg']) {
+        const R = T[k]; if (!R || !R.res) continue;
+        const el = $('res-' + k);
+        if (el.dataset.t !== String(R.resultT)) {
+          el.dataset.t = String(R.resultT);
+          slips.prepend(el);
+          el.classList.remove('printing'); void el.offsetWidth; el.classList.add('printing');
+          const led = $('print-led'); led.classList.remove('on'); void led.offsetWidth; led.classList.add('on');
+        }
+      }
       if (T.micro && T.micro.res) {
         $('res-micro').hidden = false; $('res-micro').querySelector('.res-time').textContent = 'pobranie ' + mmss(T.micro.sampleT);
         showMicro(T.micro.res, T.micro.sampleT + 1);
@@ -513,6 +564,18 @@
           st.textContent = needCulture ? 'Najpierw dodatni posiew' : `Gotowe, wynik po ${cfg.duration} s`;
           bar.style.transform = 'scaleX(0)';
         }
+        // lampka: zielona = gotowe, bursztynowa = w toku, szara = odnowienie / zablokowane
+        const lamp = lampEls[t.kind];
+        if (lamp && lamp.dataset.state !== el.dataset.state) lamp.dataset.state = el.dataset.state;
+      }
+      { // podsumowania na przyciskach menu
+        const run = TESTS.filter((t) => d.tests[t.kind].state === 'running').length;
+        const rdy = TESTS.filter((t) => testBtns[t.kind].dataset.state === 'ready').length;
+        const ts = run ? `${run} w toku` : `${rdy} gotowe`;
+        if ($('sum-tests').textContent !== ts) $('sum-tests').textContent = ts;
+        const ar = ACTIONS.filter((a) => btns[a.cd].dataset.state === 'ready').length;
+        const as = !d.unlocked ? 'po pierwszym wyniku' : `${ar} gotowe`;
+        if ($('sum-actions').textContent !== as) $('sum-actions').textContent = as;
       }
       renderResults(s);
 

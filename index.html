@@ -6,8 +6,8 @@
 <title>PatientZero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.29.1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="css/style.css?v=0.30.0">
 </head>
 <body>
 <main class="split">
@@ -94,112 +94,152 @@
         <p class="doc-who">Gracz 2, lekarz</p>
         <h1 class="doc-title">Karta pacjenta</h1>
       </div>
-      <p class="doc-clock"><span class="muted">Od przyjęcia</span> <time id="clock">0:00</time></p>
+      <p class="doc-clock"><span>Od przyjęcia</span> <time id="clock">0:00</time></p>
     </header>
 
-    <section class="room-block" aria-label="Sala: pacjent">
-      <canvas id="room" class="room" aria-hidden="true"></canvas>
-      <ul id="symptoms" class="symptoms" aria-label="Objawy"><li data-level="ok">Bez objawów</li></ul>
-    </section>
-
-    <section class="monitor" aria-label="Monitor funkcji życiowych">
-      <canvas id="ecg" class="ecg" aria-hidden="true"></canvas>
-      <dl class="vitals">
-        <div class="vital" id="vital-hr">
-          <dt>Tętno</dt>
-          <dd><span id="v-hr" class="vital-num">72</span><span class="unit">/min</span></dd>
+    <div class="ward">
+      <!-- monitor funkcji życiowych -->
+      <section class="dev dev-dark monitor" aria-label="Monitor funkcji życiowych">
+        <div class="dev-bar"><span class="dev-name">Monitor</span><span class="led" id="mon-led" aria-hidden="true"></span></div>
+        <div class="screen">
+          <canvas id="ecg" class="ecg" aria-hidden="true"></canvas>
+          <dl class="vitals">
+            <div class="vital ch-hr" id="vital-hr">
+              <dt>Tętno</dt>
+              <dd><span id="v-hr" class="vital-num">72</span><span class="unit">/min</span></dd>
+            </div>
+            <div class="vital ch-temp" id="vital-temp" data-state="ok">
+              <dt>Temp.</dt>
+              <dd><span id="v-temp" class="vital-num">36,6</span><span class="unit">°C</span></dd>
+            </div>
+            <div class="vital ch-cond" id="vital-cond" data-state="ok">
+              <dt>Stan</dt>
+              <dd><span id="v-cond" class="vital-num">100</span><span class="unit">%</span></dd>
+              <p id="v-cond-note" class="vital-note">stabilny</p>
+            </div>
+            <div class="vital ch-inf" id="vital-inf" data-state="unknown">
+              <dt>Zakażenie</dt>
+              <dd><span id="v-inf" class="vital-num">—</span></dd>
+              <p id="v-inf-note" class="vital-note">zleć badanie krwi</p>
+            </div>
+          </dl>
         </div>
-        <div class="vital" id="vital-temp" data-state="ok">
-          <dt>Temperatura</dt>
-          <dd><span id="v-temp" class="vital-num">36,6</span><span class="unit">°C</span></dd>
-        </div>
-        <div class="vital" id="vital-cond" data-state="ok">
-          <dt>Stan pacjenta</dt>
-          <dd><span id="v-cond" class="vital-num">100</span><span class="unit">%</span></dd>
-          <p id="v-cond-note" class="vital-note">stabilny</p>
-        </div>
-        <div class="vital" id="vital-inf" data-state="unknown">
-          <dt>Zakażenie</dt>
-          <dd><span id="v-inf" class="vital-num">—</span></dd>
-          <p id="v-inf-note" class="vital-note">zleć badanie krwi</p>
-        </div>
-      </dl>
-    </section>
+      </section>
 
-    <!-- niewidoczny widok 3D: robi zdjęcie miejsca pobrania krwi do wyniku mikroskopu -->
-    <div id="doc-cam" class="doc-cam-offscreen" aria-hidden="true"></div>
+      <!-- pompa infuzyjna z kroplówką -->
+      <section class="dev dev-light pump" aria-label="Pompa infuzyjna: leki we krwi">
+        <canvas id="pump" class="pump-c" aria-hidden="true"></canvas>
+        <p id="pump-text" class="sr-only"></p>
+      </section>
 
-    <section class="block" aria-labelledby="h-test">
-      <h2 id="h-test" class="block-title">Diagnostyka</h2>
-      <div id="tests" class="tests"></div>
-      <p class="hint">Badania mogą biec równolegle. Wynik opisuje chwilę pobrania próbki. Pierwszy wynik odblokowuje leczenie.</p>
-    </section>
+      <!-- sylwetka pacjenta z obszarami objawów -->
+      <section class="dev dev-dark scan" aria-label="Sylwetka pacjenta: obszary z objawami">
+        <div class="dev-bar"><span class="dev-name">Objawy</span></div>
+        <div class="screen"><canvas id="bodymap" class="bodymap" aria-hidden="true"></canvas></div>
+      </section>
 
-    <section class="block" aria-labelledby="h-res" id="results-block" hidden>
-      <h2 id="h-res" class="block-title">Wyniki badań</h2>
-      <div class="results">
-        <article id="res-crp" class="result" hidden>
-          <h3>CRP <span class="res-time muted"></span></h3>
-          <p class="res-big"><b id="res-crp-v"></b> mg/l</p>
-          <p id="res-crp-l" class="res-note"></p>
-        </article>
-        <article id="res-culture" class="result result-wide" hidden>
-          <h3>Posiew krwi <span class="res-time muted"></span></h3>
-          <p class="res-big"><b id="res-culture-v"></b></p>
-        </article>
-        <article id="res-echo" class="result" hidden>
-          <h3>Echo serca <span class="res-time muted"></span></h3>
-          <canvas id="res-echo-c" class="echo-canvas" aria-label="Obraz echa serca"></canvas>
-          <p id="res-echo-l" class="res-note"></p>
-        </article>
-        <article id="res-micro" class="result result-wide" hidden>
-          <h3>Mikroskop <span class="res-time muted"></span></h3>
-          <div class="micro-row">
-            <canvas id="res-micro-c" class="micro-canvas" tabindex="0" aria-label="Preparat krwi pod mikroskopem: przesuwaj myszą albo strzałkami"></canvas>
-            <figure id="test-photo" class="test-photo" hidden>
-              <img id="test-photo-img" alt="Zdjęcie patogenu w chwili pobrania krwi">
-              <figcaption>
-                <span class="muted">Patogen w chwili pobrania</span>
-                <b id="test-photo-place"></b>
-                <span id="test-photo-time" class="muted"></span>
-              </figcaption>
-            </figure>
-            <div>
-              <p class="res-big"><b id="res-micro-v"></b></p>
-              <p id="res-micro-l" class="res-note"></p>
+      <!-- sala: obraz z kamery -->
+      <section class="dev dev-dark room-block" aria-label="Sala: pacjent">
+        <div class="dev-bar"><span class="dev-name">Kamera w sali</span><span class="rec" aria-hidden="true"></span></div>
+        <canvas id="room" class="room" aria-hidden="true"></canvas>
+        <ul id="symptoms" class="symptoms" aria-label="Objawy"><li data-level="ok">Bez objawów</li></ul>
+      </section>
+
+      <!-- konsola zleceń: rozwijane menu -->
+      <section class="dev dev-dark console" aria-label="Zlecenia lekarza">
+        <div class="menus">
+          <div class="menu" data-menu="tests">
+            <button type="button" class="menu-btn" aria-expanded="false" aria-controls="tests">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 14h9"/></svg>
+              <span class="menu-label">Badania</span><span class="menu-sum" id="sum-tests"></span><span class="caret" aria-hidden="true"></span>
+            </button>
+            <div id="tests" class="menu-list tests" role="menu" hidden></div>
+          </div>
+          <div class="menu" data-menu="actions">
+            <button type="button" class="menu-btn" aria-expanded="false" aria-controls="actions">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 4.5 5 5M17 7l-9.5 9.5-3 .5.5-3L14.5 4.5M4.5 19.5 3 21"/><path d="m11 10 3 3"/></svg>
+              <span class="menu-label">Leczenie</span><span class="menu-sum" id="sum-actions"></span><span class="caret" aria-hidden="true"></span>
+            </button>
+            <div id="actions" class="menu-list actions" role="menu" hidden></div>
+          </div>
+          <div class="menu" data-menu="surgery">
+            <button type="button" class="menu-btn" aria-expanded="false" aria-controls="surgery-list">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 14 10M14 10l3-7 4 4-7 3"/></svg>
+              <span class="menu-label">Operacja</span><span class="menu-sum" id="surg-state"></span><span class="caret" aria-hidden="true"></span>
+            </button>
+            <div id="surgery-list" class="menu-list" role="menu" hidden>
+              <p class="menu-note">Operacja zastawki trwa 10 s i obciąża pacjenta (stan −15). Usuwa ogniska kilka milimetrów wokół zastawki, także w ścianie. Kolejna po 60 s.</p>
+              <div id="surgery" class="surgery"></div>
             </div>
           </div>
-        </article>
-        <article id="res-usg" class="result" hidden>
-          <h3>USG jamy brzusznej <span class="res-time muted"></span></h3>
-          <canvas id="res-usg-c" class="echo-canvas" aria-label="Obraz USG jamy brzusznej"></canvas>
-          <p id="res-usg-l" class="res-note"></p>
-        </article>
-        <article id="res-abg" class="result" hidden>
-          <h3>Antybiogram <span class="res-time muted"></span></h3>
-          <dl id="res-abg-l" class="abg"></dl>
-        </article>
-      </div>
-    </section>
+        </div>
+        <ul id="lamps" class="lamps" aria-label="Stan badań"></ul>
+      </section>
 
-    <section class="block" aria-labelledby="h-act">
-      <h2 id="h-act" class="block-title">Leczenie</h2>
-      <div id="actions" class="actions"></div>
-    </section>
+      <!-- niewidoczny widok 3D: robi zdjęcie miejsca pobrania krwi do wyniku mikroskopu -->
+      <div id="doc-cam" class="doc-cam-offscreen" aria-hidden="true"></div>
 
-    <section class="block" aria-labelledby="h-surg">
-      <div class="block-head">
-        <h2 id="h-surg" class="block-title">Operacja zastawki</h2>
-        <p id="surg-state" class="hint"></p>
-      </div>
-      <div id="surgery" class="surgery"></div>
-      <p class="hint">Zabieg trwa 10 s i obciąża pacjenta (stan −15). Usuwa ogniska w promieniu kilku milimetrów od wybranej zastawki, także w ścianie. Można go powtórzyć po 60 s.</p>
-    </section>
+      <!-- mikroskop -->
+      <section id="res-micro" class="dev dev-dark scope" aria-label="Mikroskop" hidden>
+        <div class="dev-bar"><span class="dev-name">Mikroskop</span><span class="res-time"></span></div>
+        <div class="micro-row">
+          <canvas id="res-micro-c" class="micro-canvas" tabindex="0" aria-label="Preparat krwi pod mikroskopem: przesuwaj myszą albo strzałkami"></canvas>
+          <figure id="test-photo" class="test-photo" hidden>
+            <img id="test-photo-img" alt="Zdjęcie patogenu w chwili pobrania krwi">
+            <figcaption>
+              <span>Patogen w chwili pobrania</span>
+              <b id="test-photo-place"></b>
+              <span id="test-photo-time"></span>
+            </figcaption>
+          </figure>
+          <div class="micro-text">
+            <p class="res-big"><b id="res-micro-v"></b></p>
+            <p id="res-micro-l" class="res-note"></p>
+          </div>
+        </div>
+      </section>
 
-    <section class="block block-log" aria-labelledby="h-log">
-      <h2 id="h-log" class="block-title">Dziennik</h2>
-      <ol id="log" class="log"></ol>
-    </section>
+      <!-- drukarka wyników -->
+      <section id="results-block" class="dev dev-light printer" aria-label="Drukarka wyników">
+        <div class="printer-head">
+          <span class="dev-name">Drukarka wyników</span>
+          <span class="printer-slot" aria-hidden="true"></span>
+          <span class="led led-print" id="print-led" aria-hidden="true"></span>
+        </div>
+        <p id="print-empty" class="print-empty">Tu wysuną się wydruki wyników badań.</p>
+        <div class="slips">
+          <article id="res-crp" class="slip" hidden>
+            <h3>CRP <span class="res-time"></span></h3>
+            <p class="res-big"><b id="res-crp-v"></b> mg/l</p>
+            <p id="res-crp-l" class="res-note"></p>
+          </article>
+          <article id="res-culture" class="slip" hidden>
+            <h3>Posiew krwi <span class="res-time"></span></h3>
+            <p class="res-big"><b id="res-culture-v"></b></p>
+          </article>
+          <article id="res-echo" class="slip" hidden>
+            <h3>Echo serca <span class="res-time"></span></h3>
+            <canvas id="res-echo-c" class="echo-canvas" aria-label="Obraz echa serca"></canvas>
+            <p id="res-echo-l" class="res-note"></p>
+          </article>
+          <article id="res-usg" class="slip" hidden>
+            <h3>USG jamy brzusznej <span class="res-time"></span></h3>
+            <canvas id="res-usg-c" class="echo-canvas" aria-label="Obraz USG jamy brzusznej"></canvas>
+            <p id="res-usg-l" class="res-note"></p>
+          </article>
+          <article id="res-abg" class="slip" hidden>
+            <h3>Antybiogram <span class="res-time"></span></h3>
+            <dl id="res-abg-l" class="abg"></dl>
+          </article>
+        </div>
+      </section>
+
+      <!-- dziennik -->
+      <section class="dev dev-dark terminal" aria-labelledby="h-log">
+        <div class="dev-bar"><h2 id="h-log" class="dev-name">Dziennik</h2></div>
+        <ol id="log" class="log"></ol>
+      </section>
+    </div>
   </section>
 </main>
 
@@ -403,29 +443,30 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.29.1"></script>
-<script src="js/config.js?v=0.29.1"></script>
-<script src="js/heart-shape.js?v=0.29.1"></script>
-<script src="js/flow.js?v=0.29.1"></script>
-<script src="js/tissue-cells.js?v=0.29.1"></script>
-<script src="js/state.js?v=0.29.1"></script>
-<script src="js/input.js?v=0.29.1"></script>
-<script src="js/render/glsl.js?v=0.29.1"></script>
-<script src="js/render/tissue.js?v=0.29.1"></script>
-<script src="js/render/cells.js?v=0.29.1"></script>
-<script src="js/render/actors.js?v=0.29.1"></script>
-<script src="js/render/post.js?v=0.29.1"></script>
-<script src="js/render/biome.js?v=0.29.1"></script>
-<script src="js/render/view.js?v=0.29.1"></script>
-<script src="js/minimap.js?v=0.29.1"></script>
-<script src="js/audio.js?v=0.29.1"></script>
-<script src="js/doctor-ui.js?v=0.29.1"></script>
-<script src="js/patient-room.js?v=0.29.1"></script>
-<script src="js/doctor-cam.js?v=0.29.1"></script>
-<script src="js/net.js?v=0.29.1"></script>
-<script src="js/lobby.js?v=0.29.1"></script>
-<script src="js/match.js?v=0.29.1"></script>
-<script src="js/net-status.js?v=0.29.1"></script>
-<script src="js/main.js?v=0.29.1"></script>
+<script src="js/version.js?v=0.30.0"></script>
+<script src="js/config.js?v=0.30.0"></script>
+<script src="js/heart-shape.js?v=0.30.0"></script>
+<script src="js/flow.js?v=0.30.0"></script>
+<script src="js/tissue-cells.js?v=0.30.0"></script>
+<script src="js/state.js?v=0.30.0"></script>
+<script src="js/input.js?v=0.30.0"></script>
+<script src="js/render/glsl.js?v=0.30.0"></script>
+<script src="js/render/tissue.js?v=0.30.0"></script>
+<script src="js/render/cells.js?v=0.30.0"></script>
+<script src="js/render/actors.js?v=0.30.0"></script>
+<script src="js/render/post.js?v=0.30.0"></script>
+<script src="js/render/biome.js?v=0.30.0"></script>
+<script src="js/render/view.js?v=0.30.0"></script>
+<script src="js/minimap.js?v=0.30.0"></script>
+<script src="js/audio.js?v=0.30.0"></script>
+<script src="js/doctor-ui.js?v=0.30.0"></script>
+<script src="js/patient-room.js?v=0.30.0"></script>
+<script src="js/doctor-devices.js?v=0.30.0"></script>
+<script src="js/doctor-cam.js?v=0.30.0"></script>
+<script src="js/net.js?v=0.30.0"></script>
+<script src="js/lobby.js?v=0.30.0"></script>
+<script src="js/match.js?v=0.30.0"></script>
+<script src="js/net-status.js?v=0.30.0"></script>
+<script src="js/main.js?v=0.30.0"></script>
 </body>
 </html>

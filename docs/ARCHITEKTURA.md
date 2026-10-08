@@ -28,7 +28,8 @@ js/net-status.js        wskaźnik połączenia, ostrzeżenie, panel szczegółó
 js/lobby.js             ekran tworzenia i dołączania do gry
 js/minimap.js           minimapa patogenu
 js/audio.js             dźwięk (Web Audio, synteza bez plików)
-js/doctor-ui.js         panel lekarza i HUD patogenu
+js/doctor-ui.js         panel lekarza (rozwijane menu zleceń, lampki, drukarka, mikroskop, USG) i HUD patogenu
+js/doctor-devices.js    pompa infuzyjna (leki we krwi) i sylwetka z obszarami objawów (canvas 2D)
 js/patient-room.js      sala z pacjentem (canvas 2D), objawy z położenia kolonii, laboratorium, alarm monitora
 js/doctor-cam.js        zdjęcie patogenu w chwili pobrania krwi do mikroskopu (niewidoczny widok 3D)
 js/main.js              pętla gry, tryby (lokalny / host / gość), wybór trybu
