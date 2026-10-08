@@ -97,7 +97,10 @@
           ['Podane antybiotyki', String(used.slow || 0)],
           ['Trafienia przeciwciał', String(S.abHits || 0)],
           ['Obrażenia od przeciwciał', num(S.dmgAntibodies) + ' pkt'],
-          ['Obrażenia od gorączki', num(S.dmgFever) + ' pkt']
+          ['Obrażenia od gorączki', num(S.dmgFever) + ' pkt'],
+          ['Najgorszy stan pacjenta', Math.max(0, Math.ceil(S.minCond ?? 100)) + '%'],
+          ['Stan pacjenta stracony przez zakażenie', num(S.condByInfection) + ' pkt'],
+          ['Stan pacjenta stracony przez leczenie', num(S.condByTreatment) + ' pkt']
         ]
       };
       for (const id in rows) {
@@ -119,6 +122,12 @@
         $('v-inf').textContent = d.knownInfection + '%';
         $('v-inf-note').textContent = 'stan sprzed ' + mmss(s.time - (d.resultTime ?? s.time));
       }
+      const cond = Math.max(0, s.patient.cond);
+      $('v-cond').textContent = Math.ceil(cond);
+      $('vital-cond').dataset.state = cond < 30 ? 'high' : cond < 65 ? 'warm' : 'ok';
+      $('v-cond-note').textContent = cond < 30 ? 'krytyczny, grozi sepsa' : cond < 65 ? 'pogarsza się' : 'stabilny';
+      $('h-cond').style.transform = `scaleX(${cond / 100})`;
+      $('h-cond-val').textContent = Math.ceil(cond) + '%';
       $('vital-inf').dataset.state = d.knownInfection == null ? 'unknown' : d.knownInfection > 50 ? 'high' : 'warm';
       $('clock').textContent = mmss(s.time);
 
@@ -150,7 +159,8 @@
         el.querySelector('.action-state').textContent = st;
         const eff = 1 - b.resist[a.cd];
         const effEl = el.querySelector('.action-eff');
-        effEl.textContent = `Skuteczność ${Math.round(eff * 100)}%`;
+        const cost = C.patient.sideEffect[a.cd] || 0;
+        effEl.textContent = `Skuteczność ${Math.round(eff * 100)}%` + (cost ? `, stan pacjenta −${cost}` : '');
         effEl.dataset.level = eff > 0.75 ? 'full' : eff > 0.45 ? 'mid' : 'low';
       }
 
@@ -195,7 +205,7 @@
         $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : 'Wygrywa bakteria';
         $('end-text').textContent = s.over === 'doctor'
           ? `Bakteria zniszczona po ${mmss(s.time)}. Kolonizacja zatrzymana na ${Math.floor(b.infection)}%.`
-          : `Zakażenie rozwinęło się w ${mmss(s.time)}. Bakterii zostało ${Math.ceil(b.hp)} punktów życia.`;
+          : `Pacjent w sepsie po ${mmss(s.time)}. Bakterii zostało ${Math.ceil(b.hp)} punktów życia.`;
         renderStats(s);
         $('end-again').focus();
       }

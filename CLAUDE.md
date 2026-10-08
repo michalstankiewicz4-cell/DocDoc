@@ -49,7 +49,7 @@ Gotowe:
 - Minimapa, dźwięk bicia serca, tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia.
 - Wersjonowanie, CHANGELOG, automatyczne wydania, dokumentacja.
 
-Warunki wygranej (tymczasowe): patogen — kolonizacja 100%, lekarz — życie patogenu 0.
+Warunki wygranej: patogen — stan pacjenta 0% (sepsa), lekarz — życie patogenu 0.
 
 ## Lista zadań (zlecone przez Michała, kolejność od najłatwiejszego)
 
@@ -61,7 +61,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Statystyki na ekranie końcowym
 - [x] Dźwięk lekarza: szpitalne „beep”
 - [x] Dźwięk patogenu: przytłumiony jak pod wodą, bicie serca, czasem kaszel
-- [ ] Stan pacjenta jako trzeci wskaźnik (patogen wygrywa przez sepsę), skutki uboczne leków
+- [x] Stan pacjenta jako trzeci wskaźnik (patogen wygrywa przez sepsę), skutki uboczne leków
 - [ ] Kolonie jako „życia” patogenu + zakładanie kolonii kosztem % zdrowia, dodatkowe wskaźniki
 - [ ] Nowe badania: CRP (szybkie), posiew (dokładny), echo serca (pokazuje kolonie), antybiogram
 - [ ] Wybór patogenu: bakteria albo wirus; klasy antybiotyków
@@ -78,4 +78,5 @@ Odrzucone przez Michała: sztuczne etapy zakażenia (przebieg ma wynikać z dzia
 Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z zasadą 1), żeby Michał mógł je zmienić.
 
 - Kod zaproszenia nie sprawdza zgodności wersji gry między graczami.
+- Stan pacjenta: liczby w `config.patient` (spadek od kolonizacji, gorączki, koszt dawek, regeneracja poniżej 40% kolonizacji).
 - Kaszel: szansa na sekundę rośnie z kolonizacją (`config.cough`), tylko dźwięk, bez wpływu na rozgrywkę.

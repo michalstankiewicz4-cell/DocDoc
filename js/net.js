@@ -239,7 +239,7 @@
         r2(b.hitFlash), b.contact ? 1 : 0, r2(b.resist.antibodies), r2(b.resist.fever), r2(b.resist.slow)],
       tr: b.transit ? [b.transit.to === 'lungs' ? 1 : 2, r2(b.transit.t), b.transit.total] : 0,
       d: [TEST.indexOf(d.test.state), r2(d.test.t), r2(d.test.cd), d.unlocked ? 1 : 0, d.knownInfection ?? -1,
-        d.resultTime ?? -1, r2(d.cd.antibodies), r2(d.cd.fever), r2(d.cd.slow), r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT)],
+        d.resultTime ?? -1, r2(d.cd.antibodies), r2(d.cd.fever), r2(d.cd.slow), r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT), r2(s.patient.cond)],
       a, c,
       st: s.over ? s.stats : 0,
       cg: s.coughs
@@ -288,7 +288,7 @@
       const d = s.doctor, w = snap.d;
       d.test.state = TEST[w[0]] || 'idle'; d.test.t = w[1]; d.test.cd = w[2]; d.unlocked = !!w[3];
       d.knownInfection = w[4] < 0 ? null : w[4]; d.resultTime = w[5] < 0 ? undefined : w[5];
-      d.cd.antibodies = w[6]; d.cd.fever = w[7]; d.cd.slow = w[8]; d.feverT = w[9]; d.feverEff = w[10]; d.temp = w[11]; d.test.sampleT = w[12];
+      d.cd.antibodies = w[6]; d.cd.fever = w[7]; d.cd.slow = w[8]; d.feverT = w[9]; d.feverEff = w[10]; d.temp = w[11]; d.test.sampleT = w[12]; s.patient.cond = w[13];
       // przeciwciała
       const A = snap.a, n = A.length / 9;
       if (s.antibodies.length !== n) s.antibodies.length = n;

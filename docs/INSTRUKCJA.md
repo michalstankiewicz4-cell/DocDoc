@@ -12,8 +12,17 @@ Gra toczy się wewnątrz serca pacjenta, pokazanego w przekroju.
 
 | Kto | Wygrywa, gdy |
 | --- | --- |
-| Patogen | kolonizacja dojdzie do 100% |
+| Patogen | stan pacjenta spadnie do 0% (sepsa) |
 | Lekarz | życie patogenu spadnie do 0 |
+
+## Stan pacjenta
+
+Wspólny wskaźnik obu graczy (0–100%). Widać go na monitorze lekarza i w HUD patogenu.
+
+- **Spada** od zakażenia (im wyższa kolonizacja, tym szybciej), od gorączki i od każdej dawki leczenia (skutki uboczne; koszt widać na przycisku).
+- **Rośnie** powoli sam, dopóki kolonizacja jest mniejsza niż 40%.
+
+Lekarz musi więc leczyć oszczędnie: zbyt dużo leków też szkodzi pacjentowi.
 
 ## Tryby gry
 

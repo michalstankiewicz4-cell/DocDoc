@@ -25,6 +25,8 @@
         cd: { antibodies: 0, fever: 0, slow: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
       },
+      // stan pacjenta 0..100: zakażenie i leczenie go obniżają, organizm powoli się regeneruje; 0 = sepsa
+      patient: { cond: 100 },
       antibodies: [],
       colonies: [],
       chords: [],      // geometria strun ścięgnistych (liczona co krok, wspólna dla kolizji i renderu)
@@ -37,7 +39,8 @@
         valveCrossings: 0, lungsTrips: 0, bodyTrips: 0, places: [],
         abHits: 0, dmgAntibodies: 0, dmgFever: 0,
         tests: 0, firstTestAt: -1, firstTreatAt: -1,
-        used: { antibodies: 0, fever: 0, slow: 0 }
+        used: { antibodies: 0, fever: 0, slow: 0 },
+        minCond: 100, condByInfection: 0, condByTreatment: 0
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0          // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
@@ -54,7 +57,13 @@
   }
 
   // skuteczność leku = 1 - oporność; po podaniu oporność rośnie
+  // skutek uboczny dawki leku: natychmiastowy spadek stanu pacjenta
+  function sideEffect(s, key) {
+    const v = C.patient.sideEffect[key] || 0;
+    s.patient.cond -= v; s.stats.condByTreatment += v;
+  }
   function useDrug(s, key) {
+    sideEffect(s, key);
     const R = C.resistance, r = s.bact.resist;
     s.stats.used[key]++;
     if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
@@ -229,6 +238,17 @@
     // kaszel: tym częstszy, im większe zakażenie
     if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection) * dt) s.coughs++;
 
+    // --- stan pacjenta ---
+    {
+      const P = C.patient, ST = s.stats;
+      const byInf = P.infectionDrain * (b.infection / 100) * dt;
+      const byFever = P.feverDrain * feverK * dt;
+      const regen = P.regen * Math.max(0, 1 - b.infection / P.regenStopsAt) * dt;
+      s.patient.cond = Math.min(100, s.patient.cond - byInf - byFever + regen);
+      ST.condByInfection += byInf; ST.condByTreatment += byFever;
+      ST.minCond = Math.min(ST.minCond, s.patient.cond);
+    }
+
     // --- bakteria ---
     b.hitFlash = Math.max(0, b.hitFlash - dt * 2.5);
     if (b.slowT > 0) b.slowT = Math.max(0, b.slowT - dt);
@@ -274,7 +294,7 @@
       if (b.contact) ST.contactTime += dt;
       ST.maxInfection = Math.max(ST.maxInfection, b.infection);
       if (b.contact) {
-        b.infection += C.infection.ratePerSec * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul)) * dt;
+        b.infection = Math.min(100, b.infection + C.infection.ratePerSec * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul)) * dt);
         if (b.infection >= b.nextColony) {
           b.nextColony += C.infection.colonyEvery;
           H.grad(b.x, b.y, g2);
@@ -323,7 +343,7 @@
 
     // --- koniec gry ---
     if (b.hp <= 0) { b.hp = 0; s.over = 'doctor'; log(s, 'sys', 'Bakteria zniszczona. Wygrywa lekarz.'); }
-    else if (b.infection >= 100) { b.infection = 100; s.over = 'bacteria'; log(s, 'sys', 'Zakażenie rozwinięte. Wygrywa bakteria.'); }
+    else if (s.patient.cond <= 0) { s.patient.cond = 0; s.over = 'bacteria'; log(s, 'sys', 'Sepsa: stan pacjenta krytyczny. Wygrywa bakteria.'); }
   };
 
   G.updateValveGeometry = updateValveGeometry;
