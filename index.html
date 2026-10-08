@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.22.0">
+<link rel="stylesheet" href="css/style.css?v=0.23.0">
 </head>
 <body>
 <main class="split">
@@ -126,17 +126,8 @@
       </dl>
     </section>
 
-    <section class="block" aria-labelledby="h-cam">
-      <div class="block-head">
-        <h2 id="h-cam" class="block-title">Podgląd pacjenta</h2>
-        <p class="hint">Obraz z opóźnieniem <span id="cam-delay">5</span> s</p>
-      </div>
-      <div id="doc-cam" class="doc-cam">
-        <p id="doc-cam-empty" class="cam-msg">Podgląd ruszy po rozpoczęciu gry.</p>
-        <p id="doc-cam-wait" class="cam-msg" hidden>Zbieram obraz…</p>
-        <span class="cam-tag" aria-hidden="true">opóźnienie</span>
-      </div>
-    </section>
+    <!-- niewidoczny widok 3D: robi zdjęcie miejsca pobrania krwi do wyniku mikroskopu -->
+    <div id="doc-cam" class="doc-cam-offscreen" aria-hidden="true"></div>
 
     <section class="block" aria-labelledby="h-test">
       <h2 id="h-test" class="block-title">Diagnostyka</h2>
@@ -155,14 +146,6 @@
         <article id="res-culture" class="result result-wide" hidden>
           <h3>Posiew krwi <span class="res-time muted"></span></h3>
           <p class="res-big"><b id="res-culture-v"></b></p>
-          <figure id="test-photo" class="test-photo" hidden>
-            <img id="test-photo-img" alt="Zdjęcie miejsca pobrania krwi">
-            <figcaption>
-              <span class="muted">Patogen w chwili pobrania</span>
-              <b id="test-photo-place"></b>
-              <span id="test-photo-time" class="muted"></span>
-            </figcaption>
-          </figure>
         </article>
         <article id="res-echo" class="result" hidden>
           <h3>Echo serca <span class="res-time muted"></span></h3>
@@ -172,7 +155,15 @@
         <article id="res-micro" class="result result-wide" hidden>
           <h3>Mikroskop <span class="res-time muted"></span></h3>
           <div class="micro-row">
-            <canvas id="res-micro-c" class="micro-canvas" aria-label="Obraz próbki krwi pod mikroskopem"></canvas>
+            <canvas id="res-micro-c" class="micro-canvas" tabindex="0" aria-label="Preparat krwi pod mikroskopem: przesuwaj myszą albo strzałkami"></canvas>
+            <figure id="test-photo" class="test-photo" hidden>
+              <img id="test-photo-img" alt="Zdjęcie patogenu w chwili pobrania krwi">
+              <figcaption>
+                <span class="muted">Patogen w chwili pobrania</span>
+                <b id="test-photo-place"></b>
+                <span id="test-photo-time" class="muted"></span>
+              </figcaption>
+            </figure>
             <div>
               <p class="res-big"><b id="res-micro-v"></b></p>
               <p id="res-micro-l" class="res-note"></p>
@@ -406,29 +397,29 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.22.0"></script>
-<script src="js/config.js?v=0.22.0"></script>
-<script src="js/heart-shape.js?v=0.22.0"></script>
-<script src="js/flow.js?v=0.22.0"></script>
-<script src="js/tissue-cells.js?v=0.22.0"></script>
-<script src="js/state.js?v=0.22.0"></script>
-<script src="js/input.js?v=0.22.0"></script>
-<script src="js/render/glsl.js?v=0.22.0"></script>
-<script src="js/render/tissue.js?v=0.22.0"></script>
-<script src="js/render/cells.js?v=0.22.0"></script>
-<script src="js/render/actors.js?v=0.22.0"></script>
-<script src="js/render/post.js?v=0.22.0"></script>
-<script src="js/render/biome.js?v=0.22.0"></script>
-<script src="js/render/view.js?v=0.22.0"></script>
-<script src="js/minimap.js?v=0.22.0"></script>
-<script src="js/audio.js?v=0.22.0"></script>
-<script src="js/doctor-ui.js?v=0.22.0"></script>
-<script src="js/patient-room.js?v=0.22.0"></script>
-<script src="js/doctor-cam.js?v=0.22.0"></script>
-<script src="js/net.js?v=0.22.0"></script>
-<script src="js/lobby.js?v=0.22.0"></script>
-<script src="js/match.js?v=0.22.0"></script>
-<script src="js/net-status.js?v=0.22.0"></script>
-<script src="js/main.js?v=0.22.0"></script>
+<script src="js/version.js?v=0.23.0"></script>
+<script src="js/config.js?v=0.23.0"></script>
+<script src="js/heart-shape.js?v=0.23.0"></script>
+<script src="js/flow.js?v=0.23.0"></script>
+<script src="js/tissue-cells.js?v=0.23.0"></script>
+<script src="js/state.js?v=0.23.0"></script>
+<script src="js/input.js?v=0.23.0"></script>
+<script src="js/render/glsl.js?v=0.23.0"></script>
+<script src="js/render/tissue.js?v=0.23.0"></script>
+<script src="js/render/cells.js?v=0.23.0"></script>
+<script src="js/render/actors.js?v=0.23.0"></script>
+<script src="js/render/post.js?v=0.23.0"></script>
+<script src="js/render/biome.js?v=0.23.0"></script>
+<script src="js/render/view.js?v=0.23.0"></script>
+<script src="js/minimap.js?v=0.23.0"></script>
+<script src="js/audio.js?v=0.23.0"></script>
+<script src="js/doctor-ui.js?v=0.23.0"></script>
+<script src="js/patient-room.js?v=0.23.0"></script>
+<script src="js/doctor-cam.js?v=0.23.0"></script>
+<script src="js/net.js?v=0.23.0"></script>
+<script src="js/lobby.js?v=0.23.0"></script>
+<script src="js/match.js?v=0.23.0"></script>
+<script src="js/net-status.js?v=0.23.0"></script>
+<script src="js/main.js?v=0.23.0"></script>
 </body>
 </html>

@@ -279,8 +279,7 @@
     } else if (kind === 'abg') {
       text = 'Antybiogram gotowy.';
     } else if (kind === 'micro') {
-      const sp = r.found && C.species[r.species];
-      text = sp ? `Mikroskop: ${sp.name} (${sp.latin}).` : 'Mikroskop: w próbce nie znaleziono drobnoustrojów.';
+      text = 'Mikroskop: preparat gotowy, szukaj patogenu.';   // rodzaj odkrywa lekarz, przesuwając preparat
     }
     log(s, 'doc', 'Wynik: ' + text + (first ? ' Odblokowano leczenie.' : ''));
   }

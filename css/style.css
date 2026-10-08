@@ -362,6 +362,7 @@ body[data-role="doc"] .half-doc {
 
 /* ---------- podgląd lekarza ---------- */
 .block-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.doc-cam-offscreen { position: fixed; left: -10000px; top: 0; width: 480px; height: 270px; overflow: hidden; pointer-events: none; }
 .doc-cam {
   position: relative; width: 100%; max-width: 480px; aspect-ratio: 16 / 9; max-height: 270px;
   border-radius: var(--r-m); overflow: hidden; background: #140405;
@@ -373,11 +374,11 @@ body[data-role="doc"] .half-doc {
   position: absolute; top: 8px; left: 8px; z-index: 1; padding: 2px 8px; border-radius: 999px;
   font-size: 12px; background: rgba(0, 0, 0, 0.55); color: #ffd9cf;
 }
-.test-photo { margin: 0; display: grid; grid-template-columns: minmax(0, 240px) 1fr; gap: 14px; align-items: center; }
+.test-photo { margin: 0; display: grid; gap: 6px; width: 240px; max-width: 100%; align-content: start; }
 .test-photo img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r-s); display: block; background: #140405; }
 .test-photo figcaption { display: grid; gap: 2px; font-size: 13px; min-width: 0; }
 .test-photo figcaption b { font-size: 17px; }
-@media (max-width: 520px) { .test-photo { grid-template-columns: 1fr; } }
+
 
 /* ---------- ekran końcowy ---------- */
 .end-card { width: min(720px, 100%); }
@@ -414,8 +415,9 @@ body[data-role="doc"] .half-doc {
 .res-big b { font-size: 26px; font-variant-numeric: tabular-nums; }
 .res-note { margin: 0; font-size: 13px; color: var(--muted); }
 .micro-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
-.micro-row > div { flex: 1 1 180px; min-width: 0; }
-.micro-canvas { display: block; width: 240px; max-width: 100%; height: auto; border-radius: 50%; background: #000; box-shadow: 0 0 0 4px #1c2421, 0 0 0 6px #4a5853; }
+.micro-row > div { flex: 1 1 100%; min-width: 0; }
+.micro-canvas:focus-visible { outline: 3px solid var(--trace); outline-offset: 3px; }
+.micro-canvas { cursor: grab; touch-action: none; display: block; width: 240px; max-width: 100%; height: auto; border-radius: 50%; background: #000; box-shadow: 0 0 0 4px #1c2421, 0 0 0 6px #4a5853; }
 .tests .test-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .echo-canvas { display: block; width: 240px; max-width: 100%; height: auto; border-radius: var(--r-s); background: #000; }
 .abg { margin: 0; display: grid; gap: 4px; font-size: 13px; }

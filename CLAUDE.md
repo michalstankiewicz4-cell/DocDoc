@@ -48,7 +48,7 @@ Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
   pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
 - Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 5 badań (CRP, posiew,
   echo, antybiogram, mikroskop), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
-  operacja zastawki, podgląd z opóźnieniem 5 s, zdjęcie z chwili pobrania, alarmy monitora.
+  operacja zastawki, mikroskop z szukaniem patogenu na preparacie i zdjęciem z chwili pobrania, alarmy monitora.
 - Dźwięk: patogen „pod wodą” (serce, szum krwi, kaszel), lekarz w sali (beep pulsoksymetru, alarmy, dzwonek wyniku).
 - Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, statystyki końcowe.
 - Wersjonowanie, CHANGELOG, automatyczne wydania, dokumentacja.
@@ -77,6 +77,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Pożywienie we krwi, rozmnożenie, przeciwciała atakują kopie (v0.19.0)
 - [x] Rodzaje bakterii i wirusów na start, mikroskop dla lekarza (v0.21.0)
 - [x] Układ krążenia rozszerzony o wątrobę i nerkę (v0.22.0)
+- [x] Bez podglądu z opóźnieniem; zdjęcie przy mikroskopie; szukanie patogenu na preparacie (v0.23.0)
 - [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
 Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
@@ -93,7 +94,8 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Kolonie (`config.colony`): koszt 25 życia, wzrost ~45 s do pełnego rozmiaru, odrodzenie w największej kolonii, żerowanie przy ścianie odnawia życie. Przeciwciała atakują kolonie, antybiotyk wstrzymuje ich wzrost.
 - Badania (`config.doctor.tests`): wynik liczony w chwili zlecenia (`pending`), ujawniany po czasie; gość dostaje go dopiero gotowy. `d.test` to alias posiewu (zdjęcie, zgodność).
 - Wirus (`config.virus`): 70 życia, ruch ×0,8, wzrost kolonii ×1,3. Leki: β-laktam (bójczy), makrolid (statyczny), przeciwwirusowy; naturalna oporność bakterii na losową klasę (skuteczność 20%).
-- Podgląd lekarza pokazuje kształt patogenu, więc zdradza bakterię albo wirusa (do decyzji Michała, czy ukryć).
+- Zdjęcie z mikroskopu pokazuje kształt patogenu (zbliżenie 9 j.). Podgląd z opóźnieniem usunięty w v0.23.0 na prośbę Michała.
+- Mikroskop (v0.23.0): preparat 720 × 600 px (3 × 3 pola), 3–8 skupisk poza polem startowym, trafienie = drobnoustrój < 34 px od środka; pusty preparat po obejrzeniu 16 z 20 pól.
 - Mięsień (`config.tissue`): pas ściany 1,2 < SDF < 7,2, płaszczyzna ruchu z = 3,3 (powierzchnia przekroju), komórki z `js/tissue-cells.js` (wspólne dla kolizji i renderu). Wykrywanie kolonii w mięśniu: echo (niewyraźnie, ±2,5 j.) i CRP (zawiera całą kolonizację).
 - Mutacje (`config.mutations`): punkty z przyrostu kolonii (1,6 pkt na 1,0 rozmiaru). Toksyny zakłócają badania pobrane w ciągu 15 s (CRP ×1,6 i 3× szum, echo ±4 j.).
 - Operacja zastawki (`config.doctor.surgery`): 10 s, stan −15, promień 5 j., patogen w pobliżu −40 życia, odnowienie 60 s.

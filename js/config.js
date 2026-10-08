@@ -52,8 +52,8 @@ DD.CONFIG = {
   // oporność: każde użycie leku podnosi oporność o perUse (do max); skuteczność = 1 - oporność
   resistance: { perUse: 0.2, max: 0.8 },
 
-  // podgląd lekarza: gra bakterii z opóźnieniem + zdjęcie miejsca pobrania krwi
-  preview: { delay: 5, history: 30, rate: 20, maxCells: 700 },
+  // zdjęcie patogenu w chwili pobrania krwi (wynik mikroskopu): historia stanu i lekki widok 3D
+  preview: { history: 30, rate: 20, maxCells: 700 },
 
   // kaszel pacjenta: szansa na sekundę = base + perInfection * kolonizacja(%)
   cough: { base: 0.004, perInfection: 0.0007, perRightMass: 0.035 },

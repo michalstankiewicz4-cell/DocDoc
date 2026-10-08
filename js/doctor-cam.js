@@ -1,6 +1,5 @@
-// Podgląd lekarza:
-//  1) małe okienko z grą bakterii opóźnioną o kilka sekund,
-//  2) zdjęcie miejsca, w którym była bakteria w chwili pobrania krwi (pokazywane z wynikiem badania).
+// Zdjęcie patogenu w chwili pobrania krwi do mikroskopu (pokazywane obok obrazu z mikroskopu).
+// Widok 3D jest niewidoczny (poza ekranem) i renderuje tylko jedną klatkę na wynik.
 // Lekarz zawsze ma pełny stan gry (host liczy symulację, gość dostaje paczki stanu),
 // więc wystarczy zapisywać krótką historię i renderować ją drugim, lekkim widokiem.
 (function () {
@@ -11,7 +10,6 @@
 
   DD.createDoctorCam = function (state0) {
     const box = $('doc-cam');
-    $('cam-delay').textContent = P.delay;
     let view = null;
     try {
       view = DD.createView(box, state0, { maxCells: P.maxCells, maxPixelRatio: 1 });
@@ -81,11 +79,12 @@
     // ---------- zdjęcie z chwili pobrania ----------
     let lastSampleT = -1, photoFor = -1;
     function takePhoto(s) {
-      const sampleT = s.doctor.test.sampleT;
+      const sampleT = s.doctor.tests.micro.sampleT;
       const pair = findPair(sampleT);
       const fig = $('test-photo');
       if (!pair) { fig.hidden = true; return; }
       const g = buildGhost({ e0: pair.e0, e1: pair.e0, k: 0 }, s);
+      view.zoom = 9;   // zbliżenie na patogen
       view.frame(g, 1 / 60, { snap: true });
       // drugi kadr: krwinki już rozmieszczone wokół miejsca zdjęcia
       view.frame(g, 1 / 60, { snap: true });
@@ -98,33 +97,21 @@
       fig.hidden = false;
     }
 
-    let frameN = 0;
     function update(s, dt) {
       // nowa runda — czyścimy historię i zdjęcie
       if (s.time < lastTime - 0.5) { hist = []; photoFor = -1; $('test-photo').hidden = true; }
       lastTime = s.time;
-      const visible = s.running && document.body.dataset.role !== 'bact';
-      $('doc-cam-empty').hidden = s.running;
       if (!s.running) return;
 
       recAcc += dt;
       if (recAcc >= 1 / P.rate) { recAcc = 0; record(s); }
 
-      // wynik badania: zrób zdjęcie raz na każde badanie
-      const d = s.doctor;
-      if (d.test.state === 'done' && d.test.sampleT >= 0 && photoFor !== d.test.sampleT) {
-        photoFor = d.test.sampleT;
+      // wynik mikroskopu: zrób zdjęcie raz na każde badanie
+      const T = s.doctor.tests.micro;
+      if (T && T.state === 'done' && T.sampleT >= 0 && photoFor !== T.sampleT) {
+        photoFor = T.sampleT;
         takePhoto(s);
       }
-      if (!visible) return;
-
-      // w trybie deweloperskim (dwa widoki 3D naraz) renderujemy podgląd co drugą klatkę
-      frameN++;
-      if (document.body.dataset.role !== 'doc' && frameN % 2) return;
-      const pair = findPair(s.time - P.delay);
-      $('doc-cam-wait').hidden = !!pair;
-      if (!pair) return;
-      view.frame(buildGhost(pair, s), dt * (document.body.dataset.role !== 'doc' ? 2 : 1));
     }
     return { update };
   };

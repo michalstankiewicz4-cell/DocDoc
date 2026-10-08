@@ -112,95 +112,175 @@
       ctx.fillText('P', 6, 14); ctx.fillText('L', w - 14, 14);
     }
 
-    // obraz z mikroskopu: bakterie w barwieniu Grama (mikroskop świetlny), wirusy w mikroskopie elektronowym
+    // Mikroskop: preparat (3 × 3 pola widzenia) rysowany raz na wynik; lekarz przesuwa go myszą albo strzałkami
+    // i szuka patogenu. Rodzaj ujawnia się, gdy drobnoustrój trafi w środek pola widzenia.
+    // Bakterie: barwienie Grama (mikroskop świetlny), wirusy: mikroskop elektronowy.
     const microC = $('res-micro-c');
-    function drawMicro(res, seed) {
-      const w = 240, h = 200, pr = Math.min(2, window.devicePixelRatio || 1);
-      microC.width = w * pr; microC.height = h * pr; microC.style.width = w + 'px'; microC.style.height = h + 'px';
-      const g = microC.getContext('2d'); g.setTransform(pr, 0, 0, pr, 0, 0);
+    const MW = 240, MH = 200, SW = MW * 3, SH = MH * 3;
+    const micro = { slide: null, res: null, px: 0, py: 0, found: false, done: false, seen: new Set(), key: null, flash: 0 };
+    function rngFrom(seed) {
       let sd = (Math.floor(seed * 1000) % 2147483646) + 1;
-      const R = () => { sd = sd * 16807 % 2147483647; return (sd - 1) / 2147483646; };
+      return () => { sd = sd * 16807 % 2147483647; return (sd - 1) / 2147483646; };
+    }
+    function drawOrganism(g, look, x0, y0, R) {
+      const purple = '#4b1f7a', pink = '#c43a6a';
+      if (look === 'staph') {
+        const m = 5 + Math.floor(R() * 8);
+        for (let k = 0; k < m; k++) { const a = R() * 6.283, rr = Math.sqrt(R()) * 7;
+          g.fillStyle = purple; g.beginPath(); g.arc(x0 + Math.cos(a) * rr * 1.4, y0 + Math.sin(a) * rr * 1.4, 3.1, 0, 6.283); g.fill(); }
+      } else if (look === 'strep') {
+        let a = R() * 6.283, x = x0, y = y0; const m = 6 + Math.floor(R() * 7);
+        x -= Math.cos(a) * m * 3; y -= Math.sin(a) * m * 3;
+        for (let k = 0; k < m; k++) { g.fillStyle = purple; g.beginPath(); g.ellipse(x, y, 3.2, 2.7, a, 0, 6.283); g.fill(); a += (R() - 0.5) * 0.6; x += Math.cos(a) * 6.2; y += Math.sin(a) * 6.2; }
+      } else if (look === 'ecoli') {
+        const a = R() * 6.283;
+        g.save(); g.translate(x0, y0); g.rotate(a);
+        g.strokeStyle = 'rgba(196, 58, 106, 0.35)'; g.lineWidth = 0.6;
+        for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-5, 0); g.bezierCurveTo(-9, -3 + k * 3, -12, 3 - k * 2, -16, -1 + k * 2); g.stroke(); }
+        g.fillStyle = pink; g.beginPath(); g.ellipse(0, 0, 7.5, 2.8, 0, 0, 6.283); g.fill();
+        g.restore();
+      } else if (look === 'flu') {
+        const r = 11 + R() * 3, x = x0, y = y0;
+        g.strokeStyle = '#2b2b29'; g.lineWidth = 1;
+        for (let k = 0; k < 36; k++) { const a = k / 36 * 6.283; g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(x + Math.cos(a) * (r + 3.2), y + Math.sin(a) * (r + 3.2)); g.stroke(); }
+        g.fillStyle = '#3a3a37'; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
+        g.fillStyle = '#6d6d68'; g.beginPath(); g.arc(x, y, r * 0.72, 0, 6.283); g.fill();
+      } else if (look === 'coxsackie') {
+        // drobne wiriony w luźnym skupisku
+        for (let q = 0; q < 7; q++) {
+          const x = x0 + (R() - 0.5) * 26, y = y0 + (R() - 0.5) * 26;
+          g.fillStyle = '#2f2f2c'; g.beginPath();
+          for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * 3.6, y + Math.sin(a) * 3.6); }
+          g.closePath(); g.fill();
+        }
+      } else {
+        const r = 8, x = x0, y = y0;
+        g.strokeStyle = '#2b2b29'; g.lineWidth = 0.8;
+        for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283 + 0.3; const ex = x + Math.cos(a) * (r + 9), ey = y + Math.sin(a) * (r + 9);
+          g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(ex, ey); g.stroke();
+          g.fillStyle = '#2b2b29'; g.beginPath(); g.arc(ex, ey, 1.6, 0, 6.283); g.fill(); }
+        g.fillStyle = '#353532'; g.beginPath();
+        for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283 + 0.3; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * r, y + Math.sin(a) * r); }
+        g.closePath(); g.fill();
+        g.strokeStyle = '#5c5c57'; g.lineWidth = 0.6; g.beginPath(); g.arc(x, y, r * 0.55, 0, 6.283); g.stroke();
+      }
+    }
+    // preparat: tło, krwinki, granulocyty i skupiska drobnoustrojów poza polem startowym
+    function buildSlide(res, seed) {
+      const pr = Math.min(2, window.devicePixelRatio || 1);
+      const c = document.createElement('canvas'); c.width = SW * pr; c.height = SH * pr;
+      const g = c.getContext('2d'); g.setTransform(pr, 0, 0, pr, 0, 0);
+      const R = rngFrom(seed);
       const sp = res.found ? C.species[res.species] : null;
       const em = sp && sp.kind === 'virus';
-      const cx = w / 2, cy = h / 2, rad = Math.min(w, h) / 2 - 4;
-      g.fillStyle = '#0b0d0c'; g.fillRect(0, 0, w, h);
-      g.save(); g.beginPath(); g.arc(cx, cy, rad, 0, 6.283); g.clip();
       if (!em) {
-        // pole widzenia mikroskopu świetlnego: jasne tło, krwinki czerwone z przejaśnieniem
-        const bg = g.createRadialGradient(cx, cy, 10, cx, cy, rad);
-        bg.addColorStop(0, '#fbf3ee'); bg.addColorStop(1, '#e9d6cf'); g.fillStyle = bg; g.fillRect(0, 0, w, h);
-        for (let i = 0; i < 38; i++) {
-          const x = R() * w, y = R() * h, r = 9 + R() * 2.5;
+        g.fillStyle = '#f6ebe5'; g.fillRect(0, 0, SW, SH);
+        for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(230, 200, 195, ${0.15 + R() * 0.2})`; g.beginPath(); g.arc(R() * SW, R() * SH, 30 + R() * 60, 0, 6.283); g.fill(); }
+        for (let i = 0; i < 340; i++) {
+          const x = R() * SW, y = R() * SH, r = 9 + R() * 2.5;
           g.fillStyle = 'rgba(226, 150, 150, 0.55)'; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
           g.fillStyle = 'rgba(250, 225, 222, 0.7)'; g.beginPath(); g.arc(x, y, r * 0.45, 0, 6.283); g.fill();
         }
-        // granulocyt (wielopłatowe jądro)
-        { const x = 40 + R() * 160, y = 40 + R() * 120;
+        for (let i = 0; i < 6; i++) {
+          const x = 30 + R() * (SW - 60), y = 30 + R() * (SH - 60);
           g.fillStyle = 'rgba(214, 190, 220, 0.9)'; g.beginPath(); g.arc(x, y, 13, 0, 6.283); g.fill();
-          g.fillStyle = '#5a3a86'; for (let k = 0; k < 3; k++) { g.beginPath(); g.ellipse(x - 5 + k * 5, y + (k % 2 ? 3 : -2), 4, 3, k, 0, 6.283); g.fill(); } }
-        const n = res.n || 0, look = res.species;
-        const purple = '#4b1f7a', pink = '#c43a6a';
-        for (let c = 0; c < n; c++) {
-          const x0 = 25 + R() * (w - 50), y0 = 25 + R() * (h - 50);
-          if (look === 'staph') {
-            // grona ziarenkowców
-            const m = 5 + Math.floor(R() * 8);
-            for (let k = 0; k < m; k++) { const a = R() * 6.283, rr = Math.sqrt(R()) * 7;
-              g.fillStyle = purple; g.beginPath(); g.arc(x0 + Math.cos(a) * rr * 1.4, y0 + Math.sin(a) * rr * 1.4, 3.1, 0, 6.283); g.fill(); }
-          } else if (look === 'strep') {
-            // łańcuszki ziarenkowców
-            let a = R() * 6.283, x = x0, y = y0; const m = 6 + Math.floor(R() * 7);
-            for (let k = 0; k < m; k++) { g.fillStyle = purple; g.beginPath(); g.ellipse(x, y, 3.2, 2.7, a, 0, 6.283); g.fill(); a += (R() - 0.5) * 0.6; x += Math.cos(a) * 6.2; y += Math.sin(a) * 6.2; }
-          } else if (look === 'ecoli') {
-            // pałeczki Gram-ujemne
-            const a = R() * 6.283;
-            g.save(); g.translate(x0, y0); g.rotate(a);
-            g.strokeStyle = 'rgba(196, 58, 106, 0.35)'; g.lineWidth = 0.6;
-            for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-5, 0); g.bezierCurveTo(-9, -3 + k * 3, -12, 3 - k * 2, -16, -1 + k * 2); g.stroke(); }
-            g.fillStyle = pink; g.beginPath(); g.ellipse(0, 0, 7.5, 2.8, 0, 0, 6.283); g.fill();
-            g.restore();
-          }
+          g.fillStyle = '#5a3a86'; for (let k = 0; k < 3; k++) { g.beginPath(); g.ellipse(x - 5 + k * 5, y + (k % 2 ? 3 : -2), 4, 3, k, 0, 6.283); g.fill(); }
         }
       } else {
-        // mikroskop elektronowy: szare tło z ziarnem, ciemne wiriony
-        g.fillStyle = '#9a9a96'; g.fillRect(0, 0, w, h);
-        for (let i = 0; i < 1600; i++) { const v = 120 + R() * 70; g.fillStyle = `rgba(${v},${v},${v - 4},0.5)`; g.fillRect(R() * w, R() * h, 2, 2); }
-        const n = Math.max(3, res.n || 0) * (res.species === 'coxsackie' ? 3 : 1);
-        for (let c = 0; c < n; c++) {
-          const x = 20 + R() * (w - 40), y = 20 + R() * (h - 40);
-          if (res.species === 'flu') {
-            const r = 11 + R() * 3;
-            g.strokeStyle = '#2b2b29'; g.lineWidth = 1;
-            for (let k = 0; k < 36; k++) { const a = k / 36 * 6.283; g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(x + Math.cos(a) * (r + 3.2), y + Math.sin(a) * (r + 3.2)); g.stroke(); }
-            g.fillStyle = '#3a3a37'; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
-            g.fillStyle = '#6d6d68'; g.beginPath(); g.arc(x, y, r * 0.72, 0, 6.283); g.fill();
-          } else if (res.species === 'coxsackie') {
-            g.fillStyle = '#2f2f2c'; g.beginPath();
-            for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * 3.6, y + Math.sin(a) * 3.6); }
-            g.closePath(); g.fill();
-          } else {
-            const r = 8;
-            g.strokeStyle = '#2b2b29'; g.lineWidth = 0.8;
-            for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283 + 0.3; const ex = x + Math.cos(a) * (r + 9), ey = y + Math.sin(a) * (r + 9);
-              g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(ex, ey); g.stroke();
-              g.fillStyle = '#2b2b29'; g.beginPath(); g.arc(ex, ey, 1.6, 0, 6.283); g.fill(); }
-            g.fillStyle = '#353532'; g.beginPath();
-            for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283 + 0.3; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * r, y + Math.sin(a) * r); }
-            g.closePath(); g.fill();
-            g.strokeStyle = '#5c5c57'; g.lineWidth = 0.6; g.beginPath(); g.arc(x, y, r * 0.55, 0, 6.283); g.stroke();
-          }
-        }
+        g.fillStyle = '#9a9a96'; g.fillRect(0, 0, SW, SH);
+        for (let i = 0; i < 14000; i++) { const v = 120 + R() * 70; g.fillStyle = `rgba(${v},${v},${v - 4},0.5)`; g.fillRect(R() * SW, R() * SH, 2, 2); }
       }
-      // winieta okularu
+      // skupiska drobnoustrojów: poza środkowym polem (od którego zaczyna się oglądanie)
+      const targets = [];
+      const n = res.found ? Math.max(3, Math.min(8, Math.round((res.n || 4) * 0.6))) : 0;
+      for (let t = 0; t < n; t++) {
+        let x = 0, y = 0;
+        for (let k = 0; k < 30; k++) {
+          // tylko tam, gdzie środek pola widzenia może dotrzeć
+          x = MW / 2 + 12 + R() * (SW - MW - 24); y = MH / 2 + 12 + R() * (SH - MH - 24);
+          const inStart = Math.abs(x - SW / 2) < MW * 0.6 && Math.abs(y - SH / 2) < MH * 0.6;
+          if (!inStart && targets.every((q) => Math.hypot(q.x - x, q.y - y) > 90)) break;
+        }
+        drawOrganism(g, res.species, x, y, R);
+        targets.push({ x, y });
+      }
+      return { c, targets, em, pr };
+    }
+    function drawMicroView() {
+      const S = micro.slide; if (!S) return;
+      const w = MW, h = MH, pr = S.pr;
+      if (microC.width !== w * pr) { microC.width = w * pr; microC.height = h * pr; microC.style.width = w + 'px'; microC.style.height = h + 'px'; }
+      const g = microC.getContext('2d'); g.setTransform(pr, 0, 0, pr, 0, 0);
+      const cx = w / 2, cy = h / 2, rad = Math.min(w, h) / 2 - 4;
+      g.fillStyle = '#0b0d0c'; g.fillRect(0, 0, w, h);
+      g.save(); g.beginPath(); g.arc(cx, cy, rad, 0, 6.283); g.clip();
+      g.drawImage(S.c, micro.px * pr, micro.py * pr, w * pr, h * pr, 0, 0, w, h);
+      // krzyż celownika w okularze
+      g.strokeStyle = S.em ? 'rgba(255,255,255,0.35)' : 'rgba(60,30,40,0.3)'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(cx - 10, cy); g.lineTo(cx + 10, cy); g.moveTo(cx, cy - 10); g.lineTo(cx, cy + 10); g.stroke();
+      if (micro.flash > 0) {
+        g.strokeStyle = `rgba(80, 220, 160, ${micro.flash})`; g.lineWidth = 3;
+        g.beginPath(); g.arc(cx, cy, 30, 0, 6.283); g.stroke();
+      }
       const v = g.createRadialGradient(cx, cy, rad * 0.75, cx, cy, rad);
       v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.45)'); g.fillStyle = v; g.fillRect(0, 0, w, h);
       g.restore();
-      // podpis i podziałka wewnątrz pola widzenia (rogi płótna są przycięte do koła)
       g.font = '10px system-ui, sans-serif'; g.textAlign = 'center';
-      g.fillStyle = em ? 'rgba(255,255,255,0.85)' : 'rgba(40,20,30,0.75)';
-      g.fillText(em ? 'mikroskop elektronowy' : 'barwienie Grama, ×1000', cx, h - 30);
-      g.fillRect(cx - 18, h - 24, 36, 2); g.fillText(em ? '100 nm' : '10 µm', cx, h - 12);
+      g.fillStyle = S.em ? 'rgba(255,255,255,0.85)' : 'rgba(40,20,30,0.75)';
+      g.fillText(S.em ? 'mikroskop elektronowy' : 'barwienie Grama, ×1000', cx, h - 30);
+      g.fillRect(cx - 18, h - 24, 36, 2); g.fillText(S.em ? '100 nm' : '10 µm', cx, h - 12);
       g.textAlign = 'start';
+    }
+    function microText() {
+      const r = micro.res, sp = r && r.found && C.species[r.species];
+      if (micro.found && sp) {
+        $('res-micro-v').textContent = sp.name;
+        $('res-micro-l').innerHTML = `<i>${sp.latin}</i>. ${sp.micro} <b>${sp.treat}</b>`;
+      } else if (micro.done) {
+        $('res-micro-v').textContent = 'Brak drobnoustrojów w próbce';
+        $('res-micro-l').textContent = 'Przeszukano preparat. Patogen nie płynął we krwi w chwili pobrania (mógł być w mięśniu albo ukryty).';
+      } else {
+        $('res-micro-v').textContent = 'Szukaj patogenu';
+        $('res-micro-l').textContent = 'Przesuwaj preparat myszą albo strzałkami (po kliknięciu w obraz), aż drobnoustrój znajdzie się w środku pola widzenia.';
+      }
+    }
+    // po każdym przesunięciu: czy w środku jest drobnoustrój, ile preparatu już obejrzano
+    function microCheck() {
+      const S = micro.slide; if (!S) return;
+      const mx = micro.px + MW / 2, my = micro.py + MH / 2;
+      // obejrzane pola: siatka 5 × 4 na obszarze, który może zająć środek okularu
+      micro.seen.add(Math.min(4, Math.floor((mx - MW / 2) / ((SW - MW) / 5))) + ',' + Math.min(3, Math.floor((my - MH / 2) / ((SH - MH) / 4))));
+      if (!micro.found && S.targets.some((q) => Math.hypot(q.x - mx, q.y - my) < 34)) { micro.found = true; micro.flash = 1; microText(); }
+      if (!micro.found && !micro.done && !S.targets.length && micro.seen.size >= 16) { micro.done = true; microText(); }
+    }
+    function microPan(dx, dy) {
+      micro.px = Math.max(0, Math.min(SW - MW, micro.px + dx));
+      micro.py = Math.max(0, Math.min(SH - MH, micro.py + dy));
+      microCheck(); drawMicroView();
+    }
+    DD.microDebug = micro;
+    DD.microPan = (dx, dy) => microPan(dx, dy);
+    function showMicro(res, seed) {
+      const key = seed;
+      if (micro.key === key) return;
+      micro.key = key; micro.res = res;
+      micro.slide = buildSlide(res, seed);
+      micro.px = (SW - MW) / 2; micro.py = (SH - MH) / 2;
+      micro.found = false; micro.done = false; micro.seen = new Set(); micro.flash = 0;
+      microCheck(); microText(); drawMicroView();
+    }
+    {
+      let drag = null;
+      microC.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; microC.setPointerCapture(e.pointerId); microC.focus(); });
+      microC.addEventListener('pointermove', (e) => { if (!drag) return; microPan(drag.x - e.clientX, drag.y - e.clientY); drag = { x: e.clientX, y: e.clientY }; });
+      const end = () => { drag = null; };
+      microC.addEventListener('pointerup', end); microC.addEventListener('pointercancel', end);
+      microC.addEventListener('keydown', (e) => {
+        const st = 24, k = { ArrowLeft: [-st, 0], ArrowRight: [st, 0], ArrowUp: [0, -st], ArrowDown: [0, st] }[e.key];
+        if (k) { e.preventDefault(); e.stopPropagation(); microPan(k[0], k[1]); }
+      });
+      // wygaszanie pierścienia po znalezieniu
+      setInterval(() => { if (micro.flash > 0) { micro.flash = Math.max(0, micro.flash - 0.08); drawMicroView(); } }, 50);
     }
 
     // EKG
@@ -319,11 +399,7 @@
       $('results-block').hidden = !(T.crp.res || T.culture.res || T.echo.res || T.abg.res || (T.micro && T.micro.res));
       if (T.micro && T.micro.res) {
         $('res-micro').hidden = false; $('res-micro').querySelector('.res-time').textContent = 'pobranie ' + mmss(T.micro.sampleT);
-        const r = T.micro.res, sp = r.found && C.species[r.species];
-        drawMicro(r, T.micro.sampleT + 1);
-        $('res-micro-v').textContent = sp ? sp.name : 'Brak drobnoustrojów w próbce';
-        $('res-micro-l').innerHTML = sp ? `<i>${sp.latin}</i>. ${sp.micro} <b>${sp.treat}</b>`
-          : 'Patogen nie płynął we krwi w chwili pobrania (mógł być w mięśniu albo ukryty).';
+        showMicro(T.micro.res, T.micro.sampleT + 1);
       } else $('res-micro').hidden = true;
       const time = (el, t) => { el.querySelector('.res-time').textContent = 'pobranie ' + mmss(t.sampleT); };
       if (T.crp.res) {

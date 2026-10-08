@@ -139,10 +139,10 @@ Każdą akcję można też kliknąć w panelu.
    | Badanie | Czas | Co pokazuje |
    | --- | --- | --- |
    | CRP | 4 s | poziom stanu zapalnego (przybliżony, z szumem pomiaru); monitor pokazuje z niego szacunek zakażenia „≈” |
-   | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek bakterii we krwi (patogen i jego kopie) i zdjęcie miejsca, w którym był patogen |
+   | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek bakterii we krwi (patogen i jego kopie) |
    | Echo serca | 8 s | obraz samego serca w stylu USG (bez jamy brzusznej): kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
-   | Mikroskop | 6 s | obraz próbki krwi i rodzaj patogenu (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym) z podpowiedzią leczenia; pusty, gdy w chwili pobrania patogen, jego kopie ani kolonie na ścianach naczyń nie były we krwi |
+   | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym) i zdjęcie patogenu w chwili pobrania; rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
 
 2. **Leczenie:**
    - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na bakterie i wirusy. Gdy patogen ma kopie, część przeciwciał atakuje kopie zamiast niego.
@@ -165,7 +165,7 @@ Każdą akcję można też kliknąć w panelu.
    | bladość, sinica | stan pacjenta poniżej 55% / 25% |
 
    W czasie badań na stole w sali widać laboratorium (wirówka, szalka z posiewem, antybiogram, USG). Kroplówka kapie, gdy lek jest we krwi. Przy stanie poniżej 30% albo gorączce od 39 °C monitor pulsuje na czerwono i gra alarm.
-5. **Podgląd pacjenta** pokazuje grę patogenu z 5-sekundowym opóźnieniem.
+5. **Mikroskop:** przeciągaj preparat myszą (albo kliknij obraz i używaj strzałek), aż drobnoustrój znajdzie się w środku okularu. Wtedy wokół niego pojawia się zielony pierścień, a pod obrazem nazwa rodzaju i podpowiedź leczenia. Jeśli w chwili pobrania patogenu nie było we krwi (był w mięśniu albo ukryty, bez kopii i kolonii na ścianach naczyń), preparat jest pusty — po przeszukaniu większości preparatu wynik to „Brak drobnoustrojów”.
 6. **Dziennik** zapisuje badania, wyniki i podane leki.
 
 ## Koniec rundy

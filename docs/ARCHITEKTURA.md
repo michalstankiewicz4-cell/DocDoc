@@ -30,7 +30,7 @@ js/minimap.js           minimapa patogenu
 js/audio.js             dźwięk (Web Audio, synteza bez plików)
 js/doctor-ui.js         panel lekarza i HUD patogenu
 js/patient-room.js      sala z pacjentem (canvas 2D), objawy z położenia kolonii, laboratorium, alarm monitora
-js/doctor-cam.js        podgląd lekarza z opóźnieniem i zdjęcie z badania
+js/doctor-cam.js        zdjęcie patogenu w chwili pobrania krwi do mikroskopu (niewidoczny widok 3D)
 js/main.js              pętla gry, tryby (lokalny / host / gość), wybór trybu
 js/render/glsl.js       wspólne shadery: szum, światło mokrej tkanki, pochłanianie we krwi, kaustyki
 js/render/tissue.js     tkanka: gęsta siatka przemieszczana z tekstury SDF
@@ -53,7 +53,7 @@ klatka (requestAnimationFrame)
 │    host: hostTick wysyła stan ~20 Hz
 ├─ gość: Input.poll (komendy idą do hosta), guestFrame (odtwarza stan z paczek)
 ├─ render 3D (pomijany u lekarza w grze sieciowej)
-└─ minimapa, dźwięk, wskaźnik połączenia, podgląd lekarza, UI
+└─ minimapa, dźwięk, wskaźnik połączenia, zdjęcie do mikroskopu, UI
 ```
 
 Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, więc symulację pcha zapasowy `setInterval`.
@@ -83,7 +83,7 @@ Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `gue
 - **Tkanka:** 4 pasy płaszczyzny (segment 0,25 j., poza kadrem pomijane), wysokość z SDF w vertex shaderze. Normalne, beleczki, włókna i tłuszcz liczone w fragment shaderze. Kolory i światło są liniowe (HDR), a mapowanie tonów robi post-process.
 - **Światło „endoskopu”** przy kamerze: wrap diffuse, rozpraszanie podpowierzchniowe, dwa płaty odblasku, pochłanianie we krwi.
 - **Komórki** żyją w oknie wokół kamery i są niesione tym samym polem przepływu.
-- **Uniformy wspólne** (`DD.SHARED`) ustawia każdy widok tuż przed własnym renderem, więc dwa widoki (gra i podgląd lekarza) mogą działać naraz.
+- **Uniformy wspólne** (`DD.SHARED`) ustawia każdy widok tuż przed własnym renderem, więc dwa widoki (gra i zdjęcie do mikroskopu) mogą działać naraz.
 
 ## Jak dodać funkcję
 
