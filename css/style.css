@@ -419,3 +419,15 @@ body[data-role="doc"] .half-doc {
 .abg dd[data-state="warm"] { color: var(--amber); }
 .abg dd[data-state="high"] { color: var(--alert); }
 @media (max-width: 640px) { .tests, .results { grid-template-columns: 1fr; } }
+
+/* ---------- operacja zastawki ---------- */
+.surgery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.surg-btn {
+  display: flex; justify-content: space-between; align-items: center; gap: 6px; cursor: pointer;
+  padding: 10px 12px; border-radius: var(--r-m); font-weight: 700; font-size: 14px;
+  border: 1.5px solid var(--alert); background: var(--panel); color: var(--alert);
+}
+.surg-btn:hover:not(:disabled) { background: #f8e7e3; }
+.surg-btn:disabled { cursor: default; opacity: 0.5; border-color: var(--line); color: var(--muted); }
+.surg-btn[data-active="1"] { opacity: 1; background: var(--alert); color: #fff; border-color: var(--alert); }
+@media (max-width: 640px) { .surgery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

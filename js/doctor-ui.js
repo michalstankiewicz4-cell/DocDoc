@@ -46,6 +46,22 @@
       $('mut-list').appendChild(b); mutBtns[m.what] = b;
     }
 
+    // operacja zastawki: przycisk na każdą zastawkę
+    const SURG = [
+      { valve: 'tricuspid', key: 'H', name: 'Trójdzielna' },
+      { valve: 'mitral', key: 'J', name: 'Mitralna' },
+      { valve: 'pulmonary', key: 'K', name: 'Pnia płucnego' },
+      { valve: 'aortic', key: 'L', name: 'Aorty' }
+    ];
+    const surgBtns = {};
+    for (const v of SURG) {
+      const b = document.createElement('button');
+      b.className = 'surg-btn'; b.type = 'button';
+      b.innerHTML = `<span>${v.name}</span><kbd>${v.key}</kbd>`;
+      b.addEventListener('click', () => DD.send({ type: 'doc.surgery', valve: v.valve }));
+      $('surgery').appendChild(b); surgBtns[v.valve] = b;
+    }
+
     const testBtns = {};
     for (const t of TESTS) {
       const b = document.createElement('button');
@@ -175,6 +191,8 @@
           ['Antybiotyk makrolidowy', String(used.abxB || 0)],
           ['Lek przeciwwirusowy', String(used.antiviral || 0)],
           ['Obrażenia od leków', num(S.dmgDrugs) + ' pkt'],
+          ['Operacje zastawek', String(S.surgeries || 0)],
+          ['Ogniska usunięte operacją', String(S.surgeryRemoved || 0)],
           ['Trafienia przeciwciał', String(S.abHits || 0)],
           ['Obrażenia od przeciwciał', num(S.dmgAntibodies) + ' pkt'],
           ['Obrażenia od gorączki', num(S.dmgFever) + ' pkt'],
@@ -269,6 +287,19 @@
       }
       renderResults(s);
 
+      // operacja zastawki
+      {
+        const SU = d.surgery || { state: 'idle', cd: 0 };
+        const busy = SU.state === 'running' || SU.cd > 0;
+        for (const v of SURG) {
+          const el = surgBtns[v.valve];
+          el.disabled = !d.unlocked || busy || !s.running || !!s.over;
+          el.dataset.active = SU.state === 'running' && SU.valve === v.valve ? '1' : '0';
+        }
+        $('surg-state').textContent = !d.unlocked ? 'Wymaga wyniku badania'
+          : SU.state === 'running' ? `Operacja w toku: jeszcze ${Math.ceil(SU.t)} s`
+          : SU.cd > 0 ? `Kolejna za ${Math.ceil(SU.cd)} s` : 'Gotowa';
+      }
 
       for (const a of ACTIONS) {
         const el = btns[a.cd], cd = d.cd[a.cd];

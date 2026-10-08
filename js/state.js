@@ -36,6 +36,7 @@
           abg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
         },
         resultSeq: 0,
+        surgery: { state: 'idle', t: 0, cd: 0, valve: null },
         unlocked: false, knownInfection: null, knownHp: null,
         cd: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
@@ -131,6 +132,17 @@
         return;
       }
       case 'doc.test': orderTest(s, cmd.kind || 'culture'); return;
+      case 'doc.surgery': {
+        const SU = d.surgery, cfg = D.surgery;
+        const v = H.VALVES.find((x) => x.id === cmd.valve);
+        if (!v || !d.unlocked || SU.state === 'running' || SU.cd > 0) return;
+        SU.state = 'running'; SU.t = cfg.duration; SU.valve = v.id;
+        s.patient.cond -= cfg.patientCost; s.stats.condByTreatment += cfg.patientCost;
+        s.stats.surgeries = (s.stats.surgeries || 0) + 1;
+        if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
+        log(s, 'doc', `Rozpoczęto operację: ${v.name.toLowerCase()}.`);
+        return;
+      }
       case 'doc.antibodies':
         if (!d.unlocked || d.cd.antibodies > 0) return;
         d.cd.antibodies = D.antibodies.cooldown;
@@ -387,6 +399,26 @@
       else if (T.cd > 0) T.cd = Math.max(0, T.cd - dt);
     }
     for (const k in d.cd) d.cd[k] = Math.max(0, d.cd[k] - dt);
+    // operacja zastawki: po zakończeniu usuwa kolonie wokół zastawki i rani patogen w pobliżu
+    {
+      const SU = d.surgery, cfg = D.surgery;
+      if (SU.state === 'running') {
+        SU.t -= dt;
+        if (SU.t <= 0) {
+          const v = H.VALVES.find((x) => x.id === SU.valve);
+          let removed = 0;
+          for (let i = s.colonies.length - 1; i >= 0; i--) {
+            const c = s.colonies[i];
+            if (Math.hypot(c.x - v.c[0], c.y - v.c[1]) < cfg.radius) { s.colonies.splice(i, 1); removed++; }
+          }
+          s.stats.coloniesLost += removed;
+          s.stats.surgeryRemoved = (s.stats.surgeryRemoved || 0) + removed;
+          if (!b.dead && !b.transit && Math.hypot(b.x - v.c[0], b.y - v.c[1]) < cfg.radius) { b.hp -= cfg.pathogenDamage; b.hitFlash = 1; }
+          SU.state = 'done'; SU.cd = cfg.cooldown;
+          log(s, 'doc', `Operacja zakończona: ${v.name.toLowerCase()}. Usunięte ogniska: ${removed}.`);
+        }
+      } else if (SU.cd > 0) SU.cd = Math.max(0, SU.cd - dt);
+    }
     if (d.feverT > 0) d.feverT = Math.max(0, d.feverT - dt);
     const targetT = d.feverT > 0 ? D.fever.temp : 36.6;
     d.temp += (targetT - d.temp) * Math.min(1, dt * 0.35);

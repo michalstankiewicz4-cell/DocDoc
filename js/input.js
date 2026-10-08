@@ -8,6 +8,8 @@
   const DOC_KEYS = { Digit1: 'doc.antibodies', Digit2: 'doc.fever', Digit3: 'doc.abxA', Digit4: 'doc.abxB', Digit5: 'doc.antiviral' };
   // badania: Z CRP, X (albo B) posiew, C echo, V antybiogram
   const TEST_KEYS = { KeyZ: 'crp', KeyX: 'culture', KeyB: 'culture', KeyC: 'echo', KeyV: 'abg' };
+  // operacja zastawki: H trójdzielna, J mitralna, K pnia płucnego, L aorty
+  const SURG_KEYS = { KeyH: 'tricuspid', KeyJ: 'mitral', KeyK: 'pulmonary', KeyL: 'aortic' };
 
   window.addEventListener('keydown', (e) => {
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
@@ -16,6 +18,7 @@
     if (TEST_KEYS[e.code] && !e.repeat) DD.send({ type: 'doc.test', kind: TEST_KEYS[e.code] });
     if (BACT_ACTIONS[e.code] && !e.repeat) DD.send({ type: BACT_ACTIONS[e.code] });
     if (MUT_KEYS[e.code] && !e.repeat) DD.send({ type: 'bact.mutate', what: MUT_KEYS[e.code] });
+    if (SURG_KEYS[e.code] && !e.repeat) DD.send({ type: 'doc.surgery', valve: SURG_KEYS[e.code] });
   });
   window.addEventListener('keyup', (e) => keys.delete(e.code));
   window.addEventListener('blur', () => keys.clear());

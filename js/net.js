@@ -245,6 +245,7 @@
       st: s.over ? s.stats : 0,
       k: s.kind, nr: b.natural, rs: b.resist, cdd: d.cd, dg: s.drugs,
       mu: [b.hidden, r2(b.points), b.mut, r2(b.toxinCd), r2(s.toxinT)],
+      su: d.surgery,
       // badania bez wyników oczekujących (gość dostaje wynik dopiero, gdy jest gotowy)
       dt: Object.fromEntries(Object.entries(d.tests).map(([k, T]) => [k, Object.assign({}, T, { pending: null })])),
       dk: [d.resultSeq, d.estInfection ?? -1, d.estT ?? -1, d.estExact ? 1 : 0],
@@ -291,6 +292,7 @@
       b.hp = v[5]; b.infection = v[6]; b.slowT = v[7]; b.slowMul = v[8]; b.hitFlash = Math.max(b.hitFlash - dt * 2.5, v[9]);
       b.contact = !!v[10];
       if (snap.rs) { b.resist = snap.rs; b.natural = snap.nr; s.kind = snap.k; s.drugs = snap.dg; d0.cd = snap.cdd; }
+      if (snap.su) s.doctor.surgery = snap.su;
       if (snap.mu) { b.hidden = snap.mu[0]; b.points = snap.mu[1]; b.mut = snap.mu[2]; b.toxinCd = snap.mu[3]; s.toxinT = snap.mu[4]; }
       b.dead = v[14]; b.colonyCd = v[15]; b.feeding = !!v[16]; b.inTissue = !!v[17]; b.burrowT = v[18]; b.z = v[19];
       b.transit = snap.tr ? { to: snap.tr[0] === 1 ? 'lungs' : 'body', t: snap.tr[1], total: snap.tr[2] } : null;

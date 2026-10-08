@@ -67,9 +67,12 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Wybór patogenu: bakteria albo wirus; klasy antybiotyków
 - [x] Przejście przez ścianę naczyń do tkanki (nowy, ładny biom), ukryte kolonie, z których odradza się patogen; lekarz musi je wykryć
 - [x] Biofilm, mutacje, toksyny
-- [ ] Operacja zastawki
+- [x] Operacja zastawki
 - [ ] Pacjent na łóżku (grafika dla lekarza), objawy jako wskazówki, animacja laboratorium, alarmy monitora
 - [ ] Mecz z zamianą ról
+
+Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
+- Wygląd kardiomiocytów: wzory w `docs/reference/` (prążkowanie, centralne jądro, wstawki, rozgałęzione włókna, jasne przestrzenie między nimi).
 
 Odrzucone przez Michała: sztuczne etapy zakażenia (przebieg ma wynikać z działań graczy).
 
@@ -85,4 +88,5 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Podgląd lekarza pokazuje kształt patogenu, więc zdradza bakterię albo wirusa (do decyzji Michała, czy ukryć).
 - Mięsień (`config.tissue`): pas ściany 1,2 < SDF < 7,2, płaszczyzna ruchu z = 3,3 (powierzchnia przekroju), komórki z `js/tissue-cells.js` (wspólne dla kolizji i renderu). Wykrywanie kolonii w mięśniu: echo (niewyraźnie, ±2,5 j.) i CRP (zawiera całą kolonizację).
 - Mutacje (`config.mutations`): punkty z przyrostu kolonii (1,6 pkt na 1,0 rozmiaru). Toksyny zakłócają badania pobrane w ciągu 15 s (CRP ×1,6 i 3× szum, echo ±4 j.).
+- Operacja zastawki (`config.doctor.surgery`): 10 s, stan −15, promień 5 j., patogen w pobliżu −40 życia, odnowienie 60 s.
 - Kaszel: szansa na sekundę rośnie z kolonizacją (`config.cough`), tylko dźwięk, bez wpływu na rozgrywkę.

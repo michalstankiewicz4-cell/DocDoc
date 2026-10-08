@@ -105,6 +105,7 @@ Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie w
 | `3` | antybiotyk β-laktamowy |
 | `4` | antybiotyk makrolidowy |
 | `5` | lek przeciwwirusowy |
+| `H` `J` `K` `L` | operacja zastawki: trójdzielnej, mitralnej, pnia płucnego, aorty |
 
 Każdą akcję można też kliknąć w panelu.
 
@@ -126,6 +127,7 @@ Każdą akcję można też kliknąć w panelu.
    - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
    - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Bakteria jest dodatkowo naturalnie odporna na jedną z dwóch klas antybiotyków; którą — pokazuje antybiogram.
    - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie.
+   - **Operacja zastawki** trwa 10 s i obciąża pacjenta (stan −15). Po zakończeniu usuwa wszystkie ogniska w promieniu kilku milimetrów od wybranej zastawki, także w ścianie, a patogen w pobliżu traci 40 życia. Kolejna operacja jest możliwa po 60 s. Dobrze ją połączyć z echem serca, które pokazuje, gdzie są ogniska.
 3. **Oporność nabyta:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Na przycisku widać siłę następnej dawki i jej koszt dla pacjenta. Rzeczywiste działanie zależy jeszcze od rodzaju patogenu i jego naturalnej oporności.
 4. **Podgląd pacjenta** pokazuje grę patogenu z 5-sekundowym opóźnieniem.
 5. **Dziennik** zapisuje badania, wyniki i podane leki.

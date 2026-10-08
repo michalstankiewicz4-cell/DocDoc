@@ -43,7 +43,9 @@ DD.CONFIG = {
     abxA:       { cooldown: 22, duration: 8, dps: 2.6, colonyShrink: 0.025 },  // β-laktam: bakteriobójczy
     abxB:       { cooldown: 22, duration: 10, speedMul: 0.45 },               // makrolid: bakteriostatyczny
     antiviral:  { cooldown: 22, duration: 10, dps: 1.8, speedMul: 0.6 },      // lek przeciwwirusowy: tylko na wirusa
-    naturalResistance: 0.2   // skuteczność antybiotyku z klasy, na którą bakteria jest naturalnie oporna
+    naturalResistance: 0.2,  // skuteczność antybiotyku z klasy, na którą bakteria jest naturalnie oporna
+    // operacja zastawki: po `duration` s usuwa kolonie w promieniu `radius` od zastawki
+    surgery: { duration: 10, cooldown: 60, radius: 5, patientCost: 15, pathogenDamage: 40 }
   },
 
   // oporność: każde użycie leku podnosi oporność o perUse (do max); skuteczność = 1 - oporność
