@@ -1,0 +1,254 @@
+// Gra przez sieć bez własnego serwera: WebRTC + ręczna wymiana kodów.
+//
+//  Host                                   Gość
+//  createOffer -> kod zaproszenia  ---->  wkleja kod, createAnswer
+//  wkleja kod odpowiedzi  <------------  kod odpowiedzi
+//  ======== bezpośredni kanał danych przeglądarka <-> przeglądarka ========
+//
+// Host liczy symulację. Gość wysyła tylko swoje komendy i dostaje stan ~20 razy na sekundę.
+// Do przejścia przez routery (NAT) używamy publicznych serwerów STUN Google — one tylko
+// mówią przeglądarce, jaki ma adres publiczny; dane gry nie przechodzą przez nie.
+(function () {
+  const ICE = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
+  const SNAP_HZ = 20;
+
+  const N = {
+    mode: 'local',   // 'local' | 'host' | 'guest'
+    role: 'both',    // 'both' | 'bact' | 'doc'
+    pc: null, chCmd: null, chSt: null, connected: false,
+    onConnected: () => {}, onClosed: () => {}
+  };
+
+  // ---------- uprawnienia ról ----------
+  N.allowed = function (cmd, role) {
+    if (role === 'both') return true;
+    if (cmd.type === 'game.start') return true;
+    if (role === 'bact') return cmd.type === 'bact.input';
+    if (role === 'doc') return cmd.type.startsWith('doc.');
+    return false;
+  };
+  N.otherRole = (r) => (r === 'bact' ? 'doc' : 'bact');
+
+  // wszystkie lokalne źródła (klawiatura, przyciski) wysyłają komendy tędy
+  DD.send = function (cmd) {
+    if (!N.allowed(cmd, N.role)) return;
+    if (N.mode === 'guest') { if (N.connected) N.sendReliable({ m: 'cmd', c: cmd }); }
+    else DD.CommandBus.push(cmd);
+  };
+
+  // ---------- kody zaproszenia / odpowiedzi ----------
+  function b64(bytes) {
+    let s = ''; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+    return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function unb64(str) {
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (str.length % 4) str += '=';
+    const s = atob(str), out = new Uint8Array(s.length);
+    for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+    return out;
+  }
+  async function pack(obj) {
+    const json = JSON.stringify(obj);
+    if (window.CompressionStream) {
+      const stream = new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+      return 'DD1.' + b64(new Uint8Array(await new Response(stream).arrayBuffer()));
+    }
+    return 'DD0.' + b64(new TextEncoder().encode(json));
+  }
+  async function unpack(code) {
+    code = (code || '').replace(/\s+/g, '');
+    const v = code.slice(0, 4), bytes = unb64(code.slice(4));
+    if (v === 'DD1.') {
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      return JSON.parse(await new Response(stream).text());
+    }
+    if (v === 'DD0.') return JSON.parse(new TextDecoder().decode(bytes));
+    throw new Error('To nie wygląda na kod DocDoc. Skopiuj go jeszcze raz w całości.');
+  }
+
+  function waitIce(pc) {
+    return new Promise((res) => {
+      if (pc.iceGatheringState === 'complete') return res();
+      const t = setTimeout(res, 5000);
+      pc.addEventListener('icegatheringstatechange', () => {
+        if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); }
+      });
+    });
+  }
+
+  function makePC() {
+    if (!window.RTCPeerConnection) throw new Error('Ta przeglądarka nie obsługuje połączeń WebRTC.');
+    const pc = new RTCPeerConnection({ iceServers: ICE });
+    pc.addEventListener('connectionstatechange', () => {
+      if (N.connected && (pc.connectionState === 'failed' || pc.connectionState === 'closed' || pc.connectionState === 'disconnected')) lost();
+    });
+    return pc;
+  }
+  function lost() {
+    if (!N.connected) return;
+    N.connected = false;
+    clearInterval(pingTimer);
+    N.onClosed();
+  }
+  function wire(ch) {
+    if (ch.label === 'cmd') N.chCmd = ch; else N.chSt = ch;
+    ch.addEventListener('open', checkOpen);
+    ch.addEventListener('close', lost);
+    ch.addEventListener('message', (e) => onMessage(ch.label, e.data));
+  }
+  // sygnał "żyję": bez wiadomości przez 6 s uznajemy połączenie za zerwane
+  let lastRecv = 0, pingTimer = null;
+  function checkOpen() {
+    if (!N.connected && N.chCmd && N.chSt && N.chCmd.readyState === 'open' && N.chSt.readyState === 'open') {
+      N.connected = true;
+      lastRecv = performance.now();
+      clearInterval(pingTimer);
+      pingTimer = setInterval(() => {
+        if (!N.connected) { clearInterval(pingTimer); return; }
+        N.sendReliable({ m: 'ping' });
+        if (performance.now() - lastRecv > 6000) lost();
+      }, 1000);
+      N.onConnected();
+    }
+  }
+
+  N.sendReliable = function (obj) {
+    if (N.chCmd && N.chCmd.readyState === 'open') N.chCmd.send(JSON.stringify(obj));
+  };
+
+  // host: krok 1 — kod zaproszenia
+  N.host = async function (role) {
+    N.close();
+    N.mode = 'host'; N.role = role;
+    const pc = N.pc = makePC();
+    wire(pc.createDataChannel('cmd'));
+    wire(pc.createDataChannel('st', { ordered: false, maxRetransmits: 0 }));
+    await pc.setLocalDescription(await pc.createOffer());
+    await waitIce(pc);
+    return pack({ k: 'o', r: role, s: pc.localDescription.sdp });
+  };
+  // host: krok 2 — kod odpowiedzi od gościa
+  N.acceptAnswer = async function (code) {
+    const o = await unpack(code);
+    if (o.k !== 'a') throw new Error('To jest kod zaproszenia, a potrzebny jest kod odpowiedzi od drugiego gracza.');
+    await N.pc.setRemoteDescription({ type: 'answer', sdp: o.s });
+  };
+  // gość: z kodu zaproszenia robi kod odpowiedzi
+  N.join = async function (code) {
+    const o = await unpack(code);
+    if (o.k !== 'o') throw new Error('To jest kod odpowiedzi. Wklej kod zaproszenia od hosta.');
+    N.close();
+    N.mode = 'guest'; N.role = N.otherRole(o.r);
+    const pc = N.pc = makePC();
+    pc.addEventListener('datachannel', (e) => { wire(e.channel); checkOpen(); });
+    await pc.setRemoteDescription({ type: 'offer', sdp: o.s });
+    await pc.setLocalDescription(await pc.createAnswer());
+    await waitIce(pc);
+    return pack({ k: 'a', s: pc.localDescription.sdp });
+  };
+  N.close = function () {
+    try { if (N.pc) N.pc.close(); } catch (e) { /* już zamknięte */ }
+    N.pc = N.chCmd = N.chSt = null; N.connected = false;
+  };
+
+  // ---------- wiadomości ----------
+  let snap = null, snapAt = 0, logCache = [];
+  function onMessage(label, data) {
+    lastRecv = performance.now();
+    let m; try { m = JSON.parse(data); } catch (e) { return; }
+    if (label === 'st') { if (N.mode === 'guest') { snap = m; snapAt = performance.now(); } return; }
+    if (m.m === 'cmd' && N.mode === 'host') {
+      if (m.c && typeof m.c.type === 'string' && N.allowed(m.c, N.otherRole(N.role))) DD.CommandBus.push(m.c);
+    } else if (m.m === 'log' && N.mode === 'guest') {
+      logCache = m.l || [];
+    }
+  }
+
+  // ---------- host: wysyłanie stanu ----------
+  const r2 = (v) => Math.round(v * 100) / 100;
+  const TEST = ['idle', 'running', 'done'];
+  function encode(s) {
+    const b = s.bact, d = s.doctor;
+    const a = [];
+    for (const x of s.antibodies) a.push(r2(x.x), r2(x.y), r2(x.z), x.stuck ? 1 : 0, r2(x.ox), r2(x.oy), r2(x.rot), r2(x.life), r2(x.eff ?? 1));
+    const c = [];
+    for (const x of s.colonies) c.push(r2(x.x), r2(x.y), r2(x.nx), r2(x.ny), r2(x.born), x.seed);
+    return {
+      t: s.time, run: s.running ? 1 : 0, ov: s.over, org: s.organ,
+      b: [r2(b.x), r2(b.y), r2(b.vx), r2(b.vy), r2(b.dir), r2(b.hp), r2(b.infection), r2(b.slowT), r2(b.slowMul),
+        r2(b.hitFlash), b.contact ? 1 : 0, r2(b.resist.antibodies), r2(b.resist.fever), r2(b.resist.slow)],
+      tr: b.transit ? [b.transit.to === 'lungs' ? 1 : 2, r2(b.transit.t), b.transit.total] : 0,
+      d: [TEST.indexOf(d.test.state), r2(d.test.t), r2(d.test.cd), d.unlocked ? 1 : 0, d.knownInfection ?? -1,
+        d.resultTime ?? -1, r2(d.cd.antibodies), r2(d.cd.fever), r2(d.cd.slow), r2(d.feverT), r2(d.feverEff), r2(d.temp)],
+      a, c
+    };
+  }
+  let sendAcc = 0, sentLogLen = -1, sentLogT = -1;
+  N.hostTick = function (s, dt) {
+    if (N.mode !== 'host' || !N.connected) return;
+    sendAcc += dt;
+    if (sendAcc >= 1 / SNAP_HZ) {
+      sendAcc = 0;
+      if (N.chSt && N.chSt.readyState === 'open' && N.chSt.bufferedAmount < 64000) N.chSt.send(JSON.stringify(encode(s)));
+    }
+    const lt = s.log.length ? s.log[s.log.length - 1].t : -1;
+    if (s.log.length !== sentLogLen || lt !== sentLogT) {
+      sentLogLen = s.log.length; sentLogT = lt;
+      N.sendReliable({ m: 'log', l: s.log.slice(-20) });
+    }
+  };
+
+  // ---------- gość: odtwarzanie stanu z wygładzaniem ----------
+  N.guestFrame = function (s, dt) {
+    const H = DD.Heart, F = DD.Flow, C = DD.CONFIG;
+    const k = 1 - Math.exp(-dt * 14);
+    if (snap) {
+      const age = Math.min(0.25, (performance.now() - snapAt) / 1000);
+      s.time = snap.t + age;
+      s.running = !!snap.run; s.over = snap.ov; s.organ = snap.org;
+      const b = s.bact, v = snap.b;
+      const far = Math.hypot(v[0] - b.x, v[1] - b.y) > 4;
+      b.x = far ? v[0] : b.x + (v[0] - b.x) * k;
+      b.y = far ? v[1] : b.y + (v[1] - b.y) * k;
+      b.vx = v[2]; b.vy = v[3];
+      let dd = v[4] - b.dir; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
+      b.dir += dd * k;
+      b.hp = v[5]; b.infection = v[6]; b.slowT = v[7]; b.slowMul = v[8]; b.hitFlash = Math.max(b.hitFlash - dt * 2.5, v[9]);
+      b.contact = !!v[10]; b.resist = { antibodies: v[11], fever: v[12], slow: v[13] };
+      b.transit = snap.tr ? { to: snap.tr[0] === 1 ? 'lungs' : 'body', t: snap.tr[1], total: snap.tr[2] } : null;
+      b.place = H.placeName(b.x, b.y);
+      const d = s.doctor, w = snap.d;
+      d.test.state = TEST[w[0]] || 'idle'; d.test.t = w[1]; d.test.cd = w[2]; d.unlocked = !!w[3];
+      d.knownInfection = w[4] < 0 ? null : w[4]; d.resultTime = w[5] < 0 ? undefined : w[5];
+      d.cd.antibodies = w[6]; d.cd.fever = w[7]; d.cd.slow = w[8]; d.feverT = w[9]; d.feverEff = w[10]; d.temp = w[11];
+      // przeciwciała
+      const A = snap.a, n = A.length / 9;
+      if (s.antibodies.length !== n) s.antibodies.length = n;
+      for (let i = 0; i < n; i++) {
+        const o = i * 9;
+        let x = s.antibodies[i];
+        if (!x) { x = s.antibodies[i] = { x: A[o], y: A[o + 1] }; }
+        const jump = Math.hypot(A[o] - x.x, A[o + 1] - x.y) > 3;
+        x.x = jump ? A[o] : x.x + (A[o] - x.x) * k; x.y = jump ? A[o + 1] : x.y + (A[o + 1] - x.y) * k;
+        x.z = A[o + 2]; x.stuck = !!A[o + 3]; x.ox = A[o + 4]; x.oy = A[o + 5]; x.rot = A[o + 6]; x.life = A[o + 7]; x.eff = A[o + 8];
+        if (x.stuck) { x.x = b.x + x.ox; x.y = b.y + x.oy; }
+      }
+      const Cc = snap.c, m = Cc.length / 6;
+      s.colonies.length = m;
+      for (let i = 0; i < m; i++) {
+        const o = i * 6;
+        s.colonies[i] = { x: Cc[o], y: Cc[o + 1], nx: Cc[o + 2], ny: Cc[o + 3], born: Cc[o + 4], seed: Cc[o + 5] };
+      }
+    } else {
+      s.time += dt;
+    }
+    s.log = logCache;
+    s.phase = (s.time * C.bpm / 60) % 1;
+    s.contraction = F.contraction(s.phase);
+    H.VALVES.forEach((v, i) => { s.valves[i].open = F.valveOpen(v.type, s.phase); });
+    DD.Game.updateValveGeometry(s);
+  };
+
+  DD.Net = N;
+})();

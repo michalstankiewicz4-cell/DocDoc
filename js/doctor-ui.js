@@ -18,11 +18,11 @@
       const b = document.createElement('button');
       b.className = 'action'; b.id = 'act-' + a.cd; b.type = 'button';
       b.innerHTML = `<span class="action-cd"></span><span class="action-head"><span class="action-name">${a.name}</span><kbd>${a.key}</kbd></span><span class="action-desc">${a.desc}</span><span class="action-foot"><span class="action-state"></span><span class="action-eff"></span></span>`;
-      b.addEventListener('click', () => DD.CommandBus.push({ type: a.cmd }));
+      b.addEventListener('click', () => DD.send({ type: a.cmd }));
       actionsEl.appendChild(b);
       btns[a.cd] = b;
     }
-    $('btn-test').addEventListener('click', () => DD.CommandBus.push({ type: 'doc.test' }));
+    $('btn-test').addEventListener('click', () => DD.send({ type: 'doc.test' }));
 
     // EKG
     const ecg = $('ecg'), ctx = ecg.getContext('2d');

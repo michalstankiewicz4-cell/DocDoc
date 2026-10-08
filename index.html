@@ -114,7 +114,8 @@
 <div id="start" class="overlay">
   <div class="overlay-card">
     <h1 class="logo">DocDoc</h1>
-    <p class="lead">Gra na dwie osoby. Na razie obie połowy ekranu obsługujesz sam.</p>
+    <p class="lead local-only">Asymetryczna gra: bakteria próbuje zainfekować ciało, lekarz próbuje ją zniszczyć.</p>
+    <p id="start-net-status" class="net-ready"></p>
     <div class="roles">
       <div class="role role-bact">
         <h2>Bakteria</h2>
@@ -127,15 +128,102 @@
         <p class="keys"><kbd>B</kbd> badanie, <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> leczenie</p>
       </div>
     </div>
-    <h2 class="pick-title">Gdzie zaczyna bakteria?</h2>
-    <div class="organs">
-      <button type="button" class="organ" data-organ="heart" id="organ-heart"><span>Serce</span><small>Gotowe</small></button>
-      <button type="button" class="organ" data-organ="head" disabled><span>Głowa</span><small>Później</small></button>
-      <button type="button" class="organ" data-organ="torso" disabled><span>Tułów</span><small>Później</small></button>
-      <button type="button" class="organ" data-organ="arm" disabled><span>Ręka</span><small>Później</small></button>
-      <button type="button" class="organ" data-organ="kidney" disabled><span>Nerka</span><small>Później</small></button>
-      <button type="button" class="organ" data-organ="skin" disabled><span>Skóra</span><small>Później</small></button>
+    <div id="mode-pick" class="modes">
+      <section class="mode mode-dev" aria-labelledby="m-dev">
+        <h2 id="m-dev">Tryb deweloperski</h2>
+        <p>Jeden gracz na jednym ekranie steruje obiema połówkami: lewa to bakteria, prawa to lekarz. Do testów i nauki zasad.</p>
+        <button id="mode-dev" class="primary" type="button">Graj sam</button>
+      </section>
+      <section class="mode mode-duo" aria-labelledby="m-duo">
+        <h2 id="m-duo">Gra na 2 osoby</h2>
+        <p>Każdy gracz na swoim komputerze i widzi tylko swoją połowę. Połączenie zestawiacie, wymieniając dwa kody przez komunikator.</p>
+        <div class="net-buttons">
+          <button id="net-host" class="primary" type="button">Utwórz grę</button>
+          <button id="net-join" class="secondary" type="button">Dołącz do gry</button>
+        </div>
+      </section>
     </div>
+
+    <div id="organ-pick" class="organ-pick" hidden>
+      <div class="organ-head">
+        <h2 class="pick-title">Gdzie zaczyna bakteria?</h2>
+        <button id="mode-back" class="link-btn local-only" type="button">Zmień tryb</button>
+      </div>
+      <div class="organs">
+        <button type="button" class="organ" data-organ="heart" id="organ-heart"><span>Serce</span><small>Gotowe</small></button>
+        <button type="button" class="organ" data-organ="head" disabled><span>Głowa</span><small>Później</small></button>
+        <button type="button" class="organ" data-organ="torso" disabled><span>Tułów</span><small>Później</small></button>
+        <button type="button" class="organ" data-organ="arm" disabled><span>Ręka</span><small>Później</small></button>
+        <button type="button" class="organ" data-organ="kidney" disabled><span>Nerka</span><small>Później</small></button>
+        <button type="button" class="organ" data-organ="skin" disabled><span>Skóra</span><small>Później</small></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lobby gry sieciowej -->
+<div id="lobby" class="overlay" hidden>
+  <div class="overlay-card lobby-card">
+    <button id="lobby-back" class="link-btn" type="button">Wróć do menu</button>
+
+    <section id="lobby-host" hidden aria-labelledby="lh-title">
+      <h2 id="lh-title" class="lobby-title">Utwórz grę</h2>
+      <ol class="steps">
+        <li>
+          <p class="step-title">Wybierz swoją rolę</p>
+          <div class="role-pick">
+            <button type="button" data-host-role="bact" aria-pressed="false">Bakteria</button>
+            <button type="button" data-host-role="doc" aria-pressed="false">Lekarz</button>
+          </div>
+        </li>
+        <li>
+          <p class="step-title">Wyślij kod zaproszenia drugiemu graczowi</p>
+          <textarea id="host-offer" class="code" rows="3" readonly placeholder="Kod pojawi się po wybraniu roli"></textarea>
+          <button id="host-copy" class="secondary" type="button">Kopiuj kod</button>
+        </li>
+        <li>
+          <p class="step-title">Wklej kod odpowiedzi, który dostaniesz od drugiego gracza</p>
+          <textarea id="host-answer" class="code" rows="3" placeholder="Kod odpowiedzi zaczyna się od DD"></textarea>
+          <button id="host-connect" class="primary" type="button">Połącz</button>
+        </li>
+      </ol>
+    </section>
+
+    <section id="lobby-join" hidden aria-labelledby="lj-title">
+      <h2 id="lj-title" class="lobby-title">Dołącz do gry</h2>
+      <ol class="steps">
+        <li>
+          <p class="step-title">Wklej kod zaproszenia od hosta</p>
+          <textarea id="join-offer" class="code" rows="3" placeholder="Kod zaproszenia zaczyna się od DD"></textarea>
+          <button id="join-make" class="primary" type="button">Utwórz kod odpowiedzi</button>
+        </li>
+        <li>
+          <p class="step-title">Odeślij kod odpowiedzi hostowi</p>
+          <textarea id="join-answer" class="code" rows="3" readonly placeholder="Kod pojawi się po wklejeniu zaproszenia"></textarea>
+          <button id="join-copy" class="secondary" type="button">Kopiuj kod</button>
+        </li>
+      </ol>
+      <p class="hint">Rolę wybiera host. Dostaniesz tę drugą.</p>
+    </section>
+
+    <p id="lobby-status" class="lobby-status" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
+<!-- Gość czeka na start -->
+<div id="wait" class="overlay" hidden>
+  <div class="overlay-card overlay-card-small">
+    <h2 class="end-title">Połączono</h2>
+    <p>Grasz jako <b id="wait-role"></b>. Host wybiera narząd i za chwilę zacznie grę.</p>
+  </div>
+</div>
+
+<!-- Zerwane połączenie -->
+<div id="net-lost" class="overlay" hidden>
+  <div class="overlay-card overlay-card-small">
+    <h2 class="end-title">Połączenie zerwane</h2>
+    <p>Drugi gracz zamknął grę albo sieć przerwała połączenie. Żeby zagrać znowu, wróćcie do menu i wymieńcie nowe kody.</p>
+    <button id="net-lost-reload" class="primary" type="button">Wróć do menu</button>
   </div>
 </div>
 
@@ -163,6 +251,8 @@
 <script src="js/minimap.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/doctor-ui.js"></script>
+<script src="js/net.js"></script>
+<script src="js/lobby.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

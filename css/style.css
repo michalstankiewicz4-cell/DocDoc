@@ -232,3 +232,65 @@ button:focus-visible, .organ:focus-visible { outline: 3px solid #2a9d77; outline
 @media (prefers-reduced-motion: reduce) {
   .bar-fill { transition: none; }
 }
+
+/* ---------- gra przez sieć ---------- */
+.net-ready { margin: 0; padding: 12px 14px; border-radius: var(--r-m); background: #dcefe6; color: var(--ink); font-weight: 700; }
+.net-ready:empty { display: none; }
+body[data-net] .local-only { display: none; }
+.net-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.secondary {
+  cursor: pointer; padding: 11px 18px; border-radius: var(--r-m);
+  border: 1.5px solid var(--ink); background: transparent; color: var(--ink); font-weight: 700;
+}
+.secondary:hover:not(:disabled) { background: #dfe9e5; }
+.secondary:disabled, .primary:disabled { opacity: 0.45; cursor: default; }
+.link-btn { justify-self: start; cursor: pointer; padding: 0; border: 0; background: none; color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn:hover { color: var(--ink); }
+
+.lobby-card { width: min(620px, 100%); }
+.lobby-title { margin: 0 0 4px; font-size: 28px; line-height: 1.1; }
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 18px; counter-reset: step; }
+.steps li { display: grid; gap: 8px; counter-increment: step; }
+.step-title::before { content: counter(step) ". "; color: var(--trace); }
+.steps .primary, .steps .secondary { justify-self: start; }
+.step-title { margin: 0; font-weight: 700; }
+.code {
+  width: 100%; resize: vertical; min-height: 4.5em;
+  font: 12px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; word-break: break-all;
+  padding: 10px 12px; border-radius: var(--r-s); border: 1.5px solid var(--line); background: var(--panel); color: var(--ink);
+}
+.code:focus { outline: 3px solid #2a9d77; outline-offset: 1px; border-color: transparent; }
+.role-pick { display: flex; gap: 8px; flex-wrap: wrap; }
+.role-pick button {
+  cursor: pointer; padding: 11px 22px; border-radius: var(--r-m); font-weight: 700;
+  border: 1.5px solid var(--line); background: var(--panel); color: var(--ink);
+}
+.role-pick button[data-host-role="bact"][aria-pressed="true"] { background: #1a0607; border-color: #1a0607; color: var(--microbe); }
+.role-pick button[data-host-role="doc"][aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--panel); }
+.lobby-status { margin: 0; min-height: 1.4em; font-size: 14px; color: var(--muted); }
+.lobby-status[data-kind="error"] { color: var(--alert); font-weight: 700; }
+.lobby-status[data-kind="info"] { color: var(--trace); }
+
+/* jeden gracz = jedna połowa na cały ekran */
+body[data-role="bact"] .split, body[data-role="doc"] .split { grid-template-columns: 1fr; grid-template-rows: 1fr; height: 100%; }
+body[data-role="bact"] .half-doc { display: none; }
+body[data-role="bact"] .half-bact { height: 100%; }
+body[data-role="doc"] .half-bact { display: none; }
+body[data-role="doc"] .half-doc {
+  border-left: 0; height: 100%; overflow-y: auto;
+  padding-inline: max(16px, calc((100% - 820px) / 2));
+}
+
+/* ---------- wybór trybu ---------- */
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mode {
+  display: grid; gap: 10px; align-content: start; min-width: 0;
+  padding: 18px; border-radius: var(--r-m); border: 1.5px solid var(--line); background: var(--panel);
+}
+.mode h2 { margin: 0; font-size: 19px; }
+.mode p { margin: 0; font-size: 14px; color: var(--muted); }
+.mode .primary, .mode .net-buttons { align-self: end; }
+.mode-duo { border-color: var(--trace); }
+.organ-pick { display: grid; gap: 10px; }
+.organ-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+@media (max-width: 900px) { .modes { grid-template-columns: 1fr; } }

@@ -1,14 +1,26 @@
 # DocDoc
 
 Asymetryczna gra na dwie osoby: **bakteria** próbuje zainfekować ciało, **lekarz** diagnozuje i leczy.
-To wersja v0: podzielony ekran, oboma graczami steruje jedna osoba, jedna arena (serce), bez sieci.
+Jedna arena (serce). Dwa tryby: deweloperski (jeden gracz na obu połówkach ekranu) i gra na 2 osoby przez sieć.
 
 ## Uruchomienie
 
-Zagraj online: https://michalstankiewicz4-cell.github.io/DocDoc/
+Zagraj online: https://michalstankiewicz4-cell.github.io/PatientZero/
 
 Lokalnie: otwórz `index.html` w przeglądarce (Chrome, Edge, Firefox). Serwer nie jest potrzebny, bo skrypty są zwykłe (nie ES-moduły).
 Three.js (r128) ładuje się z cdnjs, więc za pierwszym razem potrzebny jest internet.
+
+## Tryby
+
+- **Tryb deweloperski**: jeden ekran, lewa połowa to bakteria, prawa to lekarz. Do testów.
+- **Gra na 2 osoby**: każdy na swoim komputerze widzi tylko swoją połowę.
+  1. Host klika „Utwórz grę”, wybiera rolę i wysyła drugiemu graczowi kod zaproszenia (np. przez komunikator).
+  2. Drugi gracz klika „Dołącz do gry”, wkleja kod i odsyła kod odpowiedzi.
+  3. Host wkleja kod odpowiedzi i klika „Połącz”. Potem wybiera narząd i gra się zaczyna.
+
+Połączenie jest bezpośrednie (WebRTC), bez serwera gry. Publiczne serwery STUN Google pomagają tylko ustalić adresy przez routery; dane gry przez nie nie przechodzą.
+W części sieci (firmowe, niektóre mobilne) bezpośrednie połączenie bywa zablokowane — wtedy potrzebny byłby serwer pośredniczący (TURN).
+Tryb sieciowy działa z GitHub Pages i z lokalnego pliku; nie działa w podglądzie artefaktu claude.ai, który blokuje WebRTC.
 
 ## Sterowanie
 
@@ -44,6 +56,8 @@ js/heart-shape.js     geometria serca jako pole odległości (SDF): komory, nacz
 js/flow.js            pole przepływu krwi zależne od fazy cyklu serca + turbulencja (curl noise)
 js/state.js           stan gry, komendy, krok symulacji, kolizje
 js/input.js           klawiatura -> komendy
+js/net.js             WebRTC: kody zaproszenia/odpowiedzi, kanały, wysyłanie i odtwarzanie stanu
+js/lobby.js           ekran tworzenia i dołączania do gry
 js/minimap.js         minimapa bakterii (sylwetka z SDF)
 js/audio.js           bicie serca w Web Audio
 js/doctor-ui.js       panel lekarza (EKG, parametry, badanie, leczenie, dziennik) i HUD bakterii
@@ -56,11 +70,12 @@ js/render/post.js     bloom, głębia ostrości, aberracja, falowanie gorąca, A
 js/render/view.js     kamera śledząca bakterię, światło "endoskopu"
 ```
 
-## Architektura pod sieć
+## Architektura sieci
 
 Stan zmienia się tylko przez `DD.Game.apply(state, komenda)` i `DD.Game.step(state, dt)`.
-Klawiatura i panel lekarza wrzucają komendy do `DD.CommandBus`. Grę sieciową da się zrobić, podmieniając źródło komend:
-host liczy symulację, a drugi gracz wysyła swoje komendy i dostaje stan.
-Pole przepływu i szum turbulencji są deterministyczne, więc obie strony mogą liczyć ten sam prąd lokalnie.
+Klawiatura i panel lekarza wysyłają komendy przez `DD.send`, które sprawdza, czy rola gracza pozwala na daną komendę.
+Host liczy symulację i ~20 razy na sekundę wysyła gościowi stan (kanał bez retransmisji); gość wysyła tylko swoje komendy (kanał niezawodny).
+Gość wygładza pozycje między paczkami stanu. Sygnał „żyję” co sekundę wykrywa zerwanie połączenia po 6 s ciszy.
+Gdy host schowa kartę, symulację napędza zapasowy zegar, żeby gra nie stanęła.
 
 Krwinki i drobiny osocza są tylko wizualne i nie należą do stanu gry, więc nie trzeba ich przesyłać.
