@@ -186,7 +186,7 @@
           ['Uwolnienia toksyn', String(S.toxins || 0)],
           ['Czas w ukryciu', num(S.hiddenTime) + ' s'],
           ['Zjedzone pożywienie', String(S.eaten || 0)],
-          ['Kopie (stracone)', `${S.copiesMade || 0} (${S.copiesLost || 0})`],
+          ['Kopie: utworzone / zniszczone / obumarłe', `${S.copiesMade || 0} / ${S.copiesLost || 0} / ${S.copiesExpired || 0}`],
           ['Przeciwciała zwiedzione przez kopie', String(S.decoyHits || 0)],
           ['Krążenie płucne / duże', `${S.lungsTrips || 0} / ${S.bodyTrips || 0}`],
           ['Odwiedzone jamy serca', `${seen} z ${chambers.length}`],
@@ -235,7 +235,7 @@
       if (T.culture.res) {
         $('res-culture').hidden = false; time($('res-culture'), T.culture);
         const r = T.culture.res;
-        $('res-culture-v').textContent = r.positive ? `Dodatni, kolonizacja ${r.infection}%` : 'Ujemny';
+        $('res-culture-v').textContent = r.positive ? `Dodatni, kolonizacja ${r.infection}%, komórki we krwi: ${r.cells ?? 0}` : 'Ujemny';
       } else $('res-culture').hidden = true;
       if (T.echo.res) {
         $('res-echo').hidden = false; time($('res-echo'), T.echo);

@@ -74,6 +74,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Pacjent na łóżku (grafika dla lekarza), objawy jako wskazówki, animacja laboratorium, alarmy monitora
 - [x] Mecz z zamianą ról
 - [x] Pożywienie we krwi, rozmnożenie, przeciwciała atakują kopie (v0.19.0)
+- [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
 Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
 - Wygląd kardiomiocytów: wzory w `docs/reference/` (prążkowanie, centralne jądro, wstawki, rozgałęzione włókna, jasne przestrzenie między nimi).
@@ -98,4 +99,6 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Pożywienie i kopie (`config.food`, `config.copies`): 110 drobin, glukoza +10, aminokwasy +15, lipidy +25; kopia za 100 pożywienia, najwyżej 6.
   Kopie dryfują z prądem (bez sterowania), nie zakładają kolonii, giną od jednego przeciwciała. Przeciwciało wybiera cel losowo spośród patogenu i kopii w zasięgu.
   Patogen nie je w mięśniu ani w ukryciu.
+  Od v0.20.0: lipidy +4 życia, aminokwasy +0,15 pkt mutacji; kopia żyje 40 s (maleje przez ostatnie 4 s);
+  posiew podaje liczbę komórek we krwi (oryginał we krwi + kopie), tylko przy bakterii (posiew wirusa jest ujemny).
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk).

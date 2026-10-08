@@ -67,7 +67,7 @@
         minCond: 100, condByInfection: 0, condByTreatment: 0,
         coloniesFounded: 0, coloniesLost: 0, deaths: 0,
         mutations: 0, toxins: 0, hiddenTime: 0,
-        eaten: 0, copiesMade: 0, copiesLost: 0, decoyHits: 0
+        eaten: 0, copiesMade: 0, copiesLost: 0, copiesExpired: 0, decoyHits: 0
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0,         // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
@@ -219,7 +219,11 @@
       return { value: Math.max(1, Math.round(v)) };
     }
     // posiew wyhodowuje tylko bakterie — przy wirusie wynik jest ujemny
-    if (kind === 'culture') return { positive: s.kind === 'bacteria', infection: Math.round(b.infection) };
+    // posiew liczy też komórki patogenu we krwi: oryginał (jeśli płynie we krwi) i jego kopie
+    if (kind === 'culture') {
+      const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden ? 1 : 0;
+      return { positive: s.kind === 'bacteria', infection: Math.round(b.infection), cells: inBlood + s.copies.length };
+    }
     if (kind === 'echo') {
       // kolonie w mięśniu widać tylko jako niewyraźne zgrubienie ściany w przybliżonym miejscu
       return { colonies: s.colonies.map((c) => {
@@ -247,7 +251,7 @@
       text = `CRP ${r.value} mg/l.`;
       d.estInfection = Math.max(0, Math.min(100, Math.round((r.value - 4) / 2.4))); d.estT = T.sampleT; d.estExact = false;
     } else if (kind === 'culture') {
-      text = r.positive ? `Posiew dodatni, kolonizacja ${r.infection}%.` : 'Posiew ujemny: brak wzrostu bakterii.';
+      text = r.positive ? `Posiew dodatni, kolonizacja ${r.infection}%, komórki bakterii we krwi: ${r.cells ?? 0}.` : 'Posiew ujemny: brak wzrostu bakterii.';
       if (r.positive) {
         d.knownInfection = r.infection; d.resultTime = T.sampleT;
         d.estInfection = r.infection; d.estT = T.sampleT; d.estExact = true;
@@ -640,6 +644,8 @@
       let gone = f.y > 52 || f.x > 58 || f.y < -56;
       if (!gone && canEat && b.food < 100 && Math.hypot(f.x - b.x, f.y - b.y) < FD.eatRadius) {
         b.food = Math.min(100, b.food + FD.kinds[f.kind]); s.stats.eaten++; gone = true;
+        if (f.kind === 'lipid') b.hp = Math.min(s.kind === 'virus' ? C.virus.hp : B.hp, b.hp + FD.lipidHp);
+        if (f.kind === 'amino') b.points = (b.points || 0) + FD.aminoPoints;
       }
       if (gone) placeFood(s, f);
     }
@@ -647,6 +653,7 @@
     // --- kopie patogenu: płyną z prądem i lekko się ruszają ---
     for (let i = s.copies.length - 1; i >= 0; i--) {
       const c = s.copies[i];
+      if (s.time - c.born > C.copies.life) { s.copies.splice(i, 1); s.stats.copiesExpired = (s.stats.copiesExpired || 0) + 1; continue; }
       F.velocity(c.x, c.y, s.time, s.phase, fv);
       c.wob += dt * (0.8 + (c.id % 5) * 0.2);
       const sw = C.copies.swim;

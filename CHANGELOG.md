@@ -11,6 +11,12 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-10-09
+### Dodane
+- **Różne działanie pożywienia:** lipidy dodatkowo leczą (+4 życia), aminokwasy dają punkty mutacji (+0,15), glukoza tylko napełnia pasek.
+- **Kopie żyją 40 s:** w ostatnich 4 s maleją, potem obumierają. Nowa statystyka końcowa: kopie obumarłe.
+- **Posiew pokazuje komórki we krwi:** dodatni posiew podaje liczbę komórek bakterii we krwi (patogen, jeśli płynie we krwi, i jego kopie) — wskazówka dla lekarza, że patogen się rozmnaża.
+
 ## [0.19.0] - 2026-10-09
 ### Dodane
 - **Pożywienie we krwi:** glukoza (białe kryształki), aminokwasy (bursztynowe kuleczki) i lipidy (żółte kropelki) płyną z prądem. Patogen zjada je, wpływając w nie, i napełnia pasek „Pożywienie” (+10 / +15 / +25 do 100).
@@ -173,7 +179,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.16.0...v0.17.0

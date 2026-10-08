@@ -235,12 +235,12 @@
     for (const x of s.antibodies) a.push(r2(x.x), r2(x.y), r2(x.z), x.stuck ? 1 : 0, r2(x.ox), r2(x.oy), r2(x.rot), r2(x.life), r2(x.eff ?? 1));
     const c = [];
     for (const x of s.colonies) c.push(r2(x.x), r2(x.y), r2(x.nx), r2(x.ny), r2(x.born), x.seed, r2(x.size), x.id, x.inTissue ? 1 : 0);
-    // pożywienie: [x, y, rodzaj, id] z dokładnością 0,1; kopie: [x, y, kierunek, id]
+    // pożywienie: [x, y, rodzaj, id] z dokładnością 0,1; kopie: [x, y, kierunek, id, narodziny]
     const r1 = (v) => Math.round(v * 10) / 10;
     const fo = [];
     for (const x of s.food) fo.push(r1(x.x), r1(x.y), FOODK.indexOf(x.kind), x.id);
     const cp = [];
-    for (const x of s.copies) cp.push(r2(x.x), r2(x.y), r2(x.dir), x.id);
+    for (const x of s.copies) cp.push(r2(x.x), r2(x.y), r2(x.dir), x.id, r2(x.born));
     return {
       q: ++seq, t: s.time, run: s.running ? 1 : 0, ov: s.over, org: s.organ,
       b: [r2(b.x), r2(b.y), r2(b.vx), r2(b.vy), r2(b.dir), r2(b.hp), r2(b.infection), r2(b.slowT), r2(b.slowMul),
@@ -323,19 +323,19 @@
         if (x.stuck) { x.x = b.x + x.ox; x.y = b.y + x.oy; }
       }
       // pożywienie i kopie (wygładzane, gdy pod tym samym indeksem jest ten sam element)
-      const smooth = (arr, P, make) => {
-        const n4 = P.length / 4; arr.length = n4;
+      const smooth = (arr, P, W, make) => {
+        const n4 = P.length / W; arr.length = n4;
         for (let i = 0; i < n4; i++) {
-          const o = i * 4; let x = arr[i];
+          const o = i * W; let x = arr[i];
           if (!x || x.id !== P[o + 3]) { x = arr[i] = make(P, o); continue; }
           x.x += (P[o] - x.x) * k; x.y += (P[o + 1] - x.y) * k;
         }
       };
       b.food = snap.fd || 0;
-      if (snap.fo) smooth(s.food, snap.fo, (P, o) => ({ x: P[o], y: P[o + 1], kind: FOODK[P[o + 2]], id: P[o + 3], z: ((P[o + 3] * 0.618) % 1 - 0.5) * 1.6 }));
+      if (snap.fo) smooth(s.food, snap.fo, 4, (P, o) => ({ x: P[o], y: P[o + 1], kind: FOODK[P[o + 2]], id: P[o + 3], z: ((P[o + 3] * 0.618) % 1 - 0.5) * 1.6 }));
       if (snap.cp) {
-        smooth(s.copies, snap.cp, (P, o) => ({ x: P[o], y: P[o + 1], dir: P[o + 2], id: P[o + 3] }));
-        for (let i = 0; i < s.copies.length; i++) s.copies[i].dir = snap.cp[i * 4 + 2];
+        smooth(s.copies, snap.cp, 5, (P, o) => ({ x: P[o], y: P[o + 1], dir: P[o + 2], id: P[o + 3], born: P[o + 4] }));
+        for (let i = 0; i < s.copies.length; i++) s.copies[i].dir = snap.cp[i * 5 + 2];
       }
       const Cc = snap.c, m = Cc.length / 9;
       s.colonies.length = m;

@@ -71,7 +71,7 @@ Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, w
 - **Role:** `DD.send` sprawdza `N.allowed(cmd, rola)` przed wysłaniem, a host sprawdza ponownie po odebraniu.
 - **Gość** wygładza pozycje między paczkami i odrzuca paczki starsze od ostatniej.
 
-Pożywienie (`fo`) i kopie (`cp`) idą płaskimi tablicami `[x, y, rodzaj|kierunek, id]`; gość wygładza element tylko wtedy, gdy pod tym samym indeksem jest ten sam `id`.
+Pożywienie (`fo`) i kopie (`cp`) idą płaskimi tablicami `[x, y, rodzaj, id]` i `[x, y, kierunek, id, narodziny]`; gość wygładza element tylko wtedy, gdy pod tym samym indeksem jest ten sam `id`.
 
 Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `guestFrame()`.
 

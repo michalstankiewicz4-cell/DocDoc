@@ -26,7 +26,7 @@
         b: { x: b.x, y: b.y, vx: b.vx, vy: b.vy, dir: b.dir, hp: b.hp, slowT: b.slowT, hitFlash: b.hitFlash, dead: b.dead, inTissue: b.inTissue, z: b.z,
           transit: b.transit ? { to: b.transit.to, t: b.transit.t, total: b.transit.total } : null },
         ab: s.antibodies.map((a) => ({ x: a.x, y: a.y, z: a.z, stuck: a.stuck, ox: a.ox, oy: a.oy, rot: a.rot, life: a.life, eff: a.eff })),
-        cp: (s.copies || []).map((c) => ({ id: c.id, x: c.x, y: c.y, dir: c.dir })),
+        cp: (s.copies || []).map((c) => ({ id: c.id, x: c.x, y: c.y, dir: c.dir, born: c.born })),
         fo: (s.food || []).map((f) => ({ id: f.id, x: f.x, y: f.y, z: f.z, kind: f.kind })),
         temp: s.doctor.temp
       });
@@ -69,7 +69,7 @@
       });
       g.copies = e0.cp.map((x) => {
         const y = e1.cp.find((c) => c.id === x.id);
-        return y ? { id: x.id, x: lerp(x.x, y.x, k), y: lerp(x.y, y.y, k), dir: x.dir } : x;
+        return y ? { id: x.id, x: lerp(x.x, y.x, k), y: lerp(x.y, y.y, k), dir: x.dir, born: x.born } : x;
       });
       g.food = e0.fo;
       g.colonies = live.colonies.filter((c) => c.born <= g.time);

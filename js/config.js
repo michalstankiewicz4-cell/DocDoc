@@ -91,10 +91,12 @@ DD.CONFIG = {
   // pożywienie we krwi: patogen zjada je, wpływając w nie; pełny pasek pożywienia pozwala się rozmnożyć (R)
   food: {
     count: 110, eatRadius: 0.6,
-    kinds: { glucose: 10, amino: 15, lipid: 25 }   // ile pożywienia daje każdy rodzaj
+    kinds: { glucose: 10, amino: 15, lipid: 25 },  // ile pożywienia daje każdy rodzaj
+    lipidHp: 4,          // lipidy dodatkowo leczą (życie)
+    aminoPoints: 0.15    // aminokwasy dodatkowo dają punkty mutacji
   },
   // kopie patogenu: wabiki dla przeciwciał (płyną z prądem, giną od jednego trafienia)
-  copies: { max: 6, cost: 100, swim: 2.5 },
+  copies: { max: 6, cost: 100, swim: 2.5, life: 40, fade: 4 },   // kopia żyje `life` s, w ostatnich `fade` s maleje
 
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 

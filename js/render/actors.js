@@ -280,12 +280,14 @@
         const c = s.copies[i];
         P.b.visible = !!c && !isVirus; P.v.visible = !!c && isVirus;
         if (!c) return;
-        if (isVirus) { P.v.position.set(c.x, c.y, 0); P.v.rotation.set(animT * 0.7 + c.id, animT * 0.45, animT * 0.3); P.v.scale.setScalar(1.6); }
+        // w ostatnich sekundach życia kopia maleje
+        const left = C.copies.life - (s.time - (c.born ?? s.time)), sc = Math.max(0.15, Math.min(1, left / C.copies.fade));
+        if (isVirus) { P.v.position.set(c.x, c.y, 0); P.v.rotation.set(animT * 0.7 + c.id, animT * 0.45, animT * 0.3); P.v.scale.setScalar(1.6 * sc); }
         else {
           P.b.position.set(c.x, c.y, 0);
           P.b.rotation.set(0, 0, c.dir - Math.PI / 2);
           P.b.rotateY(Math.sin(animT * 3 + c.id) * 0.25);
-          P.b.scale.setScalar(1);
+          P.b.scale.setScalar(sc);
         }
       });
 

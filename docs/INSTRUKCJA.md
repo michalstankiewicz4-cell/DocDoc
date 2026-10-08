@@ -81,8 +81,8 @@ Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie w
   - przeciwciała cię nie dosięgną, a antybiotyki i lek przeciwwirusowy działają o połowę słabiej,
   - patogen stale żeruje, a `E` zakłada **ukrytą kolonię** — echo pokazuje ją tylko jako niewyraźne zgrubienie ściany,
   - do krwi wracasz, podpływając do ściany naczynia.
-- **Pożywienie:** we krwi płyną z prądem drobiny pożywienia: glukoza (białe kryształki, +10), aminokwasy (bursztynowe kuleczki, +15) i lipidy (żółte kropelki, +25). Patogen zjada je, wpływając w nie (we krwi, nie w mięśniu ani w ukryciu). Pasek „Pożywienie” ma 100 punktów.
-- **Rozmnożenie** (`R`, przy pełnym pasku): powstaje kopia patogenu, która wygląda tak samo jak on i dryfuje z prądem krwi. Najwyżej 6 kopii naraz. Kopie nie zakładają kolonii i nie są sterowane.
+- **Pożywienie:** we krwi płyną z prądem drobiny pożywienia: glukoza (białe kryształki, +10), aminokwasy (bursztynowe kuleczki, +15) i lipidy (żółte kropelki, +25). Patogen zjada je, wpływając w nie (we krwi, nie w mięśniu ani w ukryciu). Pasek „Pożywienie” ma 100 punktów. Lipidy dodatkowo leczą (+4 życia), a aminokwasy dają punkty mutacji (+0,15).
+- **Rozmnożenie** (`R`, przy pełnym pasku): powstaje kopia patogenu, która wygląda tak samo jak on i dryfuje z prądem krwi. Najwyżej 6 kopii naraz. Kopie nie zakładają kolonii i nie są sterowane. Kopia żyje 40 s; w ostatnich sekundach maleje i obumiera.
   - Przeciwciało w pobliżu wybiera cel losowo spośród patogenu i jego kopii, więc kopie odciągają część przeciwciał. Trafiona kopia ginie razem z przeciwciałem.
 - **Ukrycie** (`F`, przy własnej kolonii): patogen chowa się w kolonii. Przeciwciała go nie widzą, ale nie może się ruszać. Gorączka i leki nadal działają. Gdy kolonia zostanie zniszczona, patogen wypada z ukrycia.
 - **Mutacje:** rosnące kolonie dają punkty mutacji (widać je w panelu w prawym dolnym rogu). Za punkty (1, 2, 3 za kolejne poziomy) kupujesz:
@@ -121,7 +121,7 @@ Każdą akcję można też kliknąć w panelu.
    | Badanie | Czas | Co pokazuje |
    | --- | --- | --- |
    | CRP | 4 s | poziom stanu zapalnego (przybliżony, z szumem pomiaru); monitor pokazuje z niego szacunek zakażenia „≈” |
-   | Posiew krwi | 12 s | dokładną kolonizację i zdjęcie miejsca, w którym był patogen |
+   | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek bakterii we krwi (patogen i jego kopie) i zdjęcie miejsca, w którym był patogen |
    | Echo serca | 8 s | obraz serca w stylu USG: kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
 
