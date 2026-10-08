@@ -11,6 +11,12 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-10-09
+### Dodane
+- **Start w nerce:** przycisk „Nerka” na ekranie wyboru narządu jest odblokowany; patogen zaczyna w tętnicy łukowatej nerki.
+### Zmienione
+- „Zagraj jeszcze raz” zaczyna w tym samym narządzie co poprzednia runda.
+
 ## [0.23.0] - 2026-10-09
 ### Dodane
 - **Szukanie patogenu pod mikroskopem:** preparat jest 3 × 3 razy większy od pola widzenia; lekarz przesuwa go myszą albo strzałkami. Rodzaj i podpowiedź leczenia pojawiają się dopiero, gdy drobnoustrój trafi w środek okularu (zielony pierścień). Pusty preparat kończy się wynikiem „Brak drobnoustrojów” po przeszukaniu większości pola.
@@ -212,7 +218,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.23.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.24.0...HEAD
+[0.24.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.20.0...v0.21.0

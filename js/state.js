@@ -108,12 +108,13 @@
     const d = s.doctor;
     switch (cmd.type) {
       case 'game.start': {
-        if (cmd.organ !== 'heart') return;
+        if (!H.START[cmd.organ]) return;   // narządy, w których można zacząć: serce, nerka
         // cmd.kind: gatunek (C.species) albo dawne 'bacteria' / 'virus'
         const species = G.speciesOf(cmd.kind || s.nextKind);
         const kind = C.species[species].kind;
         const nextKind = s.nextKind;
-        Object.assign(s, G.create(), { running: true, organ: 'heart', kind, species, nextKind });
+        Object.assign(s, G.create(), { running: true, organ: cmd.organ, kind, species, nextKind });
+        { const st = H.START[cmd.organ]; s.bact.x = st.x; s.bact.y = st.y; }
         s.seed = (Math.random() * 4294967296) >>> 0;   // każda runda inna (liczy tylko host)
         if (kind === 'virus') { s.bact.hp = C.virus.hp; s.stats.minHp = C.virus.hp; }
         else s.bact.natural = C.species[species].natural;

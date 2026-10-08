@@ -60,6 +60,8 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 ### Wybór patogenu
 Przed startem gracz patogenu wybiera jedną z trzech bakterii albo jeden z trzech wirusów (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.
 
+**Miejsce startu:** serce (żyła główna górna) albo nerka (tętnica łukowata w nerce). Pozostałe narządy na ekranie wyboru są jeszcze niedostępne.
+
 | | Bakterie | Wirusy |
 | --- | --- | --- |
 | Życie | 100 | 70 |

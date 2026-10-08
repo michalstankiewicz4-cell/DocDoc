@@ -53,12 +53,13 @@
         // rodzaj patogenu wybiera gracz patogenu (lokalnie albo host-patogen); host-lekarz bierze wybór gościa
         DD.send({ type: 'game.start', organ: b.dataset.organ, kind: N.role === 'doc' ? undefined : DD.chosenKind });
         $('start').hidden = true;
-        if (view) { view.tx = C.bacteria.start.x; view.ty = C.bacteria.start.y; }
+        const st = DD.Heart.START[b.dataset.organ] || DD.Heart.START.heart;
+        if (view) { view.tx = st.x; view.ty = st.y; }
       });
     });
     $('end-swap').addEventListener('click', () => DD.Match.swap());
     $('end-again').addEventListener('click', () => {
-      DD.send({ type: 'game.start', organ: 'heart' });
+      DD.send({ type: 'game.start', organ: state.organ || 'heart' });
       $('end').hidden = true;
     });
 

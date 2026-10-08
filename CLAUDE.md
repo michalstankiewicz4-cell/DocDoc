@@ -77,6 +77,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Pożywienie we krwi, rozmnożenie, przeciwciała atakują kopie (v0.19.0)
 - [x] Rodzaje bakterii i wirusów na start, mikroskop dla lekarza (v0.21.0)
 - [x] Układ krążenia rozszerzony o wątrobę i nerkę (v0.22.0)
+- [x] Start w nerce (v0.24.0)
 - [x] Bez podglądu z opóźnieniem; zdjęcie przy mikroskopie; szukanie patogenu na preparacie (v0.23.0)
 - [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
@@ -115,4 +116,5 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
   Wyjście górą aorty → żyła główna górna; dół aorty → nogi → żyła główna dolna; tętnica krezkowa → jelita → żyła wrotna.
   Pożywienie 170, przeciwciała 56 na dawkę, pożywienie po 90 s bez zjedzenia przenosi się w inne miejsce.
   Głębokość kanałów w narządach mniejsza (dno −1,8, wierzch 1,4) niż w sercu.
+- Start w nerce (`Heart.START.kidney`): punkt na tętnicy łukowatej (kąt 2,1 rad). Wątroba nie ma przycisku startu.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk).

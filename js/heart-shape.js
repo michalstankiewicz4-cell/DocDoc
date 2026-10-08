@@ -271,7 +271,12 @@
     return { sdf, NX, NY, sx, sy, organ };
   }
 
-  const H = { ELLIPSES, VESSELS, VALVES, EXITS, INLETS, ROUTES, KIDNEY, LIVER, HEART_BOX, ABDOMEN_BOX };
+  // miejsca startu patogenu (ekran wyboru narządu)
+  const START = {
+    heart: { x: C.bacteria.start.x, y: C.bacteria.start.y },
+    kidney: { x: KIDNEY.c[0] + Math.cos(2.1) * KIDNEY.arc[0], y: KIDNEY.c[1] + Math.sin(2.1) * KIDNEY.arc[1] }   // tętnica łukowata
+  };
+  const H = { ELLIPSES, VESSELS, VALVES, EXITS, INLETS, ROUTES, KIDNEY, LIVER, HEART_BOX, ABDOMEN_BOX, START };
   H.organAt = organAt;
 
   H.init = function () {
