@@ -236,13 +236,14 @@
     return {
       q: ++seq, t: s.time, run: s.running ? 1 : 0, ov: s.over, org: s.organ,
       b: [r2(b.x), r2(b.y), r2(b.vx), r2(b.vy), r2(b.dir), r2(b.hp), r2(b.infection), r2(b.slowT), r2(b.slowMul),
-        r2(b.hitFlash), b.contact ? 1 : 0, r2(b.resist.antibodies), r2(b.resist.fever), r2(b.resist.slow),
+        r2(b.hitFlash), b.contact ? 1 : 0, 0, 0, 0,
         r2(b.dead), r2(b.colonyCd), b.feeding ? 1 : 0],
       tr: b.transit ? [b.transit.to === 'lungs' ? 1 : 2, r2(b.transit.t), b.transit.total] : 0,
       d: [0, 0, 0, d.unlocked ? 1 : 0, d.knownInfection ?? -1,
-        d.resultTime ?? -1, r2(d.cd.antibodies), r2(d.cd.fever), r2(d.cd.slow), r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT), r2(s.patient.cond)],
+        d.resultTime ?? -1, 0, 0, 0, r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT), r2(s.patient.cond)],
       a, c,
       st: s.over ? s.stats : 0,
+      k: s.kind, nr: b.natural, rs: b.resist, cdd: d.cd, dg: s.drugs,
       // badania bez wyników oczekujących (gość dostaje wynik dopiero, gdy jest gotowy)
       dt: Object.fromEntries(Object.entries(d.tests).map(([k, T]) => [k, Object.assign({}, T, { pending: null })])),
       dk: [d.resultSeq, d.estInfection ?? -1, d.estT ?? -1, d.estExact ? 1 : 0],
@@ -279,7 +280,7 @@
       if (snap.dt) { s.doctor.tests = snap.dt; s.doctor.test = snap.dt.culture; }
       if (snap.dk) { s.doctor.resultSeq = snap.dk[0]; s.doctor.estInfection = snap.dk[1] < 0 ? null : snap.dk[1]; s.doctor.estT = snap.dk[2]; s.doctor.estExact = !!snap.dk[3]; }
       s.coughs = snap.cg || 0;
-      const b = s.bact, v = snap.b;
+      const b = s.bact, v = snap.b, d0 = s.doctor;
       const far = Math.hypot(v[0] - b.x, v[1] - b.y) > 4;
       b.x = far ? v[0] : b.x + (v[0] - b.x) * k;
       b.y = far ? v[1] : b.y + (v[1] - b.y) * k;
@@ -287,7 +288,8 @@
       let dd = v[4] - b.dir; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
       b.dir += dd * k;
       b.hp = v[5]; b.infection = v[6]; b.slowT = v[7]; b.slowMul = v[8]; b.hitFlash = Math.max(b.hitFlash - dt * 2.5, v[9]);
-      b.contact = !!v[10]; b.resist = { antibodies: v[11], fever: v[12], slow: v[13] };
+      b.contact = !!v[10];
+      if (snap.rs) { b.resist = snap.rs; b.natural = snap.nr; s.kind = snap.k; s.drugs = snap.dg; d0.cd = snap.cdd; }
       b.dead = v[14]; b.colonyCd = v[15]; b.feeding = !!v[16];
       b.transit = snap.tr ? { to: snap.tr[0] === 1 ? 'lungs' : 'body', t: snap.tr[1], total: snap.tr[2] } : null;
       b.place = H.placeName(b.x, b.y);
@@ -295,7 +297,7 @@
       const d = s.doctor, w = snap.d;
       d.unlocked = !!w[3];
       d.knownInfection = w[4] < 0 ? null : w[4]; d.resultTime = w[5] < 0 ? undefined : w[5];
-      d.cd.antibodies = w[6]; d.cd.fever = w[7]; d.cd.slow = w[8]; d.feverT = w[9]; d.feverEff = w[10]; d.temp = w[11]; s.patient.cond = w[13];
+      d.feverT = w[9]; d.feverEff = w[10]; d.temp = w[11]; s.patient.cond = w[13];
       // przeciwciała
       const A = snap.a, n = A.length / 9;
       if (s.antibodies.length !== n) s.antibodies.length = n;

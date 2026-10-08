@@ -80,10 +80,13 @@
         if (N.mode === 'host') {
           $('start').hidden = false;
           document.body.dataset.net = 'host';
+          DD.updateKindPickers();
           DD.showOrganPick(true);
           $('start-net-status').textContent = `Połączono z drugim graczem. Grasz jako ${ROLE_NAME[N.role]}. Wybierz narząd, żeby zacząć.`;
         } else {
           document.body.dataset.net = 'guest';
+          DD.updateKindPickers();
+          if (N.role === 'bact') DD.send({ type: 'bact.kind', kind: DD.chosenKind });
           $('wait-role').textContent = ROLE_NAME[N.role];
           $('wait').hidden = false;
         }

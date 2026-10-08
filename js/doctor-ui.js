@@ -5,11 +5,13 @@
   const $ = (id) => document.getElementById(id);
 
   const ACTIONS = [
-    { cmd: 'doc.antibodies', key: '1', cd: 'antibodies', name: 'Przeciwciała', desc: 'Immunoglobuliny we krwi. Szukają bakterii i przyklejają się do niej.' },
-    { cmd: 'doc.fever',      key: '2', cd: 'fever',      name: 'Gorączka',     desc: 'Temperatura do 39,6 °C. Osłabia bakterię i spowalnia kolonizację.' },
-    { cmd: 'doc.slow',       key: '3', cd: 'slow',       name: 'Antybiotyk',   desc: 'Wlew bakteriostatyczny. Bakteria porusza się wolniej.' }
+    { cmd: 'doc.antibodies', key: '1', cd: 'antibodies', name: 'Przeciwciała', desc: 'Immunoglobuliny we krwi. Szukają patogenu i kolonii, przyklejają się do nich.' },
+    { cmd: 'doc.fever',      key: '2', cd: 'fever',      name: 'Gorączka',     desc: 'Temperatura do 39,6 °C. Osłabia patogen i spowalnia wzrost kolonii.' },
+    { cmd: 'doc.abxA',       key: '3', cd: 'abxA',       name: 'Antybiotyk β-laktamowy', desc: 'Bakteriobójczy: niszczy bakterie i kurczy kolonie. Nie działa na wirusy.' },
+    { cmd: 'doc.abxB',       key: '4', cd: 'abxB',       name: 'Antybiotyk makrolidowy', desc: 'Bakteriostatyczny: spowalnia bakterie i wstrzymuje wzrost kolonii. Nie działa na wirusy.' },
+    { cmd: 'doc.antiviral',  key: '5', cd: 'antiviral',  name: 'Lek przeciwwirusowy',    desc: 'Hamuje namnażanie wirusa i go osłabia. Nie działa na bakterie.' }
   ];
-  const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, slow: D.slow.cooldown };
+  const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, abxA: D.abxA.cooldown, abxB: D.abxB.cooldown, antiviral: D.antiviral.cooldown };
   const TESTS = [
     { kind: 'crp', key: 'Z', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
     { kind: 'culture', key: 'X', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
@@ -148,7 +150,10 @@
           ['Pierwsze leczenie', at(S.firstTreatAt)],
           ['Podane przeciwciała', String(used.antibodies || 0)],
           ['Wywołane gorączki', String(used.fever || 0)],
-          ['Podane antybiotyki', String(used.slow || 0)],
+          ['Antybiotyk β-laktamowy', String(used.abxA || 0)],
+          ['Antybiotyk makrolidowy', String(used.abxB || 0)],
+          ['Lek przeciwwirusowy', String(used.antiviral || 0)],
+          ['Obrażenia od leków', num(S.dmgDrugs) + ' pkt'],
           ['Trafienia przeciwciał', String(S.abHits || 0)],
           ['Obrażenia od przeciwciał', num(S.dmgAntibodies) + ' pkt'],
           ['Obrażenia od gorączki', num(S.dmgFever) + ' pkt'],
@@ -191,8 +196,9 @@
       if (T.abg.res) {
         $('res-abg').hidden = false; time($('res-abg'), T.abg);
         const lbl = (r) => r < 0.2 ? ['wrażliwa', 'ok'] : r < 0.5 ? ['średnio wrażliwa', 'warm'] : ['oporna', 'high'];
-        const rows = [['Przeciwciała', T.abg.res.antibodies], ['Gorączka', T.abg.res.fever], ['Antybiotyk', T.abg.res.slow]];
-        $('res-abg-l').innerHTML = rows.map(([k, r]) => { const [t, c] = lbl(r); return `<div><dt>${k}</dt><dd data-state="${c}">${t}, skuteczność ${Math.round((1 - r) * 100)}%</dd></div>`; }).join('');
+        const R = T.abg.res;
+        const rows = [['Przeciwciała', R.antibodies], ['Gorączka', R.fever], ['β-laktam', R.abxA], ['Makrolid', R.abxB]];
+        $('res-abg-l').innerHTML = rows.map(([k, e]) => { const [t, c] = lbl(1 - e); return `<div><dt>${k}</dt><dd data-state="${c}">${t}, skuteczność ${Math.round(e * 100)}%</dd></div>`; }).join('');
       } else $('res-abg').hidden = true;
     }
 
@@ -250,12 +256,12 @@
         el.querySelector('.action-cd').style.transform = `scaleX(${cd > 0 ? cd / COOLDOWN[a.cd] : 0})`;
         let st = locked ? 'Wymaga wyniku badania' : cd > 0 ? `Gotowe za ${Math.ceil(cd)} s` : 'Gotowe';
         if (a.cd === 'fever' && fever) st = `Trwa jeszcze ${Math.ceil(d.feverT)} s`;
-        if (a.cd === 'slow' && b.slowT > 0) st = `Działa jeszcze ${Math.ceil(b.slowT)} s`;
+        if (s.drugs[a.cd] && s.drugs[a.cd].t > 0) st = `We krwi jeszcze ${Math.ceil(s.drugs[a.cd].t)} s`;
         el.querySelector('.action-state').textContent = st;
         const eff = 1 - b.resist[a.cd];
         const effEl = el.querySelector('.action-eff');
         const cost = C.patient.sideEffect[a.cd] || 0;
-        effEl.textContent = `Skuteczność ${Math.round(eff * 100)}%` + (cost ? `, stan pacjenta −${cost}` : '');
+        effEl.textContent = `Dawka ${Math.round(eff * 100)}%` + (cost ? `, stan pacjenta −${cost}` : '');
         effEl.dataset.level = eff > 0.75 ? 'full' : eff > 0.45 ? 'mid' : 'low';
       }
 
@@ -273,7 +279,8 @@
         }
       }
 
-      // HUD bakterii
+      // HUD patogenu
+      document.querySelectorAll('.js-kind-name').forEach((el) => { el.textContent = s.kind === 'virus' ? 'wirus' : 'bakteria'; });
       $('h-place').textContent = b.transit ? (b.transit.to === 'lungs' ? 'Krążenie płucne' : 'Krążenie duże') : b.place;
       $('h-hp').style.transform = `scaleX(${b.hp / C.bacteria.hp})`;
       $('h-hp-val').textContent = Math.ceil(b.hp);
@@ -291,11 +298,15 @@
       if (b.dead > 0) $('respawn-t').textContent = Math.ceil(b.dead);
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;
       $('s-fever').hidden = !(d.temp > 37.4);
-      $('s-slow').hidden = !(b.slowT > 0);
+      // leki we krwi widziane przez patogen (z rzeczywistym działaniem)
+      const DN = { abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'lek przeciwwirusowy' };
+      const active = Object.keys(DN).filter((k) => s.drugs[k] && s.drugs[k].t > 0);
+      $('s-slow').hidden = active.length === 0;
+      $('s-slow').textContent = active.map((k) => `${DN[k]}: ${s.drugs[k].eff > 0.05 ? 'działa ' + Math.round(s.drugs[k].eff * 100) + '%' : 'nie działa'}`).join(', ');
       $('s-ab').hidden = stuck === 0;
       $('s-ab-n').textContent = stuck;
       $('s-ab-near').hidden = !(s.antibodies.length > stuck && stuck === 0 && s.antibodies.some(a => Math.hypot(a.x - b.x, a.y - b.y) < 12));
-      const RN = { antibodies: 'przeciwciała', fever: 'gorączka', slow: 'antybiotyk' };
+      const RN = { antibodies: 'przeciwciała', fever: 'gorączka', abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'przeciwwirusowy' };
       const res = Object.keys(RN).filter(k => b.resist[k] > 0).map(k => `${RN[k]} ${Math.round(b.resist[k] * 100)}%`);
       $('s-res').hidden = res.length === 0;
       $('s-res').textContent = 'Oporność: ' + res.join(', ');
@@ -306,10 +317,11 @@
       const end = $('end');
       if (s.over && end.hidden) {
         end.hidden = false;
-        $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : 'Wygrywa bakteria';
+        const kn = s.kind === 'virus' ? 'wirus' : 'bakteria';
+        $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`;
         $('end-text').textContent = s.over === 'doctor'
-          ? `Zakażenie wyleczone po ${mmss(s.time)}: nie ma ani bakterii, ani kolonii.`
-          : `Pacjent w sepsie po ${mmss(s.time)}. Bakterii zostało ${Math.ceil(b.hp)} punktów życia.`;
+          ? `Zakażenie wyleczone po ${mmss(s.time)}. Patogenem był${s.kind === 'virus' ? ' wirus' : 'a bakteria'}.`
+          : `Pacjent w sepsie po ${mmss(s.time)}. Patogenem był${s.kind === 'virus' ? ' wirus' : 'a bakteria'}.`;
         renderStats(s);
         $('end-again').focus();
       }

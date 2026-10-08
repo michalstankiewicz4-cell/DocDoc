@@ -121,6 +121,28 @@
     scene.add(bact);
     A.bact = bact; A.bodyMat = body.material; A.flagMat = flagMat;
 
+    // --- wirus: kapsyd (dwudziestościan) z wypustkami białkowymi ---
+    const virus = new THREE.Group();
+    const capsidGeo = new THREE.IcosahedronGeometry(0.2, 1);
+    const spikeParts = [];
+    const ico = new THREE.IcosahedronGeometry(1, 0), ip = ico.attributes.position, seenV = new Set();
+    for (let i = 0; i < ip.count; i++) {
+      const v = new THREE.Vector3(ip.getX(i), ip.getY(i), ip.getZ(i)).normalize();
+      const key = v.toArray().map((x) => x.toFixed(3)).join(',');
+      if (seenV.has(key)) continue; seenV.add(key);
+      const stalk = new THREE.CylinderGeometry(0.018, 0.022, 0.13, 6); stalk.translate(0, 0.065, 0);
+      const knob = new THREE.SphereGeometry(0.04, 8, 6); knob.translate(0, 0.14, 0);
+      const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), v);
+      const rm = new THREE.Matrix4().makeRotationFromQuaternion(q);
+      for (const g of [stalk, knob]) { g.applyMatrix4(rm); g.translate(v.x * 0.19, v.y * 0.19, v.z * 0.19); spikeParts.push(g); }
+    }
+    const capsidMat = surfMat({ albedo: 0x7a5bc4, sssCol: 0xc9a2ff, sss: 1.2, rough: 0.3, wet: 0.7, rim: 2.4, rimCol: 0xd9b8ff, emit: 0x1d0b3a, grain: 0.5 });
+    const spikeMat = surfMat({ albedo: 0xe0c8ff, sssCol: 0xffd0f0, sss: 0.8, rough: 0.35, wet: 0.5, rim: 1.4, rimCol: 0xf3e2ff, emit: 0x2a1240 });
+    virus.add(new THREE.Mesh(capsidGeo, capsidMat));
+    virus.add(new THREE.Mesh(mergeGeos(spikeParts.map((g) => g.index ? g.toNonIndexed() : g)), spikeMat));
+    virus.scale.setScalar(1.6);
+    scene.add(virus);
+
     // --- przeciwciała ---
     const abMax = 120;
     const abMesh = new THREE.InstancedMesh(antibodyGeometry(), surfMat({
@@ -129,8 +151,13 @@
     abMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); abMesh.frustumCulled = false; abMesh.count = 0;
     scene.add(abMesh);
 
-    // --- kolonie (biofilm) ---
+    // --- kolonie: biofilm bakterii (zielony) albo zakażone komórki wirusa (fioletowe) ---
     const colMax = 600;
+    const COL_LOOK = {
+      bacteria: { albedo: 0x7fbf3a, sssCol: 0xc8ff60, rimCol: 0xd8ff80, emit: 0x0c1a02 },
+      virus: { albedo: 0x9a5fd0, sssCol: 0xe0a0ff, rimCol: 0xeccbff, emit: 0x1a0830 }
+    };
+    let colKind = 'bacteria';
     const colMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.16, 2), surfMat({
       albedo: 0x7fbf3a, sssCol: 0xc8ff60, sss: 1.0, rough: 0.2, wet: 1.0, rim: 1.0, rimCol: 0xd8ff80, emit: 0x0c1a02, grain: 0.5
     }), colMax);
@@ -185,8 +212,23 @@
     A.update = function (s, dt) {
       animT += dt;
       const b = s.bact;
-      // bakteria
-      bact.visible = !b.transit && !b.dead;
+      // patogen: bakteria albo wirus
+      const isVirus = s.kind === 'virus';
+      virus.visible = isVirus && !b.transit && !b.dead;
+      if (isVirus) {
+        virus.position.set(b.x, b.y, 0);
+        virus.rotation.set(animT * 0.7, animT * 0.45, animT * 0.3);
+        capsidMat.uniforms.uTimeL.value = animT;
+        capsidMat.uniforms.uFlash.value = b.hitFlash;
+        capsidMat.uniforms.uSlow.value = b.slowT > 0 ? Math.min(1, b.slowT) : 0;
+        virus.scale.setScalar(1.6 * (0.85 + 0.15 * b.hp / C.virus.hp));
+      }
+      if (colKind !== s.kind) {
+        colKind = s.kind || 'bacteria';
+        const L = COL_LOOK[colKind] || COL_LOOK.bacteria, u = colMesh.material.uniforms;
+        u.uAlbedo.value.set(L.albedo); u.uSssCol.value.set(L.sssCol); u.uRimCol.value.set(L.rimCol); u.uEmit.value.set(L.emit);
+      }
+      bact.visible = !isVirus && !b.transit && !b.dead;
       bact.position.set(b.x, b.y, 0);
       bact.rotation.set(0, 0, b.dir - Math.PI / 2);
       bact.rotateY(Math.sin(animT * 3) * 0.25);

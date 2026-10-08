@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.12.0">
+<link rel="stylesheet" href="css/style.css?v=0.13.0">
 </head>
 <body>
 <main class="split">
@@ -17,7 +17,7 @@
     <div id="view-bacteria" class="view"></div>
 
     <div class="hud hud-top">
-      <p class="hud-who">Gracz 1, bakteria</p>
+      <p class="hud-who">Gracz 1, <span class="js-kind-name">bakteria</span></p>
       <p id="h-place" class="hud-place">Żyła główna górna</p>
     </div>
 
@@ -173,24 +173,24 @@
   <div class="overlay-card">
     <h1 class="logo">PatientZero</h1>
     <p class="version-tag">wersja <span class="js-version"></span></p>
-    <p class="lead local-only">Asymetryczna gra: bakteria próbuje zainfekować ciało, lekarz próbuje ją zniszczyć.</p>
+    <p class="lead local-only">Asymetryczna gra: patogen próbuje zainfekować pacjenta, lekarz próbuje go wyleczyć.</p>
     <p id="start-net-status" class="net-ready"></p>
     <div class="roles">
       <div class="role role-bact">
-        <h2>Bakteria</h2>
-        <p>Płyń z prądem krwi, przeciskaj się przez zastawki i przyczepiaj do ścian serca. Kolonizacja 100% to wygrana.</p>
-        <p class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ruch, kółko myszy przybliża</p>
+        <h2>Patogen: bakteria albo wirus</h2>
+        <p>Płyń z prądem krwi, zakładaj kolonie na ścianach serca i doprowadź pacjenta do sepsy.</p>
+        <p class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ruch, <kbd>E</kbd> kolonia</p>
       </div>
       <div class="role role-doc">
         <h2>Lekarz</h2>
-        <p>Zleć badanie krwi, a po wyniku lecz: przeciwciała, gorączka, antybiotyk. Zniszczenie bakterii to wygrana.</p>
-        <p class="keys"><kbd>B</kbd> badanie, <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> leczenie</p>
+        <p>Rozpoznaj patogen badaniami i dobierz leczenie. Wygrywasz, gdy nie zostanie ani patogen, ani kolonia.</p>
+        <p class="keys"><kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>V</kbd> badania, <kbd>1</kbd>–<kbd>5</kbd> leczenie</p>
       </div>
     </div>
     <div id="mode-pick" class="modes">
       <section class="mode mode-dev" aria-labelledby="m-dev">
         <h2 id="m-dev">Tryb deweloperski</h2>
-        <p>Jeden gracz na jednym ekranie steruje obiema połówkami: lewa to bakteria, prawa to lekarz. Do testów i nauki zasad.</p>
+        <p>Jeden gracz na jednym ekranie steruje obiema połówkami: lewa to patogen, prawa to lekarz. Do testów i nauki zasad.</p>
         <button id="mode-dev" class="primary" type="button">Graj sam</button>
       </section>
       <section class="mode mode-duo" aria-labelledby="m-duo">
@@ -205,8 +205,14 @@
 
     <div id="organ-pick" class="organ-pick" hidden>
       <div class="organ-head">
-        <h2 class="pick-title">Gdzie zaczyna bakteria?</h2>
+        <h2 class="pick-title">Gdzie zaczyna patogen?</h2>
         <button id="mode-back" class="link-btn local-only" type="button">Zmień tryb</button>
+      </div>
+      <div class="kind-pick js-kind-pick">
+        <span class="kind-label">Patogen</span>
+        <button type="button" data-kind="bacteria" aria-pressed="true">Bakteria</button>
+        <button type="button" data-kind="virus" aria-pressed="false">Wirus</button>
+        <span class="hint">Lekarz nie wie, którego wybrałeś.</span>
       </div>
       <div class="organs">
         <button type="button" class="organ" data-organ="heart" id="organ-heart"><span>Serce</span><small>Gotowe</small></button>
@@ -274,6 +280,12 @@
   <div class="overlay-card overlay-card-small">
     <h2 class="end-title">Połączono</h2>
     <p>Grasz jako <b id="wait-role"></b>. Host wybiera narząd i za chwilę zacznie grę.</p>
+    <div id="wait-kind" class="kind-pick js-kind-pick" hidden>
+      <span class="kind-label">Patogen</span>
+      <button type="button" data-kind="bacteria" aria-pressed="true">Bakteria</button>
+      <button type="button" data-kind="virus" aria-pressed="false">Wirus</button>
+      <span class="hint">Lekarz nie wie, którego wybrałeś.</span>
+    </div>
   </div>
 </div>
 
@@ -335,25 +347,25 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.12.0"></script>
-<script src="js/config.js?v=0.12.0"></script>
-<script src="js/heart-shape.js?v=0.12.0"></script>
-<script src="js/flow.js?v=0.12.0"></script>
-<script src="js/state.js?v=0.12.0"></script>
-<script src="js/input.js?v=0.12.0"></script>
-<script src="js/render/glsl.js?v=0.12.0"></script>
-<script src="js/render/tissue.js?v=0.12.0"></script>
-<script src="js/render/cells.js?v=0.12.0"></script>
-<script src="js/render/actors.js?v=0.12.0"></script>
-<script src="js/render/post.js?v=0.12.0"></script>
-<script src="js/render/view.js?v=0.12.0"></script>
-<script src="js/minimap.js?v=0.12.0"></script>
-<script src="js/audio.js?v=0.12.0"></script>
-<script src="js/doctor-ui.js?v=0.12.0"></script>
-<script src="js/doctor-cam.js?v=0.12.0"></script>
-<script src="js/net.js?v=0.12.0"></script>
-<script src="js/lobby.js?v=0.12.0"></script>
-<script src="js/net-status.js?v=0.12.0"></script>
-<script src="js/main.js?v=0.12.0"></script>
+<script src="js/version.js?v=0.13.0"></script>
+<script src="js/config.js?v=0.13.0"></script>
+<script src="js/heart-shape.js?v=0.13.0"></script>
+<script src="js/flow.js?v=0.13.0"></script>
+<script src="js/state.js?v=0.13.0"></script>
+<script src="js/input.js?v=0.13.0"></script>
+<script src="js/render/glsl.js?v=0.13.0"></script>
+<script src="js/render/tissue.js?v=0.13.0"></script>
+<script src="js/render/cells.js?v=0.13.0"></script>
+<script src="js/render/actors.js?v=0.13.0"></script>
+<script src="js/render/post.js?v=0.13.0"></script>
+<script src="js/render/view.js?v=0.13.0"></script>
+<script src="js/minimap.js?v=0.13.0"></script>
+<script src="js/audio.js?v=0.13.0"></script>
+<script src="js/doctor-ui.js?v=0.13.0"></script>
+<script src="js/doctor-cam.js?v=0.13.0"></script>
+<script src="js/net.js?v=0.13.0"></script>
+<script src="js/lobby.js?v=0.13.0"></script>
+<script src="js/net-status.js?v=0.13.0"></script>
+<script src="js/main.js?v=0.13.0"></script>
 </body>
 </html>

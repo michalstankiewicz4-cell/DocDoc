@@ -7,7 +7,7 @@ Zmiany między wersjami: [CHANGELOG.md](../CHANGELOG.md).
 
 Gra toczy się wewnątrz serca pacjenta, pokazanego w przekroju.
 
-- **Patogen** (bakteria) płynie z prądem krwi, przeciska się przez zastawki i przyczepia do ścian, tworząc kolonie.
+- **Patogen** (bakteria albo wirus — wybiera gracz patogenu, lekarz tego nie wie) płynie z prądem krwi, przeciska się przez zastawki i zakłada kolonie na ścianach.
 - **Lekarz** nie widzi patogenu wprost. Zleca badania krwi, ogląda opóźniony podgląd i leczy.
 
 | Kto | Wygrywa, gdy |
@@ -50,6 +50,16 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | kółko myszy | przybliżenie i oddalenie kamery |
 | `M` | dźwięk włącz/wyłącz |
 
+### Wybór patogenu
+Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś.
+
+| | Bakteria | Wirus |
+| --- | --- | --- |
+| Życie | 100 | 70 |
+| Ruch | szybszy (wici) | wolniejszy |
+| Kolonie | biofilm, wzrost normalny | zakażone komórki, wzrost o 30% szybszy |
+| Działają na niego | przeciwciała, gorączka, antybiotyki (jedna klasa słabo) | przeciwciała, gorączka, lek przeciwwirusowy |
+
 ### Jak grać
 - **Prąd krwi** zmienia się z rytmem serca (72/min). W rozkurczu krew płynie z przedsionków do komór, w skurczu jest wyrzucana do pnia płucnego i aorty. Pod prąd płynie się trudno, więc warto wyczuć rytm.
 - **Zastawki** otwierają się i zamykają w rytmie serca: trójdzielna i mitralna w rozkurczu, pnia płucnego i aorty w skurczu.
@@ -76,7 +86,9 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `V` | antybiogram |
 | `1` | przeciwciała |
 | `2` | gorączka |
-| `3` | antybiotyk |
+| `3` | antybiotyk β-laktamowy |
+| `4` | antybiotyk makrolidowy |
+| `5` | lek przeciwwirusowy |
 
 Każdą akcję można też kliknąć w panelu.
 
@@ -91,10 +103,14 @@ Każdą akcję można też kliknąć w panelu.
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
 
 2. **Leczenie:**
-   - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu same do niego płyną. Każde przyczepione zabiera życie i spowalnia.
-   - **Gorączka** podnosi temperaturę do 39,6 °C. Patogen traci życie, a kolonizacja zwalnia o połowę.
-   - **Antybiotyk** spowalnia patogen przez 10 s.
-3. **Oporność:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Skuteczność następnej dawki widać na przycisku.
+   - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na bakterie i wirusy.
+   - **Gorączka** podnosi temperaturę do 39,6 °C. Patogen traci życie, a kolonie rosną wolniej. Działa na oba patogeny, ale obciąża pacjenta.
+   - **β-laktam** (bakteriobójczy) niszczy bakterię i kurczy kolonie.
+   - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.
+   - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
+   - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Bakteria jest dodatkowo naturalnie odporna na jedną z dwóch klas antybiotyków; którą — pokazuje antybiogram.
+   - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie.
+3. **Oporność nabyta:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Na przycisku widać siłę następnej dawki i jej koszt dla pacjenta. Rzeczywiste działanie zależy jeszcze od rodzaju patogenu i jego naturalnej oporności.
 4. **Podgląd pacjenta** pokazuje grę patogenu z 5-sekundowym opóźnieniem.
 5. **Dziennik** zapisuje badania, wyniki i podane leki.
 

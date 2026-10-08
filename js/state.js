@@ -22,7 +22,8 @@
         ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
-        resist: { antibodies: 0, fever: 0, slow: 0 }
+        resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
+        natural: null    // klasa antybiotyku, na którą bakteria jest naturalnie oporna (ukryte)
       },
       doctor: {
         tests: {
@@ -33,11 +34,13 @@
         },
         resultSeq: 0,
         unlocked: false, knownInfection: null, knownHp: null,
-        cd: { antibodies: 0, fever: 0, slow: 0 },
+        cd: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
       },
       // stan pacjenta 0..100: zakażenie i leczenie go obniżają, organizm powoli się regeneruje; 0 = sepsa
       patient: { cond: 100 },
+      kind: 'bacteria',  // rodzaj patogenu: 'bacteria' | 'virus' (wybiera gracz patogenu, lekarz go nie zna)
+      drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 } },
       antibodies: [],
       colonies: [],    // kolonie patogenu: { x, y, nx, ny, born, seed, size 0..1 }
       nextColonyId: 1,
@@ -51,7 +54,7 @@
         valveCrossings: 0, lungsTrips: 0, bodyTrips: 0, places: [],
         abHits: 0, dmgAntibodies: 0, dmgFever: 0,
         tests: 0, firstTestAt: -1, firstTreatAt: -1,
-        used: { antibodies: 0, fever: 0, slow: 0 },
+        used: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
         minCond: 100, condByInfection: 0, condByTreatment: 0,
         coloniesFounded: 0, coloniesLost: 0, deaths: 0
       },
@@ -90,10 +93,19 @@
   G.apply = function (s, cmd) {
     const d = s.doctor;
     switch (cmd.type) {
-      case 'game.start':
+      case 'game.start': {
         if (cmd.organ !== 'heart') return;
-        Object.assign(s, G.create(), { running: true, organ: 'heart' });
-        log(s, 'sys', 'Pacjent przyjęty. Bakteria wnika przez żyłę główną górną.');
+        const kind = cmd.kind || s.nextKind || 'bacteria';
+        const nextKind = s.nextKind;
+        Object.assign(s, G.create(), { running: true, organ: 'heart', kind, nextKind });
+        s.seed = (Math.random() * 4294967296) >>> 0;   // każda runda inna (liczy tylko host)
+        if (kind === 'virus') { s.bact.hp = C.virus.hp; s.stats.minHp = C.virus.hp; }
+        else s.bact.natural = rnd(s) < 0.5 ? 'abxA' : 'abxB';
+        log(s, 'sys', 'Pacjent przyjęty z objawami zakażenia.');
+        return;
+      }
+      case 'bact.kind':
+        if (cmd.kind === 'bacteria' || cmd.kind === 'virus') s.nextKind = cmd.kind;
         return;
       case 'bact.input':
         s.bact.ix = Math.max(-1, Math.min(1, cmd.x));
@@ -117,13 +129,15 @@
         d.feverEff = useDrug(s, 'fever');
         log(s, 'doc', `Wywołano gorączkę leczniczą (skuteczność ${pct(d.feverEff)}).`);
         return;
-      case 'doc.slow':
-        if (!d.unlocked || d.cd.slow > 0) return;
-        { const eff = useDrug(s, 'slow');
-          d.cd.slow = D.slow.cooldown; s.bact.slowT = D.slow.duration;
-          s.bact.slowMul = 1 - (1 - D.slow.speedMul) * eff;
-          log(s, 'doc', `Podano antybiotyk bakteriostatyczny we wlewie (skuteczność ${pct(eff)}).`); }
+      case 'doc.abxA': case 'doc.abxB': case 'doc.antiviral': {
+        const key = cmd.type.slice(4);
+        if (!d.unlocked || d.cd[key] > 0) return;
+        const eff = useDrug(s, key);
+        d.cd[key] = D[key].cooldown;
+        s.drugs[key] = { t: D[key].duration, eff: eff * susceptibility(s, key) };
+        log(s, 'doc', `Podano ${DRUG_NAME[key]} (skuteczność wg dawkowania ${pct(eff)}).`);
         return;
+      }
     }
   };
 
@@ -137,6 +151,15 @@
     s.colonies.push({ id: s.nextColonyId++, x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize });
     s.stats.coloniesFounded++;
   }
+
+  const DRUG_NAME = { abxA: 'antybiotyk β-laktamowy', abxB: 'antybiotyk makrolidowy', antiviral: 'lek przeciwwirusowy' };
+  // naturalna wrażliwość patogenu na lek (0..1): antybiotyki nie działają na wirusa, lek przeciwwirusowy na bakterię
+  function susceptibility(s, key) {
+    if (key === 'abxA' || key === 'abxB') return s.kind === 'virus' ? 0 : (s.bact.natural === key ? D.naturalResistance : 1);
+    if (key === 'antiviral') return s.kind === 'virus' ? 1 : 0;
+    return 1;
+  }
+  G.susceptibility = susceptibility;
 
   // ---------- BADANIA ----------
   const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram' };
@@ -155,9 +178,14 @@
       const v = 4 + b.infection * 2.4 + (rnd(s) * 2 - 1) * D.tests.crp.noise;
       return { value: Math.max(1, Math.round(v)) };
     }
-    if (kind === 'culture') return { positive: b.infection > 0.5 || !b.dead, infection: Math.round(b.infection) };
+    // posiew wyhodowuje tylko bakterie — przy wirusie wynik jest ujemny
+    if (kind === 'culture') return { positive: s.kind === 'bacteria', infection: Math.round(b.infection) };
     if (kind === 'echo') return { colonies: s.colonies.map((c) => [Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, Math.round(c.size * 100) / 100]) };
-    if (kind === 'abg') return { antibodies: b.resist.antibodies, fever: b.resist.fever, slow: b.resist.slow };
+    if (kind === 'abg') {
+      const out = {};
+      for (const k of ['antibodies', 'fever', 'abxA', 'abxB']) out[k] = (1 - b.resist[k]) * susceptibility(s, k);
+      return out;   // skuteczność kolejnej dawki 0..1
+    }
     return null;
   }
   function finishTest(s, kind, T) {
@@ -171,9 +199,11 @@
       text = `CRP ${r.value} mg/l.`;
       d.estInfection = Math.max(0, Math.min(100, Math.round((r.value - 4) / 2.4))); d.estT = T.sampleT; d.estExact = false;
     } else if (kind === 'culture') {
-      text = r.positive ? `Posiew dodatni, kolonizacja ${r.infection}%.` : 'Posiew ujemny.';
-      d.knownInfection = r.infection; d.resultTime = T.sampleT;
-      d.estInfection = r.infection; d.estT = T.sampleT; d.estExact = true;
+      text = r.positive ? `Posiew dodatni, kolonizacja ${r.infection}%.` : 'Posiew ujemny: brak wzrostu bakterii.';
+      if (r.positive) {
+        d.knownInfection = r.infection; d.resultTime = T.sampleT;
+        d.estInfection = r.infection; d.estT = T.sampleT; d.estExact = true;
+      }
     } else if (kind === 'echo') {
       text = r.colonies.length ? `Echo serca: zmiany na ścianach (${r.colonies.length}).` : 'Echo serca bez zmian.';
     } else if (kind === 'abg') {
@@ -309,17 +339,32 @@
       ST.minCond = Math.min(ST.minCond, s.patient.cond);
     }
 
-    // --- kolonie: rosną same; antybiotyk wstrzymuje wzrost, gorączka go spowalnia ---
+    // --- leki w organizmie ---
+    const dr = s.drugs;
+    for (const k in dr) if (dr[k].t > 0) dr[k].t = Math.max(0, dr[k].t - dt);
+    const on = (k) => (dr[k].t > 0 ? dr[k].eff : 0);
+    const effA = on('abxA'), effB = on('abxB'), effV = on('antiviral');
+    // spowolnienie ruchu i wstrzymanie wzrostu kolonii: makrolid (bakteria), lek przeciwwirusowy (wirus)
+    b.slowMul = (1 - (1 - D.abxB.speedMul) * effB) * (1 - (1 - D.antiviral.speedMul) * effV);
+    b.slowT = Math.max(effB > 0 ? dr.abxB.t : 0, effV > 0 ? dr.antiviral.t : 0);
+    const halt = Math.max(effB, effV);
+
+    // --- kolonie: rosną same; leki wstrzymują wzrost, gorączka go spowalnia, β-laktam je kurczy ---
     const K = C.colony;
-    const grow = K.growth * (b.slowT > 0 ? 0 : 1) * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul));
+    const grow = K.growth * (s.kind === 'virus' ? C.virus.growthMul : 1) * (1 - halt)
+      * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul));
     let mass = 0;
-    for (const c of s.colonies) { c.size = Math.min(1, c.size + grow * dt); mass += c.size; }
+    for (let i = s.colonies.length - 1; i >= 0; i--) {
+      const c = s.colonies[i];
+      c.size = Math.min(1, c.size + (grow - D.abxA.colonyShrink * effA) * dt);
+      if (c.size <= 0.02) { s.colonies.splice(i, 1); s.stats.coloniesLost++; continue; }
+      mass += c.size;
+    }
     b.infection = Math.min(100, mass * K.infectionPerSize);
     s.stats.maxInfection = Math.max(s.stats.maxInfection, b.infection);
 
     // --- bakteria ---
     b.hitFlash = Math.max(0, b.hitFlash - dt * 2.5);
-    if (b.slowT > 0) b.slowT = Math.max(0, b.slowT - dt);
     if (b.colonyCd > 0) b.colonyCd = Math.max(0, b.colonyCd - dt);
     if (b.dead > 0) {
       // odrodzenie w największej kolonii
@@ -328,7 +373,7 @@
         let best = s.colonies[0];
         for (const c of s.colonies) if (c.size > best.size) best = c;
         b.x = best.x - best.nx * 0.6; b.y = best.y - best.ny * 0.6; b.vx = b.vy = 0;
-        b.hp = K.respawnHp; b.transit = null;
+        b.hp = K.respawnHp * (s.kind === 'virus' ? C.virus.hp / B.hp : 1); b.transit = null;
         best.size -= K.respawnCost;
         if (best.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(best), 1); s.stats.coloniesLost++; }
       }
@@ -341,7 +386,7 @@
       }
     } else {
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck += (a.eff ?? 1);
-      const mul = (b.slowT > 0 ? b.slowMul : 1) * Math.max(0.3, 1 - stuck * 0.08);
+      const mul = b.slowMul * Math.max(0.3, 1 - stuck * 0.08) * (s.kind === 'virus' ? C.virus.speedMul : 1);
       const il = Math.hypot(b.ix, b.iy) || 1;
       b.vx += (b.ix / il) * B.accel * mul * dt * (b.ix || b.iy ? 1 : 0);
       b.vy += (b.iy / il) * B.accel * mul * dt * (b.ix || b.iy ? 1 : 0);
@@ -373,14 +418,17 @@
       });
       if (b.contact) ST.contactTime += dt;
       // żerowanie na tkance odnawia życie
-      b.feeding = b.contact && b.hp < B.hp;
-      if (b.feeding) b.hp = Math.min(B.hp, b.hp + K.feed * dt);
+      const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
+      b.feeding = b.contact && b.hp < maxHp;
+      if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
       if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * dt; b.hp -= fd; ST.dmgFever += fd; }
+      // leki bójcze: β-laktam (bakteria), przeciwwirusowy (wirus)
+      { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
 
       for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
         if (ex.to === 'lungs') ST.lungsTrips++; else ST.bodyTrips++;
-        log(s, 'sys', ex.to === 'lungs' ? 'Bakteria płynie przez krążenie płucne.' : 'Bakteria płynie przez krążenie duże.');
+        log(s, 'sys', ex.to === 'lungs' ? 'Patogen płynie przez krążenie płucne.' : 'Patogen płynie przez krążenie duże.');
       }
       b.place = H.placeName(b.x, b.y);
       if (b.place && !ST.places.includes(b.place)) ST.places.push(b.place);
@@ -437,8 +485,8 @@
       for (let i = s.antibodies.length - 1; i >= 0; i--) if (s.antibodies[i].stuck) s.antibodies.splice(i, 1);
       if (s.colonies.length) b.dead = K.respawnDelay;
     }
-    if (b.hp <= 0 && !s.colonies.length) { s.over = 'doctor'; log(s, 'sys', 'Zakażenie wyleczone: nie ma ani bakterii, ani kolonii. Wygrywa lekarz.'); }
-    else if (s.patient.cond <= 0) { s.patient.cond = 0; s.over = 'bacteria'; log(s, 'sys', 'Sepsa: stan pacjenta krytyczny. Wygrywa bakteria.'); }
+    if (b.hp <= 0 && !s.colonies.length) { s.over = 'doctor'; log(s, 'sys', 'Zakażenie wyleczone: nie ma ani patogenu, ani kolonii. Wygrywa lekarz.'); }
+    else if (s.patient.cond <= 0) { s.patient.cond = 0; s.over = 'bacteria'; log(s, 'sys', 'Sepsa: stan pacjenta krytyczny. Wygrywa patogen.'); }
   };
 
   G.updateValveGeometry = updateValveGeometry;

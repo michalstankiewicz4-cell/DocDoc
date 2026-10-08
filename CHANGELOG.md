@@ -11,6 +11,21 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-08
+### Dodane
+- Wybór patogenu: **bakteria** albo **wirus** (gracz patogenu wybiera przed startem; lekarz nie wie, który). Wirus: kapsyd z wypustkami, mniej życia, wolniejszy, szybciej namnażające się kolonie (fioletowe skupiska zakażonych komórek).
+- Klasy leków zamiast jednego antybiotyku:
+  - `3` **β-laktam** — bakteriobójczy: niszczy bakterię i kurczy kolonie,
+  - `4` **makrolid** — bakteriostatyczny: spowalnia bakterię i wstrzymuje wzrost kolonii,
+  - `5` **lek przeciwwirusowy** — hamuje i osłabia wirusa.
+  Antybiotyki nie działają na wirusa, lek przeciwwirusowy na bakterię.
+- Naturalna oporność: bakteria jest losowo odporna na jedną klasę antybiotyków (ukryte, ujawnia antybiogram).
+- Patogen widzi w HUD, które leki są we krwi i czy na niego działają.
+### Zmienione
+- Posiew przy wirusie jest ujemny („brak wzrostu bakterii”).
+- Antybiogram pokazuje skuteczność przeciwciał, gorączki i obu klas antybiotyków.
+- Każda runda jest inna (losowość z nowym ziarnem przy starcie).
+
 ## [0.12.0] - 2026-10-08
 ### Dodane
 - Cztery badania, które mogą biec równolegle; każdy wynik opisuje chwilę pobrania próbki:
@@ -112,7 +127,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.9.0...v0.10.0

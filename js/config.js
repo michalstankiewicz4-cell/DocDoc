@@ -40,7 +40,10 @@ DD.CONFIG = {
     },
     antibodies: { cooldown: 18, count: 36, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },
-    slow:       { cooldown: 22, duration: 10, speedMul: 0.45 }
+    abxA:       { cooldown: 22, duration: 8, dps: 2.6, colonyShrink: 0.025 },  // β-laktam: bakteriobójczy
+    abxB:       { cooldown: 22, duration: 10, speedMul: 0.45 },               // makrolid: bakteriostatyczny
+    antiviral:  { cooldown: 22, duration: 10, dps: 1.8, speedMul: 0.6 },      // lek przeciwwirusowy: tylko na wirusa
+    naturalResistance: 0.2   // skuteczność antybiotyku z klasy, na którą bakteria jest naturalnie oporna
   },
 
   // oporność: każde użycie leku podnosi oporność o perUse (do max); skuteczność = 1 - oporność
@@ -55,7 +58,10 @@ DD.CONFIG = {
   // stan pacjenta (0..100). Na sekundę: -infectionDrain * kolonizacja, -feverDrain * gorączka,
   // +regen dopóki kolonizacja < regenStopsAt (%). sideEffect = jednorazowy koszt dawki leku.
   patient: { infectionDrain: 1.4, feverDrain: 0.35, regen: 0.25, regenStopsAt: 40,
-    sideEffect: { antibodies: 2, fever: 1, slow: 4 } },
+    sideEffect: { antibodies: 2, fever: 1, abxA: 4, abxB: 4, antiviral: 4 } },
+
+  // wirus: mniej życia, wolniejszy (bez wici), szybciej namnażające się kolonie, mniejszy
+  virus: { hp: 70, speedMul: 0.8, growthMul: 1.3, radius: 0.26 },
 
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 

@@ -4,7 +4,7 @@
   const keys = new Set();
   const BACT_KEYS = { KeyW: 1, KeyA: 1, KeyS: 1, KeyD: 1 };
   const BACT_ACTIONS = { KeyE: 'bact.colony' };
-  const DOC_KEYS = { Digit1: 'doc.antibodies', Digit2: 'doc.fever', Digit3: 'doc.slow' };
+  const DOC_KEYS = { Digit1: 'doc.antibodies', Digit2: 'doc.fever', Digit3: 'doc.abxA', Digit4: 'doc.abxB', Digit5: 'doc.antiviral' };
   // badania: Z CRP, X (albo B) posiew, C echo, V antybiogram
   const TEST_KEYS = { KeyZ: 'crp', KeyX: 'culture', KeyB: 'culture', KeyC: 'echo', KeyV: 'abg' };
 

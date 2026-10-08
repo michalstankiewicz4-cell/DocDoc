@@ -49,7 +49,8 @@
     document.querySelectorAll('[data-organ]').forEach((b) => {
       b.addEventListener('click', () => {
         if (b.disabled || N.mode === 'guest') return;
-        DD.send({ type: 'game.start', organ: b.dataset.organ });
+        // rodzaj patogenu wybiera gracz patogenu (lokalnie albo host-patogen); host-lekarz bierze wybór gościa
+        DD.send({ type: 'game.start', organ: b.dataset.organ, kind: N.role === 'doc' ? undefined : DD.chosenKind });
         $('start').hidden = true;
         if (view) { view.tx = C.bacteria.start.x; view.ty = C.bacteria.start.y; }
       });
@@ -66,6 +67,23 @@
     };
     $('mode-dev').addEventListener('click', () => { DD.Net.mode = 'local'; DD.Net.role = 'both'; DD.applyLayout('both'); DD.showOrganPick(true); });
     $('mode-back').addEventListener('click', () => DD.showOrganPick(false));
+
+    // wybór rodzaju patogenu (zapamiętany w przeglądarce)
+    DD.chosenKind = 'bacteria';
+    try { if (localStorage.getItem('patientzero-kind') === 'virus') DD.chosenKind = 'virus'; } catch (e) { /* brak dostępu */ }
+    const syncKind = () => document.querySelectorAll('.js-kind-pick button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.kind === DD.chosenKind)));
+    syncKind();
+    document.querySelectorAll('.js-kind-pick button').forEach((btn) => btn.addEventListener('click', () => {
+      DD.chosenKind = btn.dataset.kind; syncKind();
+      try { localStorage.setItem('patientzero-kind', DD.chosenKind); } catch (e) { /* brak dostępu */ }
+      DD.send({ type: 'bact.kind', kind: DD.chosenKind });
+    }));
+    // wybór widać tylko u gracza patogenu
+    DD.updateKindPickers = function () {
+      const pathogen = N.role !== 'doc';
+      document.querySelectorAll('.js-kind-pick').forEach((el) => { el.hidden = !pathogen; });
+    };
+    DD.updateKindPickers();
 
     DD.Lobby.init();
 

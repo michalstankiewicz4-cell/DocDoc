@@ -66,6 +66,7 @@
         return Object.assign({}, x, { x: lerp(x.x, y.x, k), y: lerp(x.y, y.y, k), rot: lerp(x.rot, y.rot, k) });
       });
       g.colonies = live.colonies.filter((c) => c.born <= g.time);
+      g.kind = live.kind;
       g.doctor.temp = e0.temp;
       return g;
     }

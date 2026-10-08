@@ -295,6 +295,15 @@ body[data-role="doc"] .half-doc {
 .mode .primary, .mode .net-buttons { align-self: end; }
 .mode-duo { border-color: var(--trace); }
 .organ-pick { display: grid; gap: 10px; }
+.kind-pick { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.kind-label { font-weight: 700; margin-right: 4px; }
+.kind-pick button {
+  cursor: pointer; padding: 8px 16px; border-radius: 999px; font-weight: 700;
+  border: 1.5px solid var(--line); background: var(--panel); color: var(--ink);
+}
+.kind-pick button[data-kind="bacteria"][aria-pressed="true"] { background: #1a0607; border-color: #1a0607; color: var(--microbe); }
+.kind-pick button[data-kind="virus"][aria-pressed="true"] { background: #1c0b2e; border-color: #1c0b2e; color: #d6b8ff; }
+.kind-pick .hint { margin-left: 4px; }
 .organ-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 @media (max-width: 900px) { .modes { grid-template-columns: 1fr; } }
 
