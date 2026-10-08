@@ -37,7 +37,8 @@ DD.CONFIG = {
       culture: { duration: 12, cooldown: 20 },              // posiew: dokładna kolonizacja + zdjęcie miejsca
       echo:    { duration: 8,  cooldown: 25 },              // echo serca: położenie i wielkość kolonii
       abg:     { duration: 18, cooldown: 30 },              // antybiogram: wrażliwość na leczenie (po dodatnim posiewie)
-      micro:   { duration: 6,  cooldown: 15 }               // mikroskop: rodzaj patogenu w próbce krwi
+      micro:   { duration: 6,  cooldown: 15 },              // mikroskop: rodzaj patogenu w próbce krwi
+      usg:     { duration: 8,  cooldown: 25 }               // USG jamy brzusznej: kolonie w wątrobie, nerce i naczyniach brzucha
     },
     antibodies: { cooldown: 18, count: 56, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },

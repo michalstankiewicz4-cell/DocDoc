@@ -16,6 +16,7 @@
     { kind: 'crp', key: 'Z', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
     { kind: 'culture', key: 'X', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
     { kind: 'echo', key: 'C', name: 'Echo serca', desc: 'Położenie i wielkość kolonii na ścianach.' },
+    { kind: 'usg', key: 'G', name: 'USG jamy brzusznej', desc: 'Kolonie w wątrobie, nerce i naczyniach brzucha.' },
     { kind: 'abg', key: 'V', name: 'Antybiogram', desc: 'Wrażliwość na leczenie. Wymaga dodatniego posiewu.' },
     { kind: 'micro', key: 'N', name: 'Mikroskop', desc: 'Próbka krwi pod mikroskopem: rodzaj bakterii albo wirusa.' }
   ];
@@ -73,44 +74,52 @@
       testBtns[t.kind] = b;
     }
 
-    // obraz echa: wycinek wachlarza jak w USG, ściany serca z SDF, kolonie jako jasne ogniska
-    const echoC = $('res-echo-c'), echoCtx = echoC.getContext('2d');
-    let echoBg = null;
-    function drawEcho(res) {
-      const H = DD.Heart, W = H.HEART_BOX;   // echo serca: tylko serce
-      const w = 240, h = 232, pr = Math.min(2, window.devicePixelRatio || 1);
-      echoC.width = w * pr; echoC.height = h * pr; echoC.style.width = w + 'px'; echoC.style.height = h + 'px';
-      const ctx = echoCtx; ctx.setTransform(pr, 0, 0, pr, 0, 0);
-      if (!echoBg) {
-        echoBg = document.createElement('canvas'); echoBg.width = w; echoBg.height = h;
-        const b = echoBg.getContext('2d'), img = b.createImageData(w, h);
-        for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
-          const x = W.minX + (i + 0.5) / w * (W.maxX - W.minX), y = W.maxY - (j + 0.5) / h * (W.maxY - W.minY);
-          const d = H.sample(x, y), k = (j * w + i) * 4;
-          // krew ciemna, ściany jasne (echogeniczne), ziarno plamkowe jak w USG
-          const speck = Math.random();
-          let v = d < 0 ? 18 + speck * 18 : d < 8 ? 120 + speck * 90 - d * 6 : 30 + speck * 25;
-          img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
+    // obraz USG (echo serca albo jama brzuszna): wycinek wachlarza, ściany z SDF jasne, kolonie jako jasne ogniska
+    function makeUS(canvas, box, w, h) {
+      const H = DD.Heart, ctx0 = canvas.getContext('2d');
+      let bg = null;
+      return function draw(res) {
+        const pr = Math.min(2, window.devicePixelRatio || 1);
+        canvas.width = w * pr; canvas.height = h * pr; canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = ctx0; ctx.setTransform(pr, 0, 0, pr, 0, 0);
+        const sc = Math.min(w / (box.maxX - box.minX), h / (box.maxY - box.minY));
+        const ox = (w - (box.maxX - box.minX) * sc) / 2, oy = (h - (box.maxY - box.minY) * sc) / 2;
+        const toX = (x) => ox + (x - box.minX) * sc, toY = (y) => oy + (box.maxY - y) * sc;
+        if (!bg) {
+          bg = document.createElement('canvas'); bg.width = w; bg.height = h;
+          const b = bg.getContext('2d'), img = b.createImageData(w, h);
+          for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+            const x = box.minX + (i + 0.5 - ox) / sc, y = box.maxY - (j + 0.5 - oy) / sc;
+            const k = (j * w + i) * 4, speck = Math.random();
+            let v = 12 + speck * 10;
+            if (x >= box.minX && x <= box.maxX && y >= box.minY && y <= box.maxY) {
+              const d = H.sample(x, y), o = H.organAt(x, y);
+              // krew ciemna, ściany jasne (echogeniczne), miąższ narządów średnio szary, ziarno plamkowe jak w USG
+              v = d < 0 ? 18 + speck * 18 : d < 1.2 ? 150 + speck * 90 : (o === 'liver' || o === 'kidney') ? 70 + speck * 60 : d < 8 ? 120 + speck * 90 - d * 6 : 30 + speck * 25;
+            }
+            img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
+          }
+          b.putImageData(img, 0, 0);
         }
-        b.putImageData(img, 0, 0);
-      }
-      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
-      ctx.save();
-      // wachlarz głowicy
-      ctx.beginPath(); ctx.moveTo(w / 2, -30); ctx.arc(w / 2, -30, h * 1.2, Math.PI * 0.16, Math.PI * 0.84); ctx.closePath(); ctx.clip();
-      ctx.drawImage(echoBg, 0, 0);
-      for (const [x, y, size, inT] of res.colonies) {
-        const px = (x - W.minX) / (W.maxX - W.minX) * w, py = (W.maxY - y) / (W.maxY - W.minY) * h;
-        const r = inT ? 7 + size * 6 : 2.5 + size * 5;      // zgrubienie ściany: większe i bledsze
-        const a = inT ? 0.45 : 1;
-        const g = ctx.createRadialGradient(px, py, 0, px, py, r * 1.8);
-        g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.5, `rgba(255,255,255,${a * 0.6})`); g.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, r * 1.8, 0, 6.283); ctx.fill();
-      }
-      ctx.restore();
-      ctx.fillStyle = 'rgba(160, 220, 255, 0.85)'; ctx.font = '11px system-ui, sans-serif';
-      ctx.fillText('P', 6, 14); ctx.fillText('L', w - 14, 14);
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
+        ctx.save();
+        ctx.beginPath(); ctx.moveTo(w / 2, -30); ctx.arc(w / 2, -30, h * 1.2, Math.PI * 0.16, Math.PI * 0.84); ctx.closePath(); ctx.clip();
+        ctx.drawImage(bg, 0, 0);
+        for (const [x, y, size, inT] of res.colonies) {
+          const px = toX(x), py = toY(y);
+          const r = (inT ? 7 + size * 6 : 2.5 + size * 5) * Math.min(1.2, sc / 2);   // zgrubienie ściany: większe i bledsze
+          const a = inT ? 0.45 : 1;
+          const g = ctx.createRadialGradient(px, py, 0, px, py, r * 1.8);
+          g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.5, `rgba(255,255,255,${a * 0.6})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, r * 1.8, 0, 6.283); ctx.fill();
+        }
+        ctx.restore();
+        ctx.fillStyle = 'rgba(160, 220, 255, 0.85)'; ctx.font = '11px system-ui, sans-serif';
+        ctx.fillText('P', 6, 14); ctx.fillText('L', w - 14, 14);
+      };
     }
+    const drawEcho = makeUS($('res-echo-c'), DD.Heart.HEART_BOX, 240, 232);
+    const drawUsg = makeUS($('res-usg-c'), DD.Heart.ABDOMEN_BOX, 240, 300);
 
     // Mikroskop: preparat (3 × 3 pola widzenia) rysowany raz na wynik; lekarz przesuwa go myszą albo strzałkami
     // i szuka patogenu. Rodzaj ujawnia się, gdy drobnoustrój trafi w środek pola widzenia.
@@ -396,12 +405,18 @@
       if (d.resultSeq === shownSeq) return;
       shownSeq = d.resultSeq;
       const T = d.tests;
-      $('results-block').hidden = !(T.crp.res || T.culture.res || T.echo.res || T.abg.res || (T.micro && T.micro.res));
+      $('results-block').hidden = !(T.crp.res || T.culture.res || T.echo.res || T.abg.res || (T.micro && T.micro.res) || (T.usg && T.usg.res));
       if (T.micro && T.micro.res) {
         $('res-micro').hidden = false; $('res-micro').querySelector('.res-time').textContent = 'pobranie ' + mmss(T.micro.sampleT);
         showMicro(T.micro.res, T.micro.sampleT + 1);
       } else $('res-micro').hidden = true;
       const time = (el, t) => { el.querySelector('.res-time').textContent = 'pobranie ' + mmss(t.sampleT); };
+      if (T.usg && T.usg.res) {
+        $('res-usg').hidden = false; time($('res-usg'), T.usg);
+        drawUsg(T.usg.res);
+        const C0 = T.usg.res.colonies, nL = C0.filter((c) => c[4] === 'liver').length, nK = C0.filter((c) => c[4] === 'kidney').length, nO = C0.length - nL - nK;
+        $('res-usg-l').textContent = C0.length ? `Ogniska w wątrobie: ${nL}, w nerce: ${nK}, w naczyniach brzucha: ${nO}` : 'Bez widocznych zmian';
+      } else $('res-usg').hidden = true;
       if (T.crp.res) {
         $('res-crp').hidden = false; time($('res-crp'), T.crp);
         const v = T.crp.res.value;

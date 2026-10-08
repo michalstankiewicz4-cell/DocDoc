@@ -90,7 +90,7 @@ Rodzaje w obrębie bakterii albo wirusów różnią się tylko wyglądem i wraż
   - **tętnica krezkowa górna** prowadzi przez jelita do **żyły wrotnej**, która też wpływa do wątroby,
   - **tętnica nerkowa** prowadzi do **nerki**: tętnice międzypłatowe między piramidami, tętnica łukowata na granicy kory i rdzenia, kłębuszki w korze, dalej żyły międzypłatowe i żyła nerkowa do żyły głównej dolnej,
   - dół aorty brzusznej prowadzi przez nogi do żyły głównej dolnej, która płynie w górę przez wątrobę do prawego przedsionka.
-  - W jamie brzusznej można zakładać kolonie i żerować, ale nie można wnikać w ścianę (`Q` działa tylko w sercu). Echo serca nie widzi kolonii w jamie brzusznej. Kolonie w wątrobie dają żółtaczkę, a w nerce krew w moczu.
+  - W jamie brzusznej można zakładać kolonie i żerować, ale nie można wnikać w ścianę (`Q` działa tylko w sercu). Echo serca nie widzi kolonii w jamie brzusznej, ale widzi je USG jamy brzusznej. Kolonie w wątrobie dają żółtaczkę, a w nerce krew w moczu.
 - **Żerowanie:** gdy patogen dotyka ściany serca, odzyskuje życie.
 - **Kolonie:** przy ścianie `E` zakłada kolonię za 25 punktów życia. Kolonia rośnie sama, a suma rozmiarów kolonii to kolonizacja, która obciąża pacjenta.
   - Antybiotyk wstrzymuje wzrost kolonii, a gorączka go spowalnia.
@@ -124,6 +124,7 @@ Rodzaje w obrębie bakterii albo wirusów różnią się tylko wyglądem i wraż
 | `Z` | CRP |
 | `X` (albo `B`) | posiew krwi |
 | `C` | echo serca |
+| `G` | USG jamy brzusznej |
 | `V` | antybiogram |
 | `N` | mikroskop |
 | `1` | przeciwciała |
@@ -143,6 +144,7 @@ Każdą akcję można też kliknąć w panelu.
    | CRP | 4 s | poziom stanu zapalnego (przybliżony, z szumem pomiaru); monitor pokazuje z niego szacunek zakażenia „≈” |
    | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek bakterii we krwi (patogen i jego kopie) |
    | Echo serca | 8 s | obraz samego serca w stylu USG (bez jamy brzusznej): kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
+   | USG jamy brzusznej | 8 s | obraz wątroby, nerki i naczyń brzucha: kolonie jako jasne ogniska, z podziałem na wątrobę, nerkę i naczynia |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
    | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym) i zdjęcie patogenu w chwili pobrania; rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
 

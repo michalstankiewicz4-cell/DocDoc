@@ -35,7 +35,8 @@
           culture: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           echo: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           abg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
-          micro: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
+          micro: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          usg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
         },
         resultSeq: 0,
         surgery: { state: 'idle', t: 0, cd: 0, valve: null },
@@ -212,7 +213,7 @@
   G.susceptibility = susceptibility;
 
   // ---------- BADANIA ----------
-  const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram', micro: 'mikroskop' };
+  const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram', micro: 'mikroskop', usg: 'USG jamy brzusznej' };
   function orderTest(s, kind) {
     const d = s.doctor, T = d.tests[kind], cfg = D.tests[kind];
     if (!T || T.state === 'running' || T.cd > 0) return;
@@ -242,6 +243,13 @@
         const j = (c.inTissue ? 2.5 : 0) + (tox ? 4 : 0);
         return [Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0];
       }) };
+    }
+    // USG jamy brzusznej: kolonie pod przeponą (wątroba, nerka, naczynia brzucha)
+    if (kind === 'usg') {
+      const AB = H.ABDOMEN_BOX, j = tox ? 4 : 0;
+      return { colonies: s.colonies.filter((c) => c.y < AB.maxY).map((c) => [
+        Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10,
+        Math.round(c.size * 100) / 100, 0, H.organAt(c.x, c.y)]) };
     }
     // mikroskop: rodzaj patogenu, jeśli w próbce krwi są jego komórki (patogen we krwi, kopie albo kolonie na ścianach naczyń)
     if (kind === 'micro') {
@@ -277,6 +285,10 @@
     } else if (kind === 'echo') {
       const nW = r.colonies.filter((c) => !c[3]).length, nT = r.colonies.length - nW;
       text = r.colonies.length ? `Echo serca: ogniska na ścianach ${nW}` + (nT ? `, niewyraźne zgrubienia ściany ${nT}.` : '.') : 'Echo serca bez zmian.';
+    } else if (kind === 'usg') {
+      const nL = r.colonies.filter((c) => c[4] === 'liver').length, nK = r.colonies.filter((c) => c[4] === 'kidney').length;
+      const nO = r.colonies.length - nL - nK;
+      text = r.colonies.length ? `USG jamy brzusznej: ogniska w wątrobie ${nL}, w nerce ${nK}, w naczyniach ${nO}.` : 'USG jamy brzusznej bez zmian.';
     } else if (kind === 'abg') {
       text = 'Antybiogram gotowy.';
     } else if (kind === 'micro') {

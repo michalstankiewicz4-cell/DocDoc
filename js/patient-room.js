@@ -194,14 +194,16 @@
           ctx.fillStyle = '#56706a'; ctx.fillText('Antybiogram', x - 26, y + 24);
         } }
       // echo: wózek USG z ekranem + głowica na klatce pacjenta
-      { const p = prog('echo'), x = 670, y = 112;
+      // USG jamy brzusznej korzysta z tego samego wózka; głowica na brzuchu pacjenta
+      { const pe = prog('echo'), pu = prog('usg'), p = Math.max(pe, pu), x = 670, y = 112;
         ctx.fillStyle = '#5f6f6a'; roundRect(x - 20, y - 14, 40, 30, 4); ctx.fill();
         ctx.fillStyle = '#0d1311'; roundRect(x - 16, y - 10, 32, 22, 2); ctx.fill();
         if (p >= 0) {
           ctx.fillStyle = 'rgba(220,220,220,0.75)'; ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.arc(x, y - 8, 18, Math.PI * 0.3, Math.PI * 0.7); ctx.closePath(); ctx.fill();
-          ctx.fillStyle = '#3d4a46'; roundRect(232, 104 - lift, 10, 7, 2); ctx.fill();
-          ctx.strokeStyle = '#3d4a46'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(240, 104 - lift); ctx.bezierCurveTo(330, 60, 560, 70, x - 20, y); ctx.stroke();
-          ctx.fillStyle = '#56706a'; ctx.fillText('Echo', x - 12, y + 30);
+          const hx = pu > pe ? 272 : 232, hy = pu > pe ? 112 : 104 - lift;
+          ctx.fillStyle = '#3d4a46'; roundRect(hx, hy, 10, 7, 2); ctx.fill();
+          ctx.strokeStyle = '#3d4a46'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(hx + 8, hy); ctx.bezierCurveTo(330, 60, 560, 70, x - 20, y); ctx.stroke();
+          ctx.fillStyle = '#56706a'; ctx.fillText(pu > pe ? 'USG' : 'Echo', x - 12, y + 30);
         } }
 
       // objawy (tylko gdy lista się zmieniła)

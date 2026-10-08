@@ -46,8 +46,8 @@ Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
 - Patogen: 3 bakterie i 3 wirusy (`config.species`, wybór ukryty przed lekarzem, rozpoznawany mikroskopem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
   wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0), toksyny (T),
   pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
-- Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 5 badań (CRP, posiew,
-  echo, antybiogram, mikroskop), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
+- Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 6 badań (CRP, posiew,
+  echo serca, USG jamy brzusznej, antybiogram, mikroskop), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
   operacja zastawki, mikroskop z szukaniem patogenu na preparacie i zdjęciem z chwili pobrania, alarmy monitora.
 - Dźwięk: patogen „pod wodą” (serce, szum krwi, kaszel), lekarz w sali (beep pulsoksymetru, alarmy, dzwonek wyniku).
 - Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, statystyki końcowe.
@@ -79,6 +79,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Układ krążenia rozszerzony o wątrobę i nerkę (v0.22.0)
 - [x] Start w nerce (v0.24.0)
 - [x] Objawy: żółtaczka (wątroba), krew w moczu (nerka) (v0.25.0)
+- [x] USG jamy brzusznej (v0.26.0)
 - [x] Bez podglądu z opóźnieniem; zdjęcie przy mikroskopie; szukanie patogenu na preparacie (v0.23.0)
 - [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
@@ -113,7 +114,7 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
   Mikroskop (6 s, odnowienie 15 s) wykrywa rodzaj, gdy patogen płynie we krwi albo są kopie lub kolonie poza mięśniem; podaje podpowiedź leczenia.
   Dawne wartości 'bacteria' / 'virus' w komendach i localStorage mapują się na E. coli / adenowirusa.
 - Wątroba i nerka (v0.22.0): świat x −60..76, y −236..58; nerka prawa (pod wątrobą), żyła wrotna zasilana z jelit (tętnica krezkowa).
-  Wnikanie Q tylko w sercu; echo tylko serce; regiony objawów 'liver'/'kidney'/'abdomen'.
+  Wnikanie Q tylko w sercu; echo tylko serce, USG (G, 8 s, odnowienie 25 s) tylko jama brzuszna, ten sam szum przy toksynach (±4 j.); regiony objawów 'liver'/'kidney'/'abdomen'.
   Wyjście górą aorty → żyła główna górna; dół aorty → nogi → żyła główna dolna; tętnica krezkowa → jelita → żyła wrotna.
   Pożywienie 170, przeciwciała 56 na dawkę, pożywienie po 90 s bez zjedzenia przenosi się w inne miejsce.
   Głębokość kanałów w narządach mniejsza (dno −1,8, wierzch 1,4) niż w sercu.
