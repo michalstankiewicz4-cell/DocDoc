@@ -109,7 +109,7 @@
     const d = s.doctor;
     switch (cmd.type) {
       case 'game.start': {
-        if (!H.START[cmd.organ]) return;   // narządy, w których można zacząć: serce, nerka
+        if (!H.START[cmd.organ]) return;   // narządy, w których można zacząć: serce, nerka, wątroba
         // cmd.kind: gatunek (C.species) albo dawne 'bacteria' / 'virus'
         const species = G.speciesOf(cmd.kind || s.nextKind);
         const kind = C.species[species].kind;

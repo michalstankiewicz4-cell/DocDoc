@@ -126,7 +126,8 @@
     // Bakterie: barwienie Grama (mikroskop świetlny), wirusy: mikroskop elektronowy.
     const microC = $('res-micro-c');
     const MW = 240, MH = 200, SW = MW * 3, SH = MH * 3;
-    const micro = { slide: null, res: null, px: 0, py: 0, found: false, done: false, seen: new Set(), key: null, flash: 0 };
+    const micro = { slide: null, res: null, px: 0, py: 0, found: false, done: false, seen: new Set(), key: null, flash: 0, start: 0, hint: false, sampleT: -1 };
+    const HINT_AFTER = 15000;   // po tylu ms bez znalezienia pojawia się strzałka do najbliższego skupiska
     function rngFrom(seed) {
       let sd = (Math.floor(seed * 1000) % 2147483646) + 1;
       return () => { sd = sd * 16807 % 2147483647; return (sd - 1) / 2147483646; };
@@ -231,6 +232,18 @@
         g.strokeStyle = `rgba(80, 220, 160, ${micro.flash})`; g.lineWidth = 3;
         g.beginPath(); g.arc(cx, cy, 30, 0, 6.283); g.stroke();
       }
+      // podpowiedź: pulsująca strzałka przy brzegu okularu w stronę najbliższego skupiska
+      if (micro.hint && !micro.found && S.targets.length) {
+        const mx = micro.px + w / 2, my = micro.py + h / 2;
+        let best = S.targets[0], bd = 1e9;
+        for (const q of S.targets) { const dd = Math.hypot(q.x - mx, q.y - my); if (dd < bd) { bd = dd; best = q; } }
+        const a = Math.atan2(best.y - my, best.x - mx), pulse = 0.5 + 0.5 * Math.sin(performance.now() / 160);
+        const r0 = rad - 42 + pulse * 8;
+        g.save(); g.translate(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); g.rotate(a); g.scale(1.8, 1.8);
+        g.fillStyle = `rgba(30, 190, 130, ${0.7 + 0.3 * pulse})`; g.strokeStyle = 'rgba(255,255,255,0.9)'; g.lineWidth = 1;
+        g.beginPath(); g.moveTo(12, 0); g.lineTo(-6, -9); g.lineTo(-2, 0); g.lineTo(-6, 9); g.closePath(); g.fill(); g.stroke();
+        g.restore();
+      }
       const v = g.createRadialGradient(cx, cy, rad * 0.75, cx, cy, rad);
       v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.45)'); g.fillStyle = v; g.fillRect(0, 0, w, h);
       g.restore();
@@ -276,6 +289,7 @@
       micro.slide = buildSlide(res, seed);
       micro.px = (SW - MW) / 2; micro.py = (SH - MH) / 2;
       micro.found = false; micro.done = false; micro.seen = new Set(); micro.flash = 0;
+      micro.start = performance.now(); micro.hint = false; micro.sampleT = seed - 1;
       microCheck(); microText(); drawMicroView();
     }
     {
@@ -288,8 +302,20 @@
         const st = 24, k = { ArrowLeft: [-st, 0], ArrowRight: [st, 0], ArrowUp: [0, -st], ArrowDown: [0, st] }[e.key];
         if (k) { e.preventDefault(); e.stopPropagation(); microPan(k[0], k[1]); }
       });
-      // wygaszanie pierścienia po znalezieniu
-      setInterval(() => { if (micro.flash > 0) { micro.flash = Math.max(0, micro.flash - 0.08); drawMicroView(); } }, 50);
+      // co 50 ms: wygaszanie pierścienia, podpowiedź po dłuższym szukaniu, zdjęcie patogenu dopiero po znalezieniu
+      setInterval(() => {
+        if (!micro.slide) return;
+        let redraw = false;
+        if (micro.flash > 0) { micro.flash = Math.max(0, micro.flash - 0.08); redraw = true; }
+        if (!micro.found && micro.slide.targets.length && !$('res-micro').hidden) {
+          if (!micro.hint && performance.now() - micro.start > HINT_AFTER) micro.hint = true;
+          if (micro.hint) redraw = true;
+        }
+        if (redraw) drawMicroView();
+        const fig = $('test-photo');
+        const show = micro.found && fig.dataset.ready === String(micro.sampleT);
+        if (fig.hidden === show) fig.hidden = !show;
+      }, 50);
     }
 
     // EKG

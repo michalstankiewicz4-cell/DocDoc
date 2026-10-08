@@ -11,6 +11,13 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-10-09
+### Dodane
+- **Start w wątrobie:** przycisk „Wątroba” na ekranie wyboru narządu; patogen zaczyna w żyle centralnej zrazika.
+- **Podpowiedź w mikroskopie:** po 15 s szukania przy brzegu okularu pulsuje strzałka w stronę najbliższego skupiska.
+### Zmienione
+- Kolorowe zdjęcie patogenu przy mikroskopie pojawia się dopiero po znalezieniu go na preparacie.
+
 ## [0.28.1] - 2026-10-09
 ### Zmienione
 - Minimapa patogenu jest ukryta (kod zostaje; włącza ją `ui.minimap` w `js/config.js`).
@@ -239,7 +246,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.28.1...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.0...HEAD
+[0.29.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.28.1...v0.29.0
 [0.28.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.28.0...v0.28.1
 [0.28.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.26.0...v0.27.0

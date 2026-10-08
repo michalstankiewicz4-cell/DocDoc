@@ -82,7 +82,8 @@
       const sampleT = s.doctor.tests.micro.sampleT;
       const pair = findPair(sampleT);
       const fig = $('test-photo');
-      if (!pair) { fig.hidden = true; return; }
+      fig.hidden = true; fig.dataset.ready = '';   // pokazuje je mikroskop po znalezieniu patogenu
+      if (!pair) return;
       const g = buildGhost({ e0: pair.e0, e1: pair.e0, k: 0 }, s);
       view.zoom = 9;   // zbliżenie na patogen
       view.frame(g, 1 / 60, { snap: true });
@@ -90,16 +91,16 @@
       view.frame(g, 1 / 60, { snap: true });
       try {
         $('test-photo-img').src = view.renderer.domElement.toDataURL('image/jpeg', 0.85);
-      } catch (e) { fig.hidden = true; return; }
+      } catch (e) { return; }
       const where = g.bact.transit ? 'krwiobieg poza sercem' : g.bact.place;
       $('test-photo-place').textContent = where;
       $('test-photo-time').textContent = `pobranie krwi ${mmss(sampleT)}`;
-      fig.hidden = false;
+      fig.dataset.ready = String(sampleT);
     }
 
     function update(s, dt) {
       // nowa runda — czyścimy historię i zdjęcie
-      if (s.time < lastTime - 0.5) { hist = []; photoFor = -1; $('test-photo').hidden = true; }
+      if (s.time < lastTime - 0.5) { hist = []; photoFor = -1; $('test-photo').hidden = true; $('test-photo').dataset.ready = ''; }
       lastTime = s.time;
       if (!s.running) return;
 

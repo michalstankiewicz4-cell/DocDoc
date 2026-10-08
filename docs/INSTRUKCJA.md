@@ -60,7 +60,7 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 ### Wybór patogenu
 Przed startem gracz patogenu wybiera jedną z trzech bakterii albo jeden z trzech wirusów (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.
 
-**Miejsce startu:** serce (żyła główna górna) albo nerka (tętnica łukowata w nerce). Pozostałe narządy na ekranie wyboru są jeszcze niedostępne.
+**Miejsce startu:** serce (żyła główna górna), nerka (tętnica łukowata w nerce) albo wątroba (żyła centralna zrazika). Pozostałe narządy na ekranie wyboru są jeszcze niedostępne.
 
 | | Bakterie | Wirusy |
 | --- | --- | --- |
@@ -146,7 +146,7 @@ Każdą akcję można też kliknąć w panelu.
    | Echo serca | 8 s | obraz samego serca w stylu USG (bez jamy brzusznej): kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | USG jamy brzusznej | 8 s | obraz wątroby, nerki i naczyń brzucha: kolonie jako jasne ogniska, z podziałem na wątrobę, nerkę i naczynia |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
-   | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym) i zdjęcie patogenu w chwili pobrania; rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
+   | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym); po znalezieniu zdjęcie patogenu z chwili pobrania, rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
 
 2. **Leczenie:**
    - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na bakterie i wirusy. Gdy patogen ma kopie, część przeciwciał atakuje kopie zamiast niego.
@@ -171,7 +171,7 @@ Każdą akcję można też kliknąć w panelu.
    | bladość, sinica | stan pacjenta poniżej 55% / 25% |
 
    W czasie badań na stole w sali widać laboratorium (wirówka, szalka z posiewem, antybiogram, USG). Kroplówka kapie, gdy lek jest we krwi. Przy stanie poniżej 30% albo gorączce od 39 °C monitor pulsuje na czerwono i gra alarm.
-5. **Mikroskop:** przeciągaj preparat myszą (albo kliknij obraz i używaj strzałek), aż drobnoustrój znajdzie się w środku okularu. Wtedy wokół niego pojawia się zielony pierścień, a pod obrazem nazwa rodzaju i podpowiedź leczenia. Jeśli w chwili pobrania patogenu nie było we krwi (był w mięśniu albo ukryty, bez kopii i kolonii na ścianach naczyń), preparat jest pusty — po przeszukaniu większości preparatu wynik to „Brak drobnoustrojów”.
+5. **Mikroskop:** przeciągaj preparat myszą (albo kliknij obraz i używaj strzałek), aż drobnoustrój znajdzie się w środku okularu. Wtedy wokół niego pojawia się zielony pierścień, obok kolorowe zdjęcie patogenu z chwili pobrania, a pod obrazem nazwa rodzaju i podpowiedź leczenia. Po 15 s szukania przy brzegu okularu pojawia się pulsująca strzałka w stronę najbliższego skupiska. Jeśli w chwili pobrania patogenu nie było we krwi (był w mięśniu albo ukryty, bez kopii i kolonii na ścianach naczyń), preparat jest pusty — po przeszukaniu większości preparatu wynik to „Brak drobnoustrojów”.
 6. **Dziennik** zapisuje badania, wyniki i podane leki.
 
 ## Koniec rundy

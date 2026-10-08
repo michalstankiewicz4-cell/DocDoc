@@ -274,7 +274,8 @@
   // miejsca startu patogenu (ekran wyboru narządu)
   const START = {
     heart: { x: C.bacteria.start.x, y: C.bacteria.start.y },
-    kidney: { x: KIDNEY.c[0] + Math.cos(2.1) * KIDNEY.arc[0], y: KIDNEY.c[1] + Math.sin(2.1) * KIDNEY.arc[1] }   // tętnica łukowata
+    kidney: { x: KIDNEY.c[0] + Math.cos(2.1) * KIDNEY.arc[0], y: KIDNEY.c[1] + Math.sin(2.1) * KIDNEY.arc[1] },   // tętnica łukowata
+    liver: { x: LIVER.zone.c[0], y: LIVER.zone.c[1] }   // żyła centralna zrazika w środku wątroby
   };
   const H = { ELLIPSES, VESSELS, VALVES, EXITS, INLETS, ROUTES, KIDNEY, LIVER, HEART_BOX, ABDOMEN_BOX, START };
   H.organAt = organAt;
