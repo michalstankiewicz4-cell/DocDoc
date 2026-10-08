@@ -25,6 +25,7 @@
     }
     const ui = DD.createUI();
     const minimap = DD.createMinimap($('minimap'));
+    $('hud-map').hidden = !C.ui.minimap;   // minimapa ukryta, włącza ją C.ui.minimap
     const netStatus = DD.createNetStatus();
     const docCam = DD.createDoctorCam(state);
     const room = DD.createPatientRoom();
@@ -137,7 +138,7 @@
       // lekarz w trybie sieciowym nie widzi wnętrza serca — nie renderujemy 3D
       if (N.role !== 'doc') {
         if (view) view.frame(state, dt);
-        minimap.draw(state, view);
+        if (C.ui.minimap) minimap.draw(state, view);
       }
       DD.Audio.update(state, N.role, dt);
       netStatus.update(dt);

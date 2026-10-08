@@ -114,7 +114,7 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
 
 ### Ekran
 - **Lewy dolny róg:** życie, kolonizacja, stan pacjenta, pożywienie, liczba kolonii i kopii oraz aktywne efekty (gorączka, antybiotyk, przyczepione przeciwciała, oporność).
-- **Prawy górny róg:** minimapa serca albo jamy brzusznej (przełącza się sama, gdy patogen przepłynie pod przeponę). PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie, przyciemnione kropki to kopie patogenu.
+- **Minimapa** (obecnie ukryta, można ją włączyć w `js/config.js`: `ui.minimap`): serca albo jamy brzusznej (przełącza się sama, gdy patogen przepłynie pod przeponę). PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie, przyciemnione kropki to kopie patogenu.
 
 ## Lekarz
 

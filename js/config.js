@@ -120,6 +120,9 @@ DD.CONFIG = {
   // kopie patogenu: wabiki dla przeciwciał (płyną z prądem, giną od jednego trafienia)
   copies: { max: 6, cost: 100, swim: 2.5, life: 40, fade: 4 },   // kopia żyje `life` s, w ostatnich `fade` s maleje
 
+  // minimapa patogenu: ukryta (kod zostaje; true = pokazuj)
+  ui: { minimap: false },
+
   camera: { fov: 40, zoom: 17, zoomMin: 14, zoomMax: 21 },   // zoom kamery patogenu: kółko myszy reguluje go tylko delikatnie
 
   cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }
