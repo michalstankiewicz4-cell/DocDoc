@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DocDoc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="split">
+
+  <!-- LEWA POŁOWA: gracz 1, bakteria -->
+  <section class="half half-bact" aria-label="Widok bakterii">
+    <div id="view-bacteria" class="view"></div>
+
+    <div class="hud hud-top">
+      <p class="hud-who">Gracz 1, bakteria</p>
+      <p id="h-place" class="hud-place">Żyła główna górna</p>
+    </div>
+
+    <div class="hud hud-bars">
+      <div class="bar-row">
+        <span class="bar-label">Żywotność</span>
+        <span class="bar"><span id="h-hp" class="bar-fill fill-hp"></span></span>
+        <span id="h-hp-val" class="bar-val">100</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Kolonizacja</span>
+        <span class="bar"><span id="h-inf" class="bar-fill fill-inf"></span></span>
+        <span id="h-inf-val" class="bar-val">0%</span>
+      </div>
+      <p id="h-contact" class="hud-note" hidden>Kontakt z tkanką, kolonizacja rośnie</p>
+      <ul class="chips">
+        <li id="s-fever" class="chip chip-fever" hidden>Gorączka osłabia</li>
+        <li id="s-slow" class="chip chip-slow" hidden>Antybiotyk spowalnia</li>
+        <li id="s-ab" class="chip chip-ab" hidden>Przyczepione przeciwciała: <b id="s-ab-n">0</b></li>
+        <li id="s-ab-near" class="chip chip-ab" hidden>Przeciwciała w pobliżu</li>
+      </ul>
+    </div>
+
+    <div class="hud hud-keys">
+      <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ruch</span>
+      <span><kbd>kółko</kbd> przybliżenie</span>
+    </div>
+
+    <div id="transit" class="transit" hidden>
+      <p class="transit-title">Bakteria w krwiobiegu</p>
+      <p id="transit-text" class="transit-text"></p>
+    </div>
+
+    <p id="gl-error" class="gl-error" hidden>Ta przeglądarka nie uruchomiła WebGL 2. Otwórz grę w aktualnym Chrome, Edge lub Firefoksie.</p>
+  </section>
+
+  <!-- PRAWA POŁOWA: gracz 2, lekarz -->
+  <section class="half half-doc" aria-label="Panel lekarza">
+    <header class="doc-head">
+      <div>
+        <p class="doc-who">Gracz 2, lekarz</p>
+        <h1 class="doc-title">Karta pacjenta</h1>
+      </div>
+      <p class="doc-clock"><span class="muted">Od przyjęcia</span> <time id="clock">0:00</time></p>
+    </header>
+
+    <section class="monitor" aria-label="Monitor funkcji życiowych">
+      <canvas id="ecg" class="ecg" aria-hidden="true"></canvas>
+      <dl class="vitals">
+        <div class="vital" id="vital-hr">
+          <dt>Tętno</dt>
+          <dd><span id="v-hr" class="vital-num">72</span><span class="unit">/min</span></dd>
+        </div>
+        <div class="vital" id="vital-temp" data-state="ok">
+          <dt>Temperatura</dt>
+          <dd><span id="v-temp" class="vital-num">36,6</span><span class="unit">°C</span></dd>
+        </div>
+        <div class="vital" id="vital-inf" data-state="unknown">
+          <dt>Zakażenie</dt>
+          <dd><span id="v-inf" class="vital-num">—</span></dd>
+          <p id="v-inf-note" class="vital-note">zleć badanie krwi</p>
+        </div>
+      </dl>
+    </section>
+
+    <section class="block" aria-labelledby="h-test">
+      <h2 id="h-test" class="block-title">Diagnostyka</h2>
+      <button id="btn-test" class="test-btn" type="button">
+        <span class="test-bar" aria-hidden="true"><span id="test-bar"></span></span>
+        <span class="test-row"><span id="test-label">Zleć badanie krwi</span><kbd>B</kbd></span>
+      </button>
+      <p class="hint">Wynik pokazuje zaawansowanie zakażenia i odblokowuje leczenie.</p>
+    </section>
+
+    <section class="block" aria-labelledby="h-act">
+      <h2 id="h-act" class="block-title">Leczenie</h2>
+      <div id="actions" class="actions"></div>
+    </section>
+
+    <section class="block block-log" aria-labelledby="h-log">
+      <h2 id="h-log" class="block-title">Dziennik</h2>
+      <ol id="log" class="log"></ol>
+    </section>
+  </section>
+</main>
+
+<!-- Ekran startowy -->
+<div id="start" class="overlay">
+  <div class="overlay-card">
+    <h1 class="logo">DocDoc</h1>
+    <p class="lead">Gra na dwie osoby. Na razie obie połowy ekranu obsługujesz sam.</p>
+    <div class="roles">
+      <div class="role role-bact">
+        <h2>Bakteria</h2>
+        <p>Płyń z prądem krwi, przeciskaj się przez zastawki i przyczepiaj do ścian serca. Kolonizacja 100% to wygrana.</p>
+        <p class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ruch, kółko myszy przybliża</p>
+      </div>
+      <div class="role role-doc">
+        <h2>Lekarz</h2>
+        <p>Zleć badanie krwi, a po wyniku lecz: przeciwciała, gorączka, antybiotyk. Zniszczenie bakterii to wygrana.</p>
+        <p class="keys"><kbd>B</kbd> badanie, <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> leczenie</p>
+      </div>
+    </div>
+    <h2 class="pick-title">Gdzie zaczyna bakteria?</h2>
+    <div class="organs">
+      <button type="button" class="organ" data-organ="heart" id="organ-heart"><span>Serce</span><small>Gotowe</small></button>
+      <button type="button" class="organ" data-organ="head" disabled><span>Głowa</span><small>Później</small></button>
+      <button type="button" class="organ" data-organ="torso" disabled><span>Tułów</span><small>Później</small></button>
+      <button type="button" class="organ" data-organ="arm" disabled><span>Ręka</span><small>Później</small></button>
+      <button type="button" class="organ" data-organ="kidney" disabled><span>Nerka</span><small>Później</small></button>
+      <button type="button" class="organ" data-organ="skin" disabled><span>Skóra</span><small>Później</small></button>
+    </div>
+  </div>
+</div>
+
+<!-- Koniec gry -->
+<div id="end" class="overlay overlay-end" hidden>
+  <div class="overlay-card overlay-card-small">
+    <h2 id="end-title" class="end-title"></h2>
+    <p id="end-text"></p>
+    <button id="end-again" class="primary" type="button">Zagraj jeszcze raz</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/heart-shape.js"></script>
+<script src="js/flow.js"></script>
+<script src="js/state.js"></script>
+<script src="js/input.js"></script>
+<script src="js/render/glsl.js"></script>
+<script src="js/render/tissue.js"></script>
+<script src="js/render/cells.js"></script>
+<script src="js/render/actors.js"></script>
+<script src="js/render/post.js"></script>
+<script src="js/render/view.js"></script>
+<script src="js/doctor-ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

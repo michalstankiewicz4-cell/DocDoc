@@ -23,7 +23,7 @@ DD.CONFIG = {
   },
 
   infection: {
-    ratePerSec: 3.0,    // % kolonizacji na sekundę kontaktu z tkanką
+    ratePerSec: 2.0,    // % kolonizacji na sekundę kontaktu z tkanką
     colonyEvery: 6      // co ile % powstaje widoczna kolonia
   },
 
@@ -37,5 +37,5 @@ DD.CONFIG = {
 
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 
-  cells: { maxRBC: 2600, density: 0.11, plasmaSpecks: 1400 }
+  cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }
 };

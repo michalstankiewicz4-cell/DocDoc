@@ -1,0 +1,217 @@
+/* DocDoc v0 — podział ekranu.
+   Lewo: ciemny, organiczny świat bakterii. Prawo: sterylna, jasna karta lekarza.
+   Kontrast dwóch światów jest celowy — każdy gracz widzi inną grę. */
+:root {
+  /* świat lekarza */
+  --paper: #e8efec;
+  --panel: #f6f9f7;
+  --ink: #10302a;
+  --muted: #56706a;
+  --line: #c6d5cf;
+  --trace: #11795a;
+  --amber: #9c6209;
+  --alert: #b0362a;
+  /* świat bakterii */
+  --abyss: #070102;
+  --hud: #f7e9e4;
+  --hud-dim: rgba(247, 233, 228, 0.62);
+  --microbe: #6fe3b4;
+  --biofilm: #c6e66a;
+  --heat: #ff9b6a;
+  --cold: #a9d4ff;
+
+  --font: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --r-s: 6px;
+  --r-m: 10px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--abyss);
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; }
+kbd {
+  font: inherit; font-size: 0.78em; font-weight: 700;
+  display: inline-block; min-width: 1.7em; padding: 0.05em 0.4em; margin-right: 0.2em;
+  text-align: center; border-radius: 4px;
+  border: 1px solid currentColor; opacity: 0.85;
+}
+
+.split { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+.half { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+
+/* ---------- LEWA: bakteria ---------- */
+.half-bact { background: var(--abyss); color: var(--hud); }
+.view { position: absolute; inset: 0; }
+.view canvas { display: block; }
+.hud { position: absolute; z-index: 2; pointer-events: none; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7); }
+.hud-top { top: 18px; left: 20px; right: 20px; }
+.hud-who { margin: 0; color: var(--hud-dim); font-size: 13px; }
+.hud-place { margin: 2px 0 0; font-size: 26px; font-weight: 700; line-height: 1.15; text-wrap: balance; }
+.hud-bars { left: 20px; bottom: 54px; width: min(340px, calc(100% - 40px)); display: grid; gap: 8px; }
+.bar-row { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 10px; font-size: 13px; }
+.bar-label { color: var(--hud-dim); }
+.bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.bar-fill { display: block; height: 100%; transform-origin: left; transform: scaleX(0); transition: transform 0.15s linear; }
+.fill-hp { background: var(--microbe); box-shadow: 0 0 10px var(--microbe); transform: scaleX(1); }
+.fill-inf { background: var(--biofilm); box-shadow: 0 0 10px var(--biofilm); }
+.bar-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.hud-note { margin: 0; font-size: 13px; color: var(--biofilm); }
+.chips { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: rgba(0, 0, 0, 0.45); border: 1px solid; }
+.chip-fever { color: var(--heat); }
+.chip-slow { color: var(--cold); }
+.chip-ab { color: #f3dfaa; }
+.hud-keys { left: 20px; bottom: 18px; display: flex; gap: 18px; font-size: 12px; color: var(--hud-dim); }
+.transit {
+  position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; text-align: center;
+  pointer-events: none; color: var(--hud);
+}
+.transit-title { margin: 0; font-size: 13px; color: var(--hud-dim); }
+.transit-text { margin: 4px 0 0; font-size: 22px; font-weight: 700; }
+.gl-error { position: absolute; inset: auto 20px 50% 20px; z-index: 4; padding: 16px; border-radius: var(--r-m); background: #2a0c0c; color: var(--hud); }
+
+/* ---------- PRAWA: lekarz ---------- */
+.half-doc {
+  background: var(--paper);
+  color: var(--ink);
+  overflow-y: auto;
+  padding: 22px clamp(16px, 3vw, 36px) 28px;
+  display: flex; flex-direction: column; gap: 22px;
+  border-left: 1px solid #000;
+}
+.half-doc > * { flex-shrink: 0; }
+.doc-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.doc-who { margin: 0; color: var(--muted); font-size: 13px; }
+.doc-title { margin: 0; font-size: 28px; line-height: 1.1; letter-spacing: -0.01em; }
+.doc-clock { margin: 0; font-variant-numeric: tabular-nums; font-size: 15px; }
+.doc-clock time { font-weight: 700; }
+.muted { color: var(--muted); }
+
+.monitor {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  overflow: hidden;
+}
+.ecg { --grid: #dfe8e4; --trace: #11795a; display: block; width: 100%; height: 92px; border-bottom: 1px solid var(--line); }
+.vitals { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.vital { padding: 12px 16px 14px; min-width: 0; }
+.vital + .vital { border-left: 1px solid var(--line); }
+.vital dt { font-size: 13px; color: var(--muted); }
+.vital dd { margin: 2px 0 0; display: flex; align-items: baseline; gap: 4px; }
+.vital-num { font-size: 34px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.unit { color: var(--muted); font-size: 14px; }
+.vital-note { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+.vital[data-state="warm"] .vital-num { color: var(--amber); }
+.vital[data-state="high"] .vital-num { color: var(--alert); }
+.vital[data-state="unknown"] .vital-num { color: var(--line); }
+
+.block { display: grid; gap: 10px; }
+.block-title { margin: 0; font-size: 17px; }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+
+.test-btn {
+  position: relative; overflow: hidden; text-align: left; cursor: pointer;
+  padding: 14px 16px; border-radius: var(--r-m);
+  border: 1.5px solid var(--ink); background: var(--ink); color: var(--panel);
+  font-weight: 700; font-size: 16px;
+}
+.test-btn:hover:not(:disabled) { background: #1b4a40; }
+.test-btn:disabled { cursor: default; background: var(--panel); color: var(--ink); border-color: var(--line); }
+.test-bar { position: absolute; inset: 0; pointer-events: none; }
+.test-bar span { position: absolute; inset: 0; background: #d3e6dd; transform-origin: left; transform: scaleX(0); }
+.test-row { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+
+.actions { display: grid; gap: 8px; }
+.action {
+  position: relative; overflow: hidden; cursor: pointer; text-align: left;
+  display: grid; gap: 2px; padding: 12px 16px;
+  background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--r-m);
+}
+.action-cd { position: absolute; inset: 0; background: #e2ebe7; transform-origin: left; transform: scaleX(0); pointer-events: none; }
+.action > :not(.action-cd) { position: relative; }
+.action-head { display: flex; justify-content: space-between; align-items: center; }
+.action-name { font-weight: 700; font-size: 16px; }
+.action-desc { font-size: 13px; color: var(--muted); }
+.action-state { font-size: 13px; font-weight: 700; margin-top: 4px; }
+.action[data-state="ready"] { border-color: var(--trace); }
+.action[data-state="ready"] .action-state { color: var(--trace); }
+.action[data-state="ready"]:hover { background: #eef6f2; }
+.action[data-state="locked"] { cursor: not-allowed; }
+.action[data-state="locked"] .action-name, .action[data-state="locked"] .action-desc { opacity: 0.55; }
+.action[data-state="cooldown"] .action-state { color: var(--amber); }
+.action:disabled { cursor: default; }
+
+.block-log { flex: 1; min-height: 120px; }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
+.log li { display: grid; grid-template-columns: 40px 1fr; gap: 10px; }
+.log time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.log li[data-who="sys"] span { font-weight: 700; }
+
+button:focus-visible, .organ:focus-visible { outline: 3px solid #2a9d77; outline-offset: 2px; }
+
+/* ---------- nakładki ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px;
+  background: radial-gradient(ellipse at 30% 40%, rgba(70, 8, 10, 0.55), rgba(5, 1, 2, 0.88));
+  overflow-y: auto;
+}
+.overlay-card {
+  width: min(760px, 100%);
+  background: var(--paper); color: var(--ink);
+  border-radius: 14px; padding: clamp(20px, 4vw, 40px);
+  display: grid; gap: 18px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+.overlay-card-small { width: min(440px, 100%); text-align: left; }
+.logo { margin: 0; font-size: clamp(44px, 7vw, 68px); line-height: 0.95; letter-spacing: -0.03em; }
+.lead { margin: 0; font-size: 17px; color: var(--muted); max-width: 52ch; }
+.roles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.role { padding: 16px 18px; border-radius: var(--r-m); min-width: 0; }
+.role h2 { margin: 0 0 6px; font-size: 19px; }
+.role p { margin: 0; font-size: 14px; }
+.role .keys { margin-top: 10px; font-size: 13px; }
+.role-bact { background: #1a0607; color: var(--hud); }
+.role-bact h2 { color: var(--microbe); }
+.role-doc { background: var(--panel); border: 1px solid var(--line); }
+.role-doc h2 { color: var(--trace); }
+.pick-title { margin: 6px 0 0; font-size: 17px; }
+.organs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.organ {
+  display: grid; gap: 2px; padding: 12px 10px; border-radius: var(--r-m); cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--panel); text-align: left;
+}
+.organ span { font-weight: 700; }
+.organ small { font-size: 12px; color: var(--muted); }
+.organ:not(:disabled) { border-color: #7c1d1f; background: #7c1d1f; color: #fff2ef; }
+.organ:not(:disabled) small { color: #f3c6bf; }
+.organ:not(:disabled):hover { background: #962528; }
+.organ:disabled { cursor: not-allowed; opacity: 0.6; }
+.end-title { margin: 0; font-size: 32px; line-height: 1.1; }
+.overlay-end p { margin: 0; }
+.primary {
+  justify-self: start; cursor: pointer; padding: 12px 20px; border-radius: var(--r-m);
+  border: 0; background: var(--ink); color: var(--panel); font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; grid-template-rows: 62vh auto; height: auto; }
+  .half-bact { height: 62vh; }
+  .half-doc { border-left: 0; overflow: visible; }
+  .roles { grid-template-columns: 1fr; }
+  .organs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hud-place { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill { transition: none; }
+}
