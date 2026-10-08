@@ -21,6 +21,17 @@
       $('gl-error').hidden = false;
     }
     const ui = DD.createUI();
+    const minimap = DD.createMinimap($('minimap'));
+
+    // dźwięk: włączany pierwszym gestem, przełącznik M lub przycisk
+    const soundLabel = () => { $('sound-label').textContent = DD.Audio.on ? 'Dźwięk włączony' : 'Dźwięk wyłączony'; };
+    soundLabel();
+    $('btn-sound').addEventListener('click', () => { DD.Audio.toggle(); soundLabel(); $('btn-sound').blur(); });
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyM' && !e.repeat) { DD.Audio.toggle(); soundLabel(); }
+      else DD.Audio.on && DD.Audio.init();
+    });
+    window.addEventListener('pointerdown', () => { if (DD.Audio.on) DD.Audio.init(); });
 
     // wybór narządu startowego
     document.querySelectorAll('[data-organ]').forEach((b) => {
@@ -54,6 +65,8 @@
         DD.Game.updateValveGeometry(state);
       }
       if (view) view.frame(state, dt);
+      minimap.draw(state, view);
+      DD.Audio.update(state.phase);
       ui.update(state);
       requestAnimationFrame(frame);
     }

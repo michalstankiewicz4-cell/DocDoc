@@ -5,14 +5,16 @@ To wersja v0: podzielony ekran, oboma graczami steruje jedna osoba, jedna arena 
 
 ## Uruchomienie
 
-Otwórz `index.html` w przeglądarce (Chrome, Edge, Firefox). Serwer nie jest potrzebny, bo skrypty są zwykłe (nie ES-moduły).
+Zagraj online: https://michalstankiewicz4-cell.github.io/DocDoc/
+
+Lokalnie: otwórz `index.html` w przeglądarce (Chrome, Edge, Firefox). Serwer nie jest potrzebny, bo skrypty są zwykłe (nie ES-moduły).
 Three.js (r128) ładuje się z cdnjs, więc za pierwszym razem potrzebny jest internet.
 
 ## Sterowanie
 
 | Kto | Klawisze |
 | --- | --- |
-| Bakteria (lewa połowa) | `W` `A` `S` `D` ruch, kółko myszy przybliża i oddala |
+| Bakteria (lewa połowa) | `W` `A` `S` `D` ruch, kółko myszy przybliża i oddala, `M` dźwięk |
 | Lekarz (prawa połowa) | `B` badanie krwi, `1` przeciwciała, `2` gorączka, `3` antybiotyk (albo przyciski) |
 
 ## Zasady v0
@@ -25,7 +27,10 @@ Three.js (r128) ładuje się z cdnjs, więc za pierwszym razem potrzebny jest in
   - **Przeciwciała**: pojawiają się w krwi, płyną z prądem, a w pobliżu bakterii same do niej płyną. Każde przyczepione zabiera życie i spowalnia.
   - **Gorączka**: temperatura rośnie do 39,6 °C, bakteria traci życie, a kolonizacja zwalnia o połowę.
   - **Antybiotyk**: bakteria porusza się wolniej przez 10 s.
+- **Oporność**: każde kolejne użycie tego samego leczenia działa o 20 punktów procentowych słabiej (100%, 80%, 60%, 40%, minimum 20%). Lekarz widzi skuteczność następnej dawki, a bakteria swoją oporność.
 - Spadek życia bakterii do 0 to wygrana lekarza.
+- Minimapa w rogu pokazuje bakterię, kadr kamery i kolonie. PP, PK, LP, LK to przedsionki i komory.
+- Dźwięk bicia serca jest syntezowany na żywo: „lub” przy zamknięciu zastawek przedsionkowo-komorowych, „dub” przy zamknięciu zastawek półksiężycowatych.
 
 Warunki wygranej są tymczasowe, żeby dało się zagrać pełną rundę. Wszystkie liczby balansu są w `js/config.js`.
 
@@ -39,6 +44,8 @@ js/heart-shape.js     geometria serca jako pole odległości (SDF): komory, nacz
 js/flow.js            pole przepływu krwi zależne od fazy cyklu serca + turbulencja (curl noise)
 js/state.js           stan gry, komendy, krok symulacji, kolizje
 js/input.js           klawiatura -> komendy
+js/minimap.js         minimapa bakterii (sylwetka z SDF)
+js/audio.js           bicie serca w Web Audio
 js/doctor-ui.js       panel lekarza (EKG, parametry, badanie, leczenie, dziennik) i HUD bakterii
 js/main.js            pętla: komendy -> stały krok 60 Hz -> render
 js/render/glsl.js     wspólne shadery: szum, światło mokrej tkanki, pochłanianie we krwi, kaustyki

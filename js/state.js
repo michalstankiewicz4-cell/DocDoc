@@ -15,13 +15,15 @@
       bact: {
         x: B.start.x, y: B.start.y, vx: 0, vy: 0, fx: 0, fy: 0, dir: -Math.PI / 2,
         ix: 0, iy: 0, hp: B.hp, infection: 0, nextColony: C.infection.colonyEvery,
-        slowT: 0, transit: null, hitFlash: 0, contact: false, place: ''
+        slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
+        // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
+        resist: { antibodies: 0, fever: 0, slow: 0 }
       },
       doctor: {
         test: { state: 'idle', t: 0, cd: 0 },
         unlocked: false, knownInfection: null, knownHp: null,
         cd: { antibodies: 0, fever: 0, slow: 0 },
-        feverT: 0, temp: 36.6
+        feverT: 0, feverEff: 1, temp: 36.6
       },
       antibodies: [],
       colonies: [],
@@ -40,6 +42,15 @@
     s.seed = (s.seed * 1664525 + 1013904223) >>> 0;
     return s.seed / 4294967296;
   }
+
+  // skuteczność leku = 1 - oporność; po podaniu oporność rośnie
+  function useDrug(s, key) {
+    const R = C.resistance, r = s.bact.resist;
+    const eff = 1 - r[key];
+    r[key] = Math.min(R.max, r[key] + R.perUse);
+    return eff;
+  }
+  const pct = (v) => Math.round(v * 100) + '%';
 
   // ---------- KOMENDY ----------
   G.apply = function (s, cmd) {
@@ -65,23 +76,27 @@
       case 'doc.antibodies':
         if (!d.unlocked || d.cd.antibodies > 0) return;
         d.cd.antibodies = D.antibodies.cooldown;
-        spawnAntibodies(s);
-        log(s, 'doc', 'Podano immunoglobuliny dożylnie.');
+        { const eff = useDrug(s, 'antibodies');
+          spawnAntibodies(s, eff);
+          log(s, 'doc', `Podano immunoglobuliny dożylnie (skuteczność ${pct(eff)}).`); }
         return;
       case 'doc.fever':
         if (!d.unlocked || d.cd.fever > 0) return;
         d.cd.fever = D.fever.cooldown; d.feverT = D.fever.duration;
-        log(s, 'doc', 'Wywołano gorączkę leczniczą.');
+        d.feverEff = useDrug(s, 'fever');
+        log(s, 'doc', `Wywołano gorączkę leczniczą (skuteczność ${pct(d.feverEff)}).`);
         return;
       case 'doc.slow':
         if (!d.unlocked || d.cd.slow > 0) return;
-        d.cd.slow = D.slow.cooldown; s.bact.slowT = D.slow.duration;
-        log(s, 'doc', 'Podano antybiotyk bakteriostatyczny we wlewie.');
+        { const eff = useDrug(s, 'slow');
+          d.cd.slow = D.slow.cooldown; s.bact.slowT = D.slow.duration;
+          s.bact.slowMul = 1 - (1 - D.slow.speedMul) * eff;
+          log(s, 'doc', `Podano antybiotyk bakteriostatyczny we wlewie (skuteczność ${pct(eff)}).`); }
         return;
     }
   };
 
-  function spawnAntibodies(s) {
+  function spawnAntibodies(s, eff) {
     // lek podany dożylnie miesza się z krwią: przeciwciała pojawiają się w całym krwiobiegu serca
     const W = C.world;
     for (let i = 0; i < D.antibodies.count; i++) {
@@ -93,7 +108,7 @@
       s.antibodies.push({
         x, y,
         z: (rnd(s) - 0.5) * 2.5, life: D.antibodies.life * (0.8 + rnd(s) * 0.4),
-        stuck: false, ox: 0, oy: 0, rot: rnd(s) * 6.28, spin: (rnd(s) - 0.5) * 4
+        stuck: false, ox: 0, oy: 0, eff, rot: rnd(s) * 6.28, spin: (rnd(s) - 0.5) * 4
       });
     }
   }
@@ -210,8 +225,8 @@
         b.x = p.x; b.y = p.y; b.vx = b.vy = 0; b.transit = null;
       }
     } else {
-      let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;
-      const mul = (b.slowT > 0 ? D.slow.speedMul : 1) * Math.max(0.3, 1 - stuck * 0.08);
+      let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck += (a.eff ?? 1);
+      const mul = (b.slowT > 0 ? b.slowMul : 1) * Math.max(0.3, 1 - stuck * 0.08);
       const il = Math.hypot(b.ix, b.iy) || 1;
       b.vx += (b.ix / il) * B.accel * mul * dt * (b.ix || b.iy ? 1 : 0);
       b.vy += (b.iy / il) * B.accel * mul * dt * (b.ix || b.iy ? 1 : 0);
@@ -231,7 +246,7 @@
       b.contact = collideWalls(b, B.radius + 0.05) || H.sample(b.x, b.y) > -(B.radius + 0.3);
 
       if (b.contact) {
-        b.infection += C.infection.ratePerSec * (1 - feverK * (1 - D.fever.infectionMul)) * dt;
+        b.infection += C.infection.ratePerSec * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul)) * dt;
         if (b.infection >= b.nextColony) {
           b.nextColony += C.infection.colonyEvery;
           H.grad(b.x, b.y, g2);
@@ -239,7 +254,7 @@
           s.colonies.push({ x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s) });
         }
       }
-      if (feverK > 0) b.hp -= D.fever.dps * feverK * dt;
+      if (feverK > 0) b.hp -= D.fever.dps * feverK * d.feverEff * dt;
 
       for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
@@ -270,7 +285,7 @@
       }
       if (!b.transit && dist < B.radius + 0.4) {
         a.stuck = true; a.ox = a.x - b.x; a.oy = a.y - b.y; a.life = Math.min(a.life, 8);
-        b.hp -= A.damage; b.hitFlash = 1;
+        b.hp -= A.damage * (a.eff ?? 1); b.hitFlash = 0.4 + 0.6 * (a.eff ?? 1);
       }
     }
 

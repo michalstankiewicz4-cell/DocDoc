@@ -21,6 +21,10 @@
       <p id="h-place" class="hud-place">Żyła główna górna</p>
     </div>
 
+    <div class="hud hud-map">
+      <canvas id="minimap" class="minimap" aria-label="Minimapa serca"></canvas>
+    </div>
+
     <div class="hud hud-bars">
       <div class="bar-row">
         <span class="bar-label">Żywotność</span>
@@ -38,12 +42,14 @@
         <li id="s-slow" class="chip chip-slow" hidden>Antybiotyk spowalnia</li>
         <li id="s-ab" class="chip chip-ab" hidden>Przyczepione przeciwciała: <b id="s-ab-n">0</b></li>
         <li id="s-ab-near" class="chip chip-ab" hidden>Przeciwciała w pobliżu</li>
+        <li id="s-res" class="chip chip-res" hidden></li>
       </ul>
     </div>
 
     <div class="hud hud-keys">
       <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ruch</span>
       <span><kbd>kółko</kbd> przybliżenie</span>
+      <button id="btn-sound" class="sound-btn" type="button"><kbd>M</kbd> <span id="sound-label">Dźwięk włączony</span></button>
     </div>
 
     <div id="transit" class="transit" hidden>
@@ -154,6 +160,8 @@
 <script src="js/render/actors.js"></script>
 <script src="js/render/post.js"></script>
 <script src="js/render/view.js"></script>
+<script src="js/minimap.js"></script>
+<script src="js/audio.js"></script>
 <script src="js/doctor-ui.js"></script>
 <script src="js/main.js"></script>
 </body>

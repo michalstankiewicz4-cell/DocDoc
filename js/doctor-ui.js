@@ -17,7 +17,7 @@
     for (const a of ACTIONS) {
       const b = document.createElement('button');
       b.className = 'action'; b.id = 'act-' + a.cd; b.type = 'button';
-      b.innerHTML = `<span class="action-cd"></span><span class="action-head"><span class="action-name">${a.name}</span><kbd>${a.key}</kbd></span><span class="action-desc">${a.desc}</span><span class="action-state"></span>`;
+      b.innerHTML = `<span class="action-cd"></span><span class="action-head"><span class="action-name">${a.name}</span><kbd>${a.key}</kbd></span><span class="action-desc">${a.desc}</span><span class="action-foot"><span class="action-state"></span><span class="action-eff"></span></span>`;
       b.addEventListener('click', () => DD.CommandBus.push({ type: a.cmd }));
       actionsEl.appendChild(b);
       btns[a.cd] = b;
@@ -112,6 +112,10 @@
         if (a.cd === 'fever' && fever) st = `Trwa jeszcze ${Math.ceil(d.feverT)} s`;
         if (a.cd === 'slow' && b.slowT > 0) st = `Działa jeszcze ${Math.ceil(b.slowT)} s`;
         el.querySelector('.action-state').textContent = st;
+        const eff = 1 - b.resist[a.cd];
+        const effEl = el.querySelector('.action-eff');
+        effEl.textContent = `Skuteczność ${Math.round(eff * 100)}%`;
+        effEl.dataset.level = eff > 0.75 ? 'full' : eff > 0.45 ? 'mid' : 'low';
       }
 
       if (s.log.length !== logCount || (s.log.length && s.log[s.log.length - 1].t !== update._lt)) {
@@ -141,6 +145,10 @@
       $('s-ab').hidden = stuck === 0;
       $('s-ab-n').textContent = stuck;
       $('s-ab-near').hidden = !(s.antibodies.length > stuck && stuck === 0 && s.antibodies.some(a => Math.hypot(a.x - b.x, a.y - b.y) < 12));
+      const RN = { antibodies: 'przeciwciała', fever: 'gorączka', slow: 'antybiotyk' };
+      const res = Object.keys(RN).filter(k => b.resist[k] > 0).map(k => `${RN[k]} ${Math.round(b.resist[k] * 100)}%`);
+      $('s-res').hidden = res.length === 0;
+      $('s-res').textContent = 'Oporność: ' + res.join(', ');
       $('transit').hidden = !b.transit;
       if (b.transit) $('transit-text').textContent = b.transit.to === 'lungs' ? 'Przez płuca do lewego przedsionka' : 'Przez krążenie duże do prawego przedsionka';
 
