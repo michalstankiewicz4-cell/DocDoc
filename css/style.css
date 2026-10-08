@@ -190,6 +190,7 @@ button:focus-visible, .organ:focus-visible { outline: 3px solid #2a9d77; outline
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
 }
 .overlay-card-small { width: min(440px, 100%); text-align: left; }
+.version-tag { margin: -12px 0 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .logo { margin: 0; font-size: clamp(44px, 7vw, 68px); line-height: 0.95; letter-spacing: -0.03em; }
 .lead { margin: 0; font-size: 17px; color: var(--muted); max-width: 52ch; }
 .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

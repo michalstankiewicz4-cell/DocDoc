@@ -6,6 +6,7 @@
   function boot() {
     const $ = (id) => document.getElementById(id);
     const N = DD.Net;
+    document.querySelectorAll('.js-version').forEach((el) => { el.textContent = DD.VERSION; });
     try {
       DD.Heart.init();
       DD.Flow.init();
