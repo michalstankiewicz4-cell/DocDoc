@@ -322,8 +322,10 @@ body[data-role="doc"] .half-doc {
   cursor: pointer; padding: 8px 16px; border-radius: 999px; font-weight: 700;
   border: 1.5px solid var(--line); background: var(--panel); color: var(--ink);
 }
-.kind-pick button[data-kind="bacteria"][aria-pressed="true"] { background: #1a0607; border-color: #1a0607; color: var(--microbe); }
-.kind-pick button[data-kind="virus"][aria-pressed="true"] { background: #1c0b2e; border-color: #1c0b2e; color: #d6b8ff; }
+.kind-group { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.kind-sub { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.7; }
+.kind-pick button:is([data-kind="staph"], [data-kind="strep"], [data-kind="ecoli"])[aria-pressed="true"] { background: #1a0607; border-color: #1a0607; color: var(--microbe); }
+.kind-pick button:is([data-kind="flu"], [data-kind="coxsackie"], [data-kind="adeno"])[aria-pressed="true"] { background: #1c0b2e; border-color: #1c0b2e; color: #d6b8ff; }
 .kind-pick .hint { margin-left: 4px; }
 .organ-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 @media (max-width: 900px) { .modes { grid-template-columns: 1fr; } }
@@ -411,6 +413,10 @@ body[data-role="doc"] .half-doc {
 .res-big { margin: 0; font-size: 15px; }
 .res-big b { font-size: 26px; font-variant-numeric: tabular-nums; }
 .res-note { margin: 0; font-size: 13px; color: var(--muted); }
+.micro-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.micro-row > div { flex: 1 1 180px; min-width: 0; }
+.micro-canvas { display: block; width: 240px; max-width: 100%; height: auto; border-radius: 50%; background: #000; box-shadow: 0 0 0 4px #1c2421, 0 0 0 6px #4a5853; }
+.tests .test-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .echo-canvas { display: block; width: 240px; max-width: 100%; height: auto; border-radius: var(--r-s); background: #000; }
 .abg { margin: 0; display: grid; gap: 4px; font-size: 13px; }
 .abg > div { display: flex; justify-content: space-between; gap: 8px; }

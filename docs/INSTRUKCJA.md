@@ -58,14 +58,25 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `M` | dźwięk włącz/wyłącz |
 
 ### Wybór patogenu
-Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś.
+Przed startem gracz patogenu wybiera jedną z trzech bakterii albo jeden z trzech wirusów (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.
 
-| | Bakteria | Wirus |
+| | Bakterie | Wirusy |
 | --- | --- | --- |
 | Życie | 100 | 70 |
-| Ruch | szybszy (wici) | wolniejszy |
+| Ruch | szybszy | wolniejszy |
 | Kolonie | biofilm, wzrost normalny | zakażone komórki, wzrost o 30% szybszy |
-| Działają na niego | przeciwciała, gorączka, antybiotyki (jedna klasa słabo) | przeciwciała, gorączka, lek przeciwwirusowy |
+| Działają na nie | przeciwciała, gorączka, antybiotyki | przeciwciała, gorączka, lek przeciwwirusowy |
+
+| Rodzaj | Wygląd | Leczenie |
+| --- | --- | --- |
+| Gronkowiec złocisty (MRSA) | złociste ziarenkowce w gronach | oporny na β-laktamy (20%), makrolid działa |
+| Paciorkowiec | ziarenkowce w łańcuszku | wrażliwy na β-laktamy i makrolidy |
+| Pałeczka okrężnicy (E. coli) | pałeczka z witkami | oporna na makrolidy (20%), β-laktam działa |
+| Wirus grypy | kulisty, gęste kolce | lek przeciwwirusowy 100% |
+| Wirus Coxsackie B | mały, gładki dwudziestościan | lek przeciwwirusowy tylko 20% |
+| Adenowirus | dwudziestościan z włóknami | lek przeciwwirusowy 60% |
+
+Rodzaje w obrębie bakterii albo wirusów różnią się tylko wyglądem i wrażliwością na leki.
 
 ### Jak grać
 - **Prąd krwi** zmienia się z rytmem serca (72/min). W rozkurczu krew płynie z przedsionków do komór, w skurczu jest wyrzucana do pnia płucnego i aorty. Pod prąd płynie się trudno, więc warto wyczuć rytm.
@@ -106,6 +117,7 @@ Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie w
 | `X` (albo `B`) | posiew krwi |
 | `C` | echo serca |
 | `V` | antybiogram |
+| `N` | mikroskop |
 | `1` | przeciwciała |
 | `2` | gorączka |
 | `3` | antybiotyk β-laktamowy |
@@ -124,6 +136,7 @@ Każdą akcję można też kliknąć w panelu.
    | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek bakterii we krwi (patogen i jego kopie) i zdjęcie miejsca, w którym był patogen |
    | Echo serca | 8 s | obraz serca w stylu USG: kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
+   | Mikroskop | 6 s | obraz próbki krwi i rodzaj patogenu (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym) z podpowiedzią leczenia; pusty, gdy w chwili pobrania patogen, jego kopie ani kolonie na ścianach naczyń nie były we krwi |
 
 2. **Leczenie:**
    - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na bakterie i wirusy. Gdy patogen ma kopie, część przeciwciał atakuje kopie zamiast niego.
@@ -131,7 +144,7 @@ Każdą akcję można też kliknąć w panelu.
    - **β-laktam** (bakteriobójczy) niszczy bakterię i kurczy kolonie.
    - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.
    - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
-   - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Bakteria jest dodatkowo naturalnie odporna na jedną z dwóch klas antybiotyków; którą — pokazuje antybiogram.
+   - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Skuteczność zależy od rodzaju patogenu (tabela w „Wybór patogenu”); rodzaj pokazuje mikroskop, a antybiogram wrażliwość z uwzględnieniem oporności nabytej.
    - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie.
    - **Operacja zastawki** trwa 10 s i obciąża pacjenta (stan −15). Po zakończeniu usuwa wszystkie ogniska w promieniu kilku milimetrów od wybranej zastawki, także w ścianie, a patogen w pobliżu traci 40 życia. Kolejna operacja jest możliwa po 60 s. Dobrze ją połączyć z echem serca, które pokazuje, gdzie są ogniska.
 3. **Oporność nabyta:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Na przycisku widać siłę następnej dawki i jej koszt dla pacjenta. Rzeczywiste działanie zależy jeszcze od rodzaju patogenu i jego naturalnej oporności.

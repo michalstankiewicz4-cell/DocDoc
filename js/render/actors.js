@@ -143,6 +143,54 @@
     virus.scale.setScalar(1.6);
     scene.add(virus);
 
+    // --- pozostałe gatunki (C.species): każdy ma własną grupę i listę materiałów ---
+    const sphereAt = (r, x, y, z, seg) => { const g = new THREE.SphereGeometry(r, seg || 14, 10); g.translate(x, y, z); return g.toNonIndexed(); };
+    // gronkowiec: grono ziarenkowców
+    const staph = new THREE.Group();
+    const staphMat = surfMat({ albedo: 0xc9ac3e, sssCol: 0xffe27a, sss: 1.1, rough: 0.25, wet: 0.8, rim: 2.4, rimCol: 0xfff0a0, emit: 0x2a2205, grain: 0.6 });
+    { const parts = [], P = [[0, 0, 0], [0.24, 0.05, 0.04], [-0.22, 0.1, -0.03], [0.05, 0.25, 0.08], [0.1, -0.23, -0.05], [-0.12, -0.18, 0.12], [-0.05, 0.08, 0.24], [0.2, 0.22, -0.12], [-0.25, -0.08, -0.15]];
+      for (const q of P) parts.push(sphereAt(0.13, q[0], q[1], q[2]));
+      staph.add(new THREE.Mesh(mergeGeos(parts), staphMat)); }
+    scene.add(staph);
+    // paciorkowiec: łańcuszek ziarenkowców (ogniwa falują)
+    const strep = new THREE.Group();
+    const strepMat = surfMat({ albedo: 0x37ab9c, sssCol: 0x7dffe8, sss: 1.1, rough: 0.25, wet: 0.8, rim: 2.4, rimCol: 0x9affee, emit: 0x063a32, grain: 0.6 });
+    const strepLinks = [];
+    { const g = new THREE.SphereGeometry(0.12, 14, 10); g.scale(1, 0.85, 1);
+      for (let i = 0; i < 7; i++) { const m = new THREE.Mesh(g, strepMat); strep.add(m); strepLinks.push(m); } }
+    scene.add(strep);
+    // wirus grypy: kulista otoczka z gęstymi kolcami
+    const flu = new THREE.Group();
+    const fluMat = surfMat({ albedo: 0xb24f8c, sssCol: 0xff9ad0, sss: 1.2, rough: 0.3, wet: 0.7, rim: 2.4, rimCol: 0xffc4e6, emit: 0x2e0a20, grain: 0.5 });
+    const fluSpikeMat = surfMat({ albedo: 0xffd0ea, sssCol: 0xffe0f0, sss: 0.8, rough: 0.35, wet: 0.5, rim: 1.4, rimCol: 0xfff0f8, emit: 0x30101f });
+    { flu.add(new THREE.Mesh(new THREE.SphereGeometry(0.2, 20, 14), fluMat));
+      const parts = [], n = 70, ga = Math.PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < n; i++) {
+        const y = 1 - (i + 0.5) / n * 2, rr = Math.sqrt(1 - y * y), a = i * ga, v = new THREE.Vector3(Math.cos(a) * rr, y, Math.sin(a) * rr);
+        const st = new THREE.CylinderGeometry(0.012, 0.016, 0.07, 5); st.translate(0, 0.035, 0);
+        const kn = new THREE.SphereGeometry(0.022, 6, 4); kn.translate(0, 0.075, 0);
+        const rm = new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), v));
+        for (const g of [st, kn]) { g.applyMatrix4(rm); g.translate(v.x * 0.19, v.y * 0.19, v.z * 0.19); parts.push(g.toNonIndexed()); }
+      }
+      flu.add(new THREE.Mesh(mergeGeos(parts), fluSpikeMat)); }
+    flu.scale.setScalar(1.6); scene.add(flu);
+    // wirus Coxsackie: mały, gładki dwudziestościan bez otoczki
+    const cox = new THREE.Group();
+    const coxMat = surfMat({ albedo: 0x5b46c8, sssCol: 0xa894ff, sss: 1.0, rough: 0.2, wet: 0.8, rim: 2.8, rimCol: 0xc8bcff, emit: 0x140a3a, grain: 0.3 });
+    { const g = new THREE.IcosahedronGeometry(0.17, 0).toNonIndexed(); g.computeVertexNormals(); cox.add(new THREE.Mesh(g, coxMat)); }
+    cox.scale.setScalar(1.6); scene.add(cox);
+
+    // wygląd -> grupa, materiały do efektów (błysk trafienia, spowolnienie), czy to wirus
+    const LOOKS = {
+      ecoli: { g: bact, mats: [body.material, flagMat] },
+      staph: { g: staph, mats: [staphMat] },
+      strep: { g: strep, mats: [strepMat] },
+      adeno: { g: virus, mats: [capsidMat, spikeMat], virus: true },
+      flu: { g: flu, mats: [fluMat, fluSpikeMat], virus: true },
+      coxsackie: { g: cox, mats: [coxMat], virus: true }
+    };
+    const lookOf = (s) => LOOKS[s.species] || (s.kind === 'virus' ? LOOKS.adeno : LOOKS.ecoli);
+
     // --- przeciwciała ---
     const abMax = 120;
     const abMesh = new THREE.InstancedMesh(antibodyGeometry(), surfMat({
@@ -179,12 +227,13 @@
     }
 
     // --- kopie patogenu: te same siatki co oryginał (wabiki mają wyglądać identycznie) ---
-    const copyPool = [];
-    for (let i = 0; i < C.copies.max; i++) {
-      const cb = bact.clone(), cv = virus.clone();
-      cb.visible = cv.visible = false;
-      scene.add(cb); scene.add(cv);
-      copyPool.push({ b: cb, v: cv });
+    // pula kopii budowana dla bieżącego gatunku (klony dzielą materiały z oryginałem)
+    let copyPool = [], copyLook = null;
+    function ensureCopies(L) {
+      if (copyLook === L) return;
+      for (const g of copyPool) scene.remove(g);
+      copyPool = []; copyLook = L;
+      for (let i = 0; i < C.copies.max; i++) { const g = L.g.clone(); g.visible = false; scene.add(g); copyPool.push(g); }
     }
 
     // --- płatki zastawek ---
@@ -235,34 +284,40 @@
     A.update = function (s, dt) {
       animT += dt;
       const b = s.bact;
-      // patogen: bakteria albo wirus
-      const isVirus = s.kind === 'virus';
-      virus.visible = isVirus && !b.transit && !b.dead;
+      // patogen: grupa wybranego gatunku
+      const L = lookOf(s), isVirus = !!L.virus;
+      const showP = !b.transit && !b.dead;
+      for (const k in LOOKS) if (LOOKS[k] !== L) LOOKS[k].g.visible = false;
+      L.g.visible = showP;
+      const slowV = b.slowT > 0 ? Math.min(1, b.slowT) : 0;
+      for (const m of L.mats) { m.uniforms.uTimeL.value = animT; m.uniforms.uFlash.value = b.hitFlash; m.uniforms.uSlow.value = slowV; }
       if (isVirus) {
-        virus.position.set(b.x, b.y, b.z || 0);
-        virus.rotation.set(animT * 0.7, animT * 0.45, animT * 0.3);
-        capsidMat.uniforms.uTimeL.value = animT;
-        capsidMat.uniforms.uFlash.value = b.hitFlash;
-        capsidMat.uniforms.uSlow.value = b.slowT > 0 ? Math.min(1, b.slowT) : 0;
-        virus.scale.setScalar(1.6 * (0.85 + 0.15 * b.hp / C.virus.hp));
+        L.g.position.set(b.x, b.y, b.z || 0);
+        L.g.rotation.set(animT * 0.7, animT * 0.45, animT * 0.3);
+        L.g.scale.setScalar(1.6 * (0.85 + 0.15 * b.hp / C.virus.hp));
       }
+      // łańcuszek paciorkowca falujący w nurcie
+      const chainPose = (links, ph) => {
+        let x = 0, y = 0;
+        links.forEach((m, i) => { m.position.set(x, y, Math.sin(ph + i) * 0.04); const a = Math.sin(ph * 0.8 + i * 0.9) * 0.35; x += Math.sin(a) * 0.22; y -= Math.cos(a) * 0.22; });
+        const cx = x / 2, cy = y / 2; links.forEach((m) => { m.position.x -= cx; m.position.y -= cy; });
+      };
+      if (L.g === strep) chainPose(strepLinks, animT * 2.2);
       if (colKind !== s.kind) {
         colKind = s.kind || 'bacteria';
         const L = COL_LOOK[colKind] || COL_LOOK.bacteria, u = colMesh.material.uniforms;
         u.uAlbedo.value.set(L.albedo); u.uSssCol.value.set(L.sssCol); u.uRimCol.value.set(L.rimCol); u.uEmit.value.set(L.emit);
       }
-      bact.visible = !isVirus && !b.transit && !b.dead;
-      bact.position.set(b.x, b.y, b.z || 0);
-      bact.rotation.set(0, 0, b.dir - Math.PI / 2);
-      bact.rotateY(Math.sin(animT * 3) * 0.25);
-      const sp = Math.hypot(b.vx, b.vy);
-      flagMat.uniforms.uTimeL.value = animT * (0.6 + sp * 0.25);
-      A.bodyMat.uniforms.uTimeL.value = animT;
-      A.bodyMat.uniforms.uFlash.value = b.hitFlash;
-      A.bodyMat.uniforms.uSlow.value = b.slowT > 0 ? Math.min(1, b.slowT) : 0;
-      flagMat.uniforms.uSlow.value = A.bodyMat.uniforms.uSlow.value;
-      const hpK = b.hp / C.bacteria.hp;
-      bact.scale.setScalar(0.85 + 0.15 * hpK);
+      if (!isVirus) {
+        const g = L.g;
+        g.position.set(b.x, b.y, b.z || 0);
+        g.rotation.set(0, 0, b.dir - Math.PI / 2);
+        g.rotateY(Math.sin(animT * 3) * 0.25);
+        if (g === staph) g.rotateX(animT * 0.6);
+        const sp = Math.hypot(b.vx, b.vy);
+        flagMat.uniforms.uTimeL.value = animT * (0.6 + sp * 0.25);
+        g.scale.setScalar(0.85 + 0.15 * b.hp / C.bacteria.hp);
+      }
 
       // pożywienie
       const fc = { glucose: 0, amino: 0, lipid: 0 };
@@ -276,18 +331,19 @@
       for (const k in foodMesh) { foodMesh[k].count = fc[k]; foodMesh[k].instanceMatrix.needsUpdate = true; }
 
       // kopie patogenu
+      ensureCopies(L);
       copyPool.forEach((P, i) => {
         const c = s.copies[i];
-        P.b.visible = !!c && !isVirus; P.v.visible = !!c && isVirus;
+        P.visible = !!c;
         if (!c) return;
         // w ostatnich sekundach życia kopia maleje
         const left = C.copies.life - (s.time - (c.born ?? s.time)), sc = Math.max(0.15, Math.min(1, left / C.copies.fade));
-        if (isVirus) { P.v.position.set(c.x, c.y, 0); P.v.rotation.set(animT * 0.7 + c.id, animT * 0.45, animT * 0.3); P.v.scale.setScalar(1.6 * sc); }
+        P.position.set(c.x, c.y, 0);
+        if (isVirus) { P.rotation.set(animT * 0.7 + c.id, animT * 0.45, animT * 0.3); P.scale.setScalar(1.6 * sc); }
         else {
-          P.b.position.set(c.x, c.y, 0);
-          P.b.rotation.set(0, 0, c.dir - Math.PI / 2);
-          P.b.rotateY(Math.sin(animT * 3 + c.id) * 0.25);
-          P.b.scale.setScalar(sc);
+          P.rotation.set(0, 0, c.dir - Math.PI / 2);
+          P.rotateY(Math.sin(animT * 3 + c.id) * 0.25);
+          P.scale.setScalar(sc);
         }
       });
 

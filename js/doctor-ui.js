@@ -16,7 +16,8 @@
     { kind: 'crp', key: 'Z', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
     { kind: 'culture', key: 'X', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
     { kind: 'echo', key: 'C', name: 'Echo serca', desc: 'Położenie i wielkość kolonii na ścianach.' },
-    { kind: 'abg', key: 'V', name: 'Antybiogram', desc: 'Wrażliwość na leczenie. Wymaga dodatniego posiewu.' }
+    { kind: 'abg', key: 'V', name: 'Antybiogram', desc: 'Wrażliwość na leczenie. Wymaga dodatniego posiewu.' },
+    { kind: 'micro', key: 'N', name: 'Mikroskop', desc: 'Próbka krwi pod mikroskopem: rodzaj bakterii albo wirusa.' }
   ];
 
   DD.createUI = function () {
@@ -109,6 +110,97 @@
       ctx.restore();
       ctx.fillStyle = 'rgba(160, 220, 255, 0.85)'; ctx.font = '11px system-ui, sans-serif';
       ctx.fillText('P', 6, 14); ctx.fillText('L', w - 14, 14);
+    }
+
+    // obraz z mikroskopu: bakterie w barwieniu Grama (mikroskop świetlny), wirusy w mikroskopie elektronowym
+    const microC = $('res-micro-c');
+    function drawMicro(res, seed) {
+      const w = 240, h = 200, pr = Math.min(2, window.devicePixelRatio || 1);
+      microC.width = w * pr; microC.height = h * pr; microC.style.width = w + 'px'; microC.style.height = h + 'px';
+      const g = microC.getContext('2d'); g.setTransform(pr, 0, 0, pr, 0, 0);
+      let sd = (Math.floor(seed * 1000) % 2147483646) + 1;
+      const R = () => { sd = sd * 16807 % 2147483647; return (sd - 1) / 2147483646; };
+      const sp = res.found ? C.species[res.species] : null;
+      const em = sp && sp.kind === 'virus';
+      const cx = w / 2, cy = h / 2, rad = Math.min(w, h) / 2 - 4;
+      g.fillStyle = '#0b0d0c'; g.fillRect(0, 0, w, h);
+      g.save(); g.beginPath(); g.arc(cx, cy, rad, 0, 6.283); g.clip();
+      if (!em) {
+        // pole widzenia mikroskopu świetlnego: jasne tło, krwinki czerwone z przejaśnieniem
+        const bg = g.createRadialGradient(cx, cy, 10, cx, cy, rad);
+        bg.addColorStop(0, '#fbf3ee'); bg.addColorStop(1, '#e9d6cf'); g.fillStyle = bg; g.fillRect(0, 0, w, h);
+        for (let i = 0; i < 38; i++) {
+          const x = R() * w, y = R() * h, r = 9 + R() * 2.5;
+          g.fillStyle = 'rgba(226, 150, 150, 0.55)'; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
+          g.fillStyle = 'rgba(250, 225, 222, 0.7)'; g.beginPath(); g.arc(x, y, r * 0.45, 0, 6.283); g.fill();
+        }
+        // granulocyt (wielopłatowe jądro)
+        { const x = 40 + R() * 160, y = 40 + R() * 120;
+          g.fillStyle = 'rgba(214, 190, 220, 0.9)'; g.beginPath(); g.arc(x, y, 13, 0, 6.283); g.fill();
+          g.fillStyle = '#5a3a86'; for (let k = 0; k < 3; k++) { g.beginPath(); g.ellipse(x - 5 + k * 5, y + (k % 2 ? 3 : -2), 4, 3, k, 0, 6.283); g.fill(); } }
+        const n = res.n || 0, look = res.species;
+        const purple = '#4b1f7a', pink = '#c43a6a';
+        for (let c = 0; c < n; c++) {
+          const x0 = 25 + R() * (w - 50), y0 = 25 + R() * (h - 50);
+          if (look === 'staph') {
+            // grona ziarenkowców
+            const m = 5 + Math.floor(R() * 8);
+            for (let k = 0; k < m; k++) { const a = R() * 6.283, rr = Math.sqrt(R()) * 7;
+              g.fillStyle = purple; g.beginPath(); g.arc(x0 + Math.cos(a) * rr * 1.4, y0 + Math.sin(a) * rr * 1.4, 3.1, 0, 6.283); g.fill(); }
+          } else if (look === 'strep') {
+            // łańcuszki ziarenkowców
+            let a = R() * 6.283, x = x0, y = y0; const m = 6 + Math.floor(R() * 7);
+            for (let k = 0; k < m; k++) { g.fillStyle = purple; g.beginPath(); g.ellipse(x, y, 3.2, 2.7, a, 0, 6.283); g.fill(); a += (R() - 0.5) * 0.6; x += Math.cos(a) * 6.2; y += Math.sin(a) * 6.2; }
+          } else if (look === 'ecoli') {
+            // pałeczki Gram-ujemne
+            const a = R() * 6.283;
+            g.save(); g.translate(x0, y0); g.rotate(a);
+            g.strokeStyle = 'rgba(196, 58, 106, 0.35)'; g.lineWidth = 0.6;
+            for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-5, 0); g.bezierCurveTo(-9, -3 + k * 3, -12, 3 - k * 2, -16, -1 + k * 2); g.stroke(); }
+            g.fillStyle = pink; g.beginPath(); g.ellipse(0, 0, 7.5, 2.8, 0, 0, 6.283); g.fill();
+            g.restore();
+          }
+        }
+      } else {
+        // mikroskop elektronowy: szare tło z ziarnem, ciemne wiriony
+        g.fillStyle = '#9a9a96'; g.fillRect(0, 0, w, h);
+        for (let i = 0; i < 1600; i++) { const v = 120 + R() * 70; g.fillStyle = `rgba(${v},${v},${v - 4},0.5)`; g.fillRect(R() * w, R() * h, 2, 2); }
+        const n = Math.max(3, res.n || 0) * (res.species === 'coxsackie' ? 3 : 1);
+        for (let c = 0; c < n; c++) {
+          const x = 20 + R() * (w - 40), y = 20 + R() * (h - 40);
+          if (res.species === 'flu') {
+            const r = 11 + R() * 3;
+            g.strokeStyle = '#2b2b29'; g.lineWidth = 1;
+            for (let k = 0; k < 36; k++) { const a = k / 36 * 6.283; g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(x + Math.cos(a) * (r + 3.2), y + Math.sin(a) * (r + 3.2)); g.stroke(); }
+            g.fillStyle = '#3a3a37'; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
+            g.fillStyle = '#6d6d68'; g.beginPath(); g.arc(x, y, r * 0.72, 0, 6.283); g.fill();
+          } else if (res.species === 'coxsackie') {
+            g.fillStyle = '#2f2f2c'; g.beginPath();
+            for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * 3.6, y + Math.sin(a) * 3.6); }
+            g.closePath(); g.fill();
+          } else {
+            const r = 8;
+            g.strokeStyle = '#2b2b29'; g.lineWidth = 0.8;
+            for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283 + 0.3; const ex = x + Math.cos(a) * (r + 9), ey = y + Math.sin(a) * (r + 9);
+              g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(ex, ey); g.stroke();
+              g.fillStyle = '#2b2b29'; g.beginPath(); g.arc(ex, ey, 1.6, 0, 6.283); g.fill(); }
+            g.fillStyle = '#353532'; g.beginPath();
+            for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283 + 0.3; g[k ? 'lineTo' : 'moveTo'](x + Math.cos(a) * r, y + Math.sin(a) * r); }
+            g.closePath(); g.fill();
+            g.strokeStyle = '#5c5c57'; g.lineWidth = 0.6; g.beginPath(); g.arc(x, y, r * 0.55, 0, 6.283); g.stroke();
+          }
+        }
+      }
+      // winieta okularu
+      const v = g.createRadialGradient(cx, cy, rad * 0.75, cx, cy, rad);
+      v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.45)'); g.fillStyle = v; g.fillRect(0, 0, w, h);
+      g.restore();
+      // podpis i podziałka wewnątrz pola widzenia (rogi płótna są przycięte do koła)
+      g.font = '10px system-ui, sans-serif'; g.textAlign = 'center';
+      g.fillStyle = em ? 'rgba(255,255,255,0.85)' : 'rgba(40,20,30,0.75)';
+      g.fillText(em ? 'mikroskop elektronowy' : 'barwienie Grama, ×1000', cx, h - 30);
+      g.fillRect(cx - 18, h - 24, 36, 2); g.fillText(em ? '100 nm' : '10 µm', cx, h - 12);
+      g.textAlign = 'start';
     }
 
     // EKG
@@ -224,7 +316,15 @@
       if (d.resultSeq === shownSeq) return;
       shownSeq = d.resultSeq;
       const T = d.tests;
-      $('results-block').hidden = !(T.crp.res || T.culture.res || T.echo.res || T.abg.res);
+      $('results-block').hidden = !(T.crp.res || T.culture.res || T.echo.res || T.abg.res || (T.micro && T.micro.res));
+      if (T.micro && T.micro.res) {
+        $('res-micro').hidden = false; $('res-micro').querySelector('.res-time').textContent = 'pobranie ' + mmss(T.micro.sampleT);
+        const r = T.micro.res, sp = r.found && C.species[r.species];
+        drawMicro(r, T.micro.sampleT + 1);
+        $('res-micro-v').textContent = sp ? sp.name : 'Brak drobnoustrojów w próbce';
+        $('res-micro-l').innerHTML = sp ? `<i>${sp.latin}</i>. ${sp.micro} <b>${sp.treat}</b>`
+          : 'Patogen nie płynął we krwi w chwili pobrania (mógł być w mięśniu albo ukryty).';
+      } else $('res-micro').hidden = true;
       const time = (el, t) => { el.querySelector('.res-time').textContent = 'pobranie ' + mmss(t.sampleT); };
       if (T.crp.res) {
         $('res-crp').hidden = false; time($('res-crp'), T.crp);
@@ -252,6 +352,7 @@
       } else $('res-abg').hidden = true;
     }
 
+    const spLabel = (s) => { const sp = C.species[s.species]; return sp ? `${sp.name.charAt(0).toLowerCase() + sp.name.slice(1)} (${sp.latin})` : (s.kind === 'virus' ? 'wirus' : 'bakteria'); };
     function update(s) {
       const d = s.doctor, b = s.bact;
       drawEcg(s);
@@ -344,7 +445,8 @@
       }
 
       // HUD patogenu
-      document.querySelectorAll('.js-kind-name').forEach((el) => { el.textContent = s.kind === 'virus' ? 'wirus' : 'bakteria'; });
+      { const sp = C.species[s.species]; const nm = sp ? sp.name.charAt(0).toLowerCase() + sp.name.slice(1) : (s.kind === 'virus' ? 'wirus' : 'bakteria');
+        document.querySelectorAll('.js-kind-name').forEach((el) => { if (el.textContent !== nm) el.textContent = nm; }); }
       $('h-place').textContent = b.transit ? (b.transit.to === 'lungs' ? 'Krążenie płucne' : 'Krążenie duże') : b.place;
       $('h-hp').style.transform = `scaleX(${b.hp / C.bacteria.hp})`;
       $('h-hp-val').textContent = Math.ceil(b.hp);
@@ -414,8 +516,8 @@
         const kn = s.kind === 'virus' ? 'wirus' : 'bakteria';
         $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`;
         $('end-text').textContent = s.over === 'doctor'
-          ? `Zakażenie wyleczone po ${mmss(s.time)}. Patogenem był${s.kind === 'virus' ? ' wirus' : 'a bakteria'}.`
-          : `Pacjent w sepsie po ${mmss(s.time)}. Patogenem był${s.kind === 'virus' ? ' wirus' : 'a bakteria'}.`;
+          ? `Zakażenie wyleczone po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`
+          : `Pacjent w sepsie po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`;
         renderStats(s);
         if (DD.Match) DD.Match.renderEnd();
         $('end-again').focus();

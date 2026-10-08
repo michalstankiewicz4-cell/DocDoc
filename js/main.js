@@ -71,8 +71,8 @@
     $('mode-back').addEventListener('click', () => DD.showOrganPick(false));
 
     // wybór rodzaju patogenu (zapamiętany w przeglądarce)
-    DD.chosenKind = 'bacteria';
-    try { if (localStorage.getItem('patientzero-kind') === 'virus') DD.chosenKind = 'virus'; } catch (e) { /* brak dostępu */ }
+    DD.chosenKind = 'ecoli';
+    try { const k = localStorage.getItem('patientzero-kind'); if (k) DD.chosenKind = DD.Game.speciesOf(k); } catch (e) { /* brak dostępu */ }
     const syncKind = () => document.querySelectorAll('.js-kind-pick button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.kind === DD.chosenKind)));
     syncKind();
     document.querySelectorAll('.js-kind-pick button').forEach((btn) => btn.addEventListener('click', () => {

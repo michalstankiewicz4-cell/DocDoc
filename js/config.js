@@ -36,7 +36,8 @@ DD.CONFIG = {
       crp:     { duration: 4,  cooldown: 10, noise: 12 },   // szybkie, przybliżone (szum ±noise mg/l)
       culture: { duration: 12, cooldown: 20 },              // posiew: dokładna kolonizacja + zdjęcie miejsca
       echo:    { duration: 8,  cooldown: 25 },              // echo serca: położenie i wielkość kolonii
-      abg:     { duration: 18, cooldown: 30 }               // antybiogram: wrażliwość na leczenie (po dodatnim posiewie)
+      abg:     { duration: 18, cooldown: 30 },              // antybiogram: wrażliwość na leczenie (po dodatnim posiewie)
+      micro:   { duration: 6,  cooldown: 15 }               // mikroskop: rodzaj patogenu w próbce krwi
     },
     antibodies: { cooldown: 18, count: 36, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },
@@ -61,6 +62,24 @@ DD.CONFIG = {
   // +regen dopóki kolonizacja < regenStopsAt (%). sideEffect = jednorazowy koszt dawki leku.
   patient: { infectionDrain: 1.4, feverDrain: 0.35, regen: 0.25, regenStopsAt: 40,
     sideEffect: { antibodies: 2, fever: 1, abxA: 4, abxB: 4, antiviral: 4 } },
+
+  // rodzaje patogenów do wyboru na starcie. natural = klasa antybiotyku, na którą bakteria jest naturalnie oporna;
+  // antiviral = skuteczność leku przeciwwirusowego na danego wirusa. Lekarz rozpoznaje rodzaj pod mikroskopem.
+  species: {
+    staph:     { kind: 'bacteria', name: 'Gronkowiec złocisty', latin: 'Staphylococcus aureus, szczep MRSA', natural: 'abxA',
+                 micro: 'Gram-dodatnie ziarenkowce w gronach.', treat: 'Szczep oporny na β-laktamy, wrażliwy na makrolidy.' },
+    strep:     { kind: 'bacteria', name: 'Paciorkowiec', latin: 'Streptococcus pyogenes', natural: null,
+                 micro: 'Gram-dodatnie ziarenkowce w łańcuszkach.', treat: 'Wrażliwy na β-laktamy i makrolidy.' },
+    ecoli:     { kind: 'bacteria', name: 'Pałeczka okrężnicy', latin: 'Escherichia coli', natural: 'abxB',
+                 micro: 'Gram-ujemne pałeczki z witkami.', treat: 'Naturalnie oporna na makrolidy, wrażliwa na β-laktamy.' },
+    flu:       { kind: 'virus', name: 'Wirus grypy', latin: 'Influenza A', antiviral: 1.0,
+                 micro: 'Kuliste wiriony z otoczką i gęstymi kolcami białkowymi.', treat: 'Lek przeciwwirusowy działa w pełni.' },
+    coxsackie: { kind: 'virus', name: 'Wirus Coxsackie B', latin: 'Enterovirus B', antiviral: 0.2,
+                 micro: 'Bardzo małe, gładkie wiriony bez otoczki.', treat: 'Brak swoistego leku: lek przeciwwirusowy działa słabo (20%).' },
+    adeno:     { kind: 'virus', name: 'Adenowirus', latin: 'Adenoviridae', antiviral: 0.6,
+                 micro: 'Wiriony w kształcie dwudziestościanu z długimi włóknami.', treat: 'Lek przeciwwirusowy działa częściowo (60%).' }
+  },
+  defaultSpecies: { bacteria: 'ecoli', virus: 'adeno' },
 
   // wirus: mniej życia, wolniejszy (bez wici), szybciej namnażające się kolonie, mniejszy
   virus: { hp: 70, speedMul: 0.8, growthMul: 1.3, radius: 0.26 },

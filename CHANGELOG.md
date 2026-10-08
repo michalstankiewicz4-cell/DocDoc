@@ -11,6 +11,15 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-10-09
+### Dodane
+- **Rodzaje patogenów na starcie:** bakterie — gronkowiec złocisty (MRSA, grona ziarenkowców), paciorkowiec (łańcuszek), pałeczka okrężnicy (pałeczka z witkami); wirusy — grypa (kulisty z kolcami), Coxsackie B (mały dwudziestościan), adenowirus (dwudziestościan z włóknami). Każdy ma własny wygląd 3D.
+- Wrażliwość na leki zależy od rodzaju: gronkowiec oporny na β-laktamy, pałeczka okrężnicy na makrolidy, paciorkowiec wrażliwy na oba; lek przeciwwirusowy działa na grypę w 100%, na adenowirusa w 60%, na Coxsackie B w 20%.
+- **Mikroskop** (`N`): próbka krwi pod mikroskopem po 6 s — bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym; nazwa rodzaju, opis i podpowiedź leczenia. Pusty wynik, gdy patogen, jego kopie ani kolonie na ścianach naczyń nie były we krwi. W sali na stole laboratoryjnym pracuje mikroskop.
+### Zmienione
+- Naturalna oporność bakterii wynika z rodzaju, a nie z losowania.
+- HUD i ekran końcowy podają nazwę rodzaju patogenu.
+
 ## [0.20.0] - 2026-10-09
 ### Dodane
 - **Różne działanie pożywienia:** lipidy dodatkowo leczą (+4 życia), aminokwasy dają punkty mutacji (+0,15), glukoza tylko napełnia pasek.
@@ -179,7 +188,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.20.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.21.0...HEAD
+[0.21.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.17.0...v0.18.0

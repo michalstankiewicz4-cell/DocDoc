@@ -34,7 +34,8 @@
           crp: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           culture: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           echo: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
-          abg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
+          abg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          micro: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
         },
         resultSeq: 0,
         surgery: { state: 'idle', t: 0, cd: 0, valve: null },
@@ -45,6 +46,7 @@
       // stan pacjenta 0..100: zakażenie i leczenie go obniżają, organizm powoli się regeneruje; 0 = sepsa
       patient: { cond: 100 },
       kind: 'bacteria',  // rodzaj patogenu: 'bacteria' | 'virus' (wybiera gracz patogenu, lekarz go nie zna)
+      species: 'ecoli',  // gatunek z C.species
       toxinT: 0,         // pozostały czas zakłócania badań przez toksyny
       drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 } },
       antibodies: [],
@@ -107,17 +109,19 @@
     switch (cmd.type) {
       case 'game.start': {
         if (cmd.organ !== 'heart') return;
-        const kind = cmd.kind || s.nextKind || 'bacteria';
+        // cmd.kind: gatunek (C.species) albo dawne 'bacteria' / 'virus'
+        const species = G.speciesOf(cmd.kind || s.nextKind);
+        const kind = C.species[species].kind;
         const nextKind = s.nextKind;
-        Object.assign(s, G.create(), { running: true, organ: 'heart', kind, nextKind });
+        Object.assign(s, G.create(), { running: true, organ: 'heart', kind, species, nextKind });
         s.seed = (Math.random() * 4294967296) >>> 0;   // każda runda inna (liczy tylko host)
         if (kind === 'virus') { s.bact.hp = C.virus.hp; s.stats.minHp = C.virus.hp; }
-        else s.bact.natural = rnd(s) < 0.5 ? 'abxA' : 'abxB';
+        else s.bact.natural = C.species[species].natural;
         log(s, 'sys', 'Pacjent przyjęty z objawami zakażenia.');
         return;
       }
       case 'bact.kind':
-        if (cmd.kind === 'bacteria' || cmd.kind === 'virus') s.nextKind = cmd.kind;
+        if (C.species[cmd.kind] || cmd.kind === 'bacteria' || cmd.kind === 'virus') s.nextKind = cmd.kind;
         return;
       case 'bact.input':
         s.bact.ix = Math.max(-1, Math.min(1, cmd.x));
@@ -192,16 +196,21 @@
   }
 
   const DRUG_NAME = { abxA: 'antybiotyk β-laktamowy', abxB: 'antybiotyk makrolidowy', antiviral: 'lek przeciwwirusowy' };
+  // gatunek patogenu z identyfikatora (dawne 'bacteria' / 'virus' -> gatunek domyślny)
+  G.speciesOf = function (id) {
+    if (C.species[id]) return id;
+    return C.defaultSpecies[id] || C.defaultSpecies.bacteria;
+  };
   // naturalna wrażliwość patogenu na lek (0..1): antybiotyki nie działają na wirusa, lek przeciwwirusowy na bakterię
   function susceptibility(s, key) {
     if (key === 'abxA' || key === 'abxB') return s.kind === 'virus' ? 0 : (s.bact.natural === key ? D.naturalResistance : 1);
-    if (key === 'antiviral') return s.kind === 'virus' ? 1 : 0;
+    if (key === 'antiviral') return s.kind === 'virus' ? ((C.species[s.species] || {}).antiviral ?? 1) : 0;
     return 1;
   }
   G.susceptibility = susceptibility;
 
   // ---------- BADANIA ----------
-  const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram' };
+  const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram', micro: 'mikroskop' };
   function orderTest(s, kind) {
     const d = s.doctor, T = d.tests[kind], cfg = D.tests[kind];
     if (!T || T.state === 'running' || T.cd > 0) return;
@@ -230,6 +239,12 @@
         const j = (c.inTissue ? 2.5 : 0) + (tox ? 4 : 0);
         return [Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0];
       }) };
+    }
+    // mikroskop: rodzaj patogenu, jeśli w próbce krwi są jego komórki (patogen we krwi, kopie albo kolonie na ścianach naczyń)
+    if (kind === 'micro') {
+      const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden;
+      const found = inBlood || s.copies.length > 0 || s.colonies.some((c) => !c.inTissue);
+      return { found, species: found ? s.species : null, n: found ? Math.min(12, 4 + s.copies.length + Math.round(b.infection / 12)) : 0 };
     }
     if (kind === 'abg') {
       const out = {};
@@ -261,6 +276,9 @@
       text = r.colonies.length ? `Echo serca: ogniska na ścianach ${nW}` + (nT ? `, niewyraźne zgrubienia ściany ${nT}.` : '.') : 'Echo serca bez zmian.';
     } else if (kind === 'abg') {
       text = 'Antybiogram gotowy.';
+    } else if (kind === 'micro') {
+      const sp = r.found && C.species[r.species];
+      text = sp ? `Mikroskop: ${sp.name} (${sp.latin}).` : 'Mikroskop: w próbce nie znaleziono drobnoustrojów.';
     }
     log(s, 'doc', 'Wynik: ' + text + (first ? ' Odblokowano leczenie.' : ''));
   }

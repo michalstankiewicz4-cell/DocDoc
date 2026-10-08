@@ -135,14 +135,30 @@
       const T = d.tests || {};
       const prog = (k) => (T[k] && T[k].state === 'running' ? 1 - T[k].t / C.doctor.tests[k].duration : -1);
       // CRP: wirówka
-      { const p = prog('crp'), x = 500, y = 132;
+      { const p = prog('crp'), x = 492, y = 132;
         ctx.fillStyle = '#e7eeeb'; roundRect(x - 16, y - 8, 32, 26, 5); ctx.fill();
         ctx.strokeStyle = '#7d8d88'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y + 4, 9, 0, 6.283); ctx.stroke();
         const a = p >= 0 ? t * 25 : 0.5;
         for (let i = 0; i < 4; i++) { const aa = a + i * Math.PI / 2; ctx.beginPath(); ctx.moveTo(x, y + 4); ctx.lineTo(x + Math.cos(aa) * 8, y + 4 + Math.sin(aa) * 8); ctx.stroke(); }
         if (p >= 0) ctx.fillText('CRP', x - 10, y + 32); }
+      // mikroskop: statyw, tubus, stolik z preparatem; w czasie badania świeci lampka i obraca się pokrętło
+      { const p = prog('micro'), x = 530, y = 150;
+        ctx.fillStyle = '#4d5e59'; roundRect(x - 13, y - 5, 26, 5, 2); ctx.fill();                 // podstawa
+        ctx.strokeStyle = '#4d5e59'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(x + 7, y - 5); ctx.quadraticCurveTo(x + 12, y - 22, x + 3, y - 34); ctx.stroke();   // ramię
+        ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x + 2, y - 36); ctx.lineTo(x - 6, y - 24); ctx.stroke();          // tubus
+        ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + 3, y - 37); ctx.lineTo(x + 6, y - 42); ctx.stroke();          // okular
+        ctx.lineCap = 'butt';
+        ctx.fillStyle = '#6b7c77'; ctx.fillRect(x - 12, y - 17, 18, 3);                              // stolik
+        ctx.fillStyle = p >= 0 ? '#e9f4ff' : '#cfd9d5'; ctx.fillRect(x - 10, y - 18.5, 12, 1.6);     // szkiełko
+        if (p >= 0) {
+          ctx.fillStyle = 'rgba(255, 236, 160, 0.9)'; ctx.beginPath(); ctx.arc(x - 4, y - 10, 2.2 + Math.sin(t * 8) * 0.4, 0, 6.283); ctx.fill();
+          const a = t * 3; ctx.strokeStyle = '#2f3b38'; ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.arc(x + 9, y - 14, 3, a, a + 4.5); ctx.stroke();
+          ctx.fillStyle = '#56706a'; ctx.fillText('Mikroskop', x - 24, y + 14);
+        } }
       // posiew: szalka z rosnącymi koloniami
-      { const p = prog('culture'), x = 556, y = 140;
+      { const p = prog('culture'), x = 570, y = 140;
         ctx.fillStyle = '#f3e7c8'; ctx.beginPath(); ctx.ellipse(x, y, 18, 7, 0, 0, 6.283); ctx.fill();
         ctx.strokeStyle = '#c9b98f'; ctx.stroke();
         if (p >= 0) {
@@ -152,7 +168,7 @@
           ctx.fillStyle = '#56706a'; ctx.fillText('Posiew', x - 16, y + 24);
         } }
       // antybiogram: krążki ze strefami zahamowania
-      { const p = prog('abg'), x = 612, y = 140;
+      { const p = prog('abg'), x = 620, y = 140;
         ctx.fillStyle = '#f0e4c4'; ctx.beginPath(); ctx.ellipse(x, y, 18, 7, 0, 0, 6.283); ctx.fill();
         if (p >= 0) {
           for (let i = 0; i < 4; i++) {

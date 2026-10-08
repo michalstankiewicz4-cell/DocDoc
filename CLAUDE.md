@@ -42,11 +42,11 @@ Aktualna wersja: zobacz `js/version.js` i `CHANGELOG.md`.
 
 Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
 - Serce w przekroju (SDF), prąd krwi zależny od cyklu serca, zastawki, struny ścięgniste, krążenie płucne i duże.
-- Patogen: bakteria albo wirus (wybór ukryty przed lekarzem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
+- Patogen: 3 bakterie i 3 wirusy (`config.species`, wybór ukryty przed lekarzem, rozpoznawany mikroskopem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
   wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0), toksyny (T),
   pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
-- Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 4 badania (CRP, posiew,
-  echo, antybiogram), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
+- Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 5 badań (CRP, posiew,
+  echo, antybiogram, mikroskop), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
   operacja zastawki, podgląd z opóźnieniem 5 s, zdjęcie z chwili pobrania, alarmy monitora.
 - Dźwięk: patogen „pod wodą” (serce, szum krwi, kaszel), lekarz w sali (beep pulsoksymetru, alarmy, dzwonek wyniku).
 - Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, statystyki końcowe.
@@ -74,6 +74,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Pacjent na łóżku (grafika dla lekarza), objawy jako wskazówki, animacja laboratorium, alarmy monitora
 - [x] Mecz z zamianą ról
 - [x] Pożywienie we krwi, rozmnożenie, przeciwciała atakują kopie (v0.19.0)
+- [x] Rodzaje bakterii i wirusów na start, mikroskop dla lekarza (v0.21.0)
 - [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 
 Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
@@ -101,4 +102,8 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
   Patogen nie je w mięśniu ani w ukryciu.
   Od v0.20.0: lipidy +4 życia, aminokwasy +0,15 pkt mutacji; kopia żyje 40 s (maleje przez ostatnie 4 s);
   posiew podaje liczbę komórek we krwi (oryginał we krwi + kopie), tylko przy bakterii (posiew wirusa jest ujemny).
+- Rodzaje patogenów (`config.species`): w obrębie bakterii / wirusów różnią się tylko wyglądem i wrażliwością na leki.
+  Gronkowiec MRSA oporny na β-laktam, E. coli na makrolid, paciorkowiec bez oporności; lek przeciwwirusowy: grypa 1,0, adenowirus 0,6, Coxsackie 0,2.
+  Mikroskop (6 s, odnowienie 15 s) wykrywa rodzaj, gdy patogen płynie we krwi albo są kopie lub kolonie poza mięśniem; podaje podpowiedź leczenia.
+  Dawne wartości 'bacteria' / 'virus' w komendach i localStorage mapują się na E. coli / adenowirusa.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk).

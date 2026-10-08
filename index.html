@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.20.0">
+<link rel="stylesheet" href="css/style.css?v=0.21.0">
 </head>
 <body>
 <main class="split">
@@ -169,6 +169,16 @@
           <canvas id="res-echo-c" class="echo-canvas" aria-label="Obraz echa serca"></canvas>
           <p id="res-echo-l" class="res-note"></p>
         </article>
+        <article id="res-micro" class="result result-wide" hidden>
+          <h3>Mikroskop <span class="res-time muted"></span></h3>
+          <div class="micro-row">
+            <canvas id="res-micro-c" class="micro-canvas" aria-label="Obraz próbki krwi pod mikroskopem"></canvas>
+            <div>
+              <p class="res-big"><b id="res-micro-v"></b></p>
+              <p id="res-micro-l" class="res-note"></p>
+            </div>
+          </div>
+        </article>
         <article id="res-abg" class="result" hidden>
           <h3>Antybiogram <span class="res-time muted"></span></h3>
           <dl id="res-abg-l" class="abg"></dl>
@@ -213,7 +223,7 @@
       <div class="role role-doc">
         <h2>Lekarz</h2>
         <p>Rozpoznaj patogen badaniami i dobierz leczenie. Wygrywasz, gdy nie zostanie ani patogen, ani kolonia.</p>
-        <p class="keys"><kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>V</kbd> badania, <kbd>1</kbd>–<kbd>5</kbd> leczenie</p>
+        <p class="keys"><kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>V</kbd><kbd>N</kbd> badania, <kbd>1</kbd>–<kbd>5</kbd> leczenie</p>
       </div>
     </div>
     <div id="mode-pick" class="modes">
@@ -239,8 +249,14 @@
       </div>
       <div class="kind-pick js-kind-pick">
         <span class="kind-label">Patogen</span>
-        <button type="button" data-kind="bacteria" aria-pressed="true">Bakteria</button>
-        <button type="button" data-kind="virus" aria-pressed="false">Wirus</button>
+        <span class="kind-group"><span class="kind-sub">Bakterie</span>
+          <button type="button" data-kind="staph" aria-pressed="false">Gronkowiec złocisty</button>
+          <button type="button" data-kind="strep" aria-pressed="false">Paciorkowiec</button>
+          <button type="button" data-kind="ecoli" aria-pressed="true">Pałeczka okrężnicy</button></span>
+        <span class="kind-group"><span class="kind-sub">Wirusy</span>
+          <button type="button" data-kind="flu" aria-pressed="false">Grypa</button>
+          <button type="button" data-kind="coxsackie" aria-pressed="false">Coxsackie B</button>
+          <button type="button" data-kind="adeno" aria-pressed="false">Adenowirus</button></span>
         <span class="hint">Lekarz nie wie, którego wybrałeś.</span>
       </div>
       <div class="organs">
@@ -311,8 +327,14 @@
     <p>Grasz jako <b id="wait-role"></b>. Host wybiera narząd i za chwilę zacznie grę.</p>
     <div id="wait-kind" class="kind-pick js-kind-pick" hidden>
       <span class="kind-label">Patogen</span>
-      <button type="button" data-kind="bacteria" aria-pressed="true">Bakteria</button>
-      <button type="button" data-kind="virus" aria-pressed="false">Wirus</button>
+      <span class="kind-group"><span class="kind-sub">Bakterie</span>
+        <button type="button" data-kind="staph" aria-pressed="false">Gronkowiec złocisty</button>
+        <button type="button" data-kind="strep" aria-pressed="false">Paciorkowiec</button>
+        <button type="button" data-kind="ecoli" aria-pressed="true">Pałeczka okrężnicy</button></span>
+      <span class="kind-group"><span class="kind-sub">Wirusy</span>
+        <button type="button" data-kind="flu" aria-pressed="false">Grypa</button>
+        <button type="button" data-kind="coxsackie" aria-pressed="false">Coxsackie B</button>
+        <button type="button" data-kind="adeno" aria-pressed="false">Adenowirus</button></span>
       <span class="hint">Lekarz nie wie, którego wybrałeś.</span>
     </div>
   </div>
@@ -384,29 +406,29 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.20.0"></script>
-<script src="js/config.js?v=0.20.0"></script>
-<script src="js/heart-shape.js?v=0.20.0"></script>
-<script src="js/flow.js?v=0.20.0"></script>
-<script src="js/tissue-cells.js?v=0.20.0"></script>
-<script src="js/state.js?v=0.20.0"></script>
-<script src="js/input.js?v=0.20.0"></script>
-<script src="js/render/glsl.js?v=0.20.0"></script>
-<script src="js/render/tissue.js?v=0.20.0"></script>
-<script src="js/render/cells.js?v=0.20.0"></script>
-<script src="js/render/actors.js?v=0.20.0"></script>
-<script src="js/render/post.js?v=0.20.0"></script>
-<script src="js/render/biome.js?v=0.20.0"></script>
-<script src="js/render/view.js?v=0.20.0"></script>
-<script src="js/minimap.js?v=0.20.0"></script>
-<script src="js/audio.js?v=0.20.0"></script>
-<script src="js/doctor-ui.js?v=0.20.0"></script>
-<script src="js/patient-room.js?v=0.20.0"></script>
-<script src="js/doctor-cam.js?v=0.20.0"></script>
-<script src="js/net.js?v=0.20.0"></script>
-<script src="js/lobby.js?v=0.20.0"></script>
-<script src="js/match.js?v=0.20.0"></script>
-<script src="js/net-status.js?v=0.20.0"></script>
-<script src="js/main.js?v=0.20.0"></script>
+<script src="js/version.js?v=0.21.0"></script>
+<script src="js/config.js?v=0.21.0"></script>
+<script src="js/heart-shape.js?v=0.21.0"></script>
+<script src="js/flow.js?v=0.21.0"></script>
+<script src="js/tissue-cells.js?v=0.21.0"></script>
+<script src="js/state.js?v=0.21.0"></script>
+<script src="js/input.js?v=0.21.0"></script>
+<script src="js/render/glsl.js?v=0.21.0"></script>
+<script src="js/render/tissue.js?v=0.21.0"></script>
+<script src="js/render/cells.js?v=0.21.0"></script>
+<script src="js/render/actors.js?v=0.21.0"></script>
+<script src="js/render/post.js?v=0.21.0"></script>
+<script src="js/render/biome.js?v=0.21.0"></script>
+<script src="js/render/view.js?v=0.21.0"></script>
+<script src="js/minimap.js?v=0.21.0"></script>
+<script src="js/audio.js?v=0.21.0"></script>
+<script src="js/doctor-ui.js?v=0.21.0"></script>
+<script src="js/patient-room.js?v=0.21.0"></script>
+<script src="js/doctor-cam.js?v=0.21.0"></script>
+<script src="js/net.js?v=0.21.0"></script>
+<script src="js/lobby.js?v=0.21.0"></script>
+<script src="js/match.js?v=0.21.0"></script>
+<script src="js/net-status.js?v=0.21.0"></script>
+<script src="js/main.js?v=0.21.0"></script>
 </body>
 </html>
