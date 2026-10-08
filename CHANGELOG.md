@@ -11,6 +11,12 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-08
+### Dodane
+- Dźwięk lekarza (sala szpitalna): „beep” pulsoksymetru przy każdym uderzeniu serca, alarm monitora przy gorączce od 39 °C, dzwonek przy wyniku badania.
+### Zmienione
+- Dźwięk zależy od roli: patogen słyszy serce od środka, lekarz salę szpitalną; w trybie deweloperskim obie warstwy.
+
 ## [0.7.0] - 2026-10-08
 ### Dodane
 - Statystyki rundy na ekranie końcowym: dla bakterii (droga, kolonizacja, kolonie, czas przy ścianie, przejścia przez zastawki, krążenia, odwiedzone jamy, najmniej życia) i dla lekarza (badania, czas pierwszego badania i leczenia, użyte leki, trafienia i obrażenia).
@@ -69,7 +75,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.1...v0.6.2

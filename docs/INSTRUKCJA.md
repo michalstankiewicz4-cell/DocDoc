@@ -79,6 +79,10 @@ Po wygranej jednej ze stron ekran końcowy pokazuje statystyki obu graczy: drog�
 
 ## Dźwięk
 
+- **Patogen** słyszy serce od środka: przytłumione „lub-dub”.
+- **Lekarz** słyszy salę szpitalną: „beep” pulsoksymetru przy każdym uderzeniu serca, alarm monitora (trzy tony co 6 s) przy gorączce od 39 °C i dzwonek, gdy przychodzi wynik badania.
+- W trybie deweloperskim słychać obie warstwy, lekarza ciszej.
+
 Dźwięk włącza się po pierwszym kliknięciu albo klawiszu, bo przeglądarki wcześniej go blokują. `M` wycisza, a wybór zostaje zapamiętany.
 
 ## Połączenie (gra na 2 osoby)

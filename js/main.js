@@ -116,7 +116,7 @@
         if (view) view.frame(state, dt);
         minimap.draw(state, view);
       }
-      DD.Audio.update(state.phase);
+      DD.Audio.update(state, N.role, dt);
       netStatus.update(dt);
       docCam.update(state, dt);
       ui.update(state);

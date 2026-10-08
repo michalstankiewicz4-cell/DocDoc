@@ -59,7 +59,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Dokumentacja: README, instrukcja, architektura
 - [x] Plik kontekstu (ten plik)
 - [x] Statystyki na ekranie końcowym
-- [ ] Dźwięk lekarza: szpitalne „beep”
+- [x] Dźwięk lekarza: szpitalne „beep”
 - [ ] Dźwięk patogenu: przytłumiony jak pod wodą, bicie serca, czasem kaszel
 - [ ] Stan pacjenta jako trzeci wskaźnik (patogen wygrywa przez sepsę), skutki uboczne leków
 - [ ] Kolonie jako „życia” patogenu + zakładanie kolonii kosztem % zdrowia, dodatkowe wskaźniki
