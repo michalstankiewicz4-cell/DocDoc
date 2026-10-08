@@ -40,13 +40,15 @@ i aktualizuj sekcje „Stan” i „Lista zadań” po każdym wydaniu.
 
 Aktualna wersja: zobacz `js/version.js` i `CHANGELOG.md`.
 
-Gotowe:
+Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
 - Serce w przekroju (SDF), prąd krwi zależny od cyklu serca, zastawki, struny ścięgniste, krążenie płucne i duże.
-- Patogen: bakteria, ruch WASD, kolonizacja przez kontakt ze ścianą, kolonie (biofilm).
-- Lekarz: EKG, badanie krwi (odblokowuje leczenie), przeciwciała, gorączka, antybiotyk, oporność na powtarzane leczenie,
-  podgląd z opóźnieniem 5 s, zdjęcie miejsca z chwili pobrania krwi.
-- Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, falowanie gorąca, ACES.
-- Minimapa, dźwięk bicia serca, tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia.
+- Patogen: bakteria albo wirus (wybór ukryty przed lekarzem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
+  wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0), toksyny (T).
+- Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 4 badania (CRP, posiew,
+  echo, antybiogram), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
+  operacja zastawki, podgląd z opóźnieniem 5 s, zdjęcie z chwili pobrania, alarmy monitora.
+- Dźwięk: patogen „pod wodą” (serce, szum krwi, kaszel), lekarz w sali (beep pulsoksymetru, alarmy, dzwonek wyniku).
+- Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, statystyki końcowe.
 - Wersjonowanie, CHANGELOG, automatyczne wydania, dokumentacja.
 
 Warunki wygranej: patogen — stan pacjenta 0% (sepsa), lekarz — brak patogenu i kolonii.
@@ -69,7 +71,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Biofilm, mutacje, toksyny
 - [x] Operacja zastawki
 - [x] Pacjent na łóżku (grafika dla lekarza), objawy jako wskazówki, animacja laboratorium, alarmy monitora
-- [ ] Mecz z zamianą ról
+- [x] Mecz z zamianą ról
 
 Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
 - Wygląd kardiomiocytów: wzory w `docs/reference/` (prążkowanie, centralne jądro, wstawki, rozgałęzione włókna, jasne przestrzenie między nimi).
@@ -89,5 +91,6 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Mięsień (`config.tissue`): pas ściany 1,2 < SDF < 7,2, płaszczyzna ruchu z = 3,3 (powierzchnia przekroju), komórki z `js/tissue-cells.js` (wspólne dla kolizji i renderu). Wykrywanie kolonii w mięśniu: echo (niewyraźnie, ±2,5 j.) i CRP (zawiera całą kolonizację).
 - Mutacje (`config.mutations`): punkty z przyrostu kolonii (1,6 pkt na 1,0 rozmiaru). Toksyny zakłócają badania pobrane w ciągu 15 s (CRP ×1,6 i 3× szum, echo ±4 j.).
 - Operacja zastawki (`config.doctor.surgery`): 10 s, stan −15, promień 5 j., patogen w pobliżu −40 życia, odnowienie 60 s.
+- Mecz: 2 rundy, remis 1:1 rozstrzyga szybsze zwycięstwo; wynik prowadzi host (`js/match.js`).
 - Kaszel: szansa na sekundę rośnie z kolonizacją i masą kolonii w prawym sercu (`config.cough`), tylko dźwięk i obraz, bez wpływu na rozgrywkę.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk).

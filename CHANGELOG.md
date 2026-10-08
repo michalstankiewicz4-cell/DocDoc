@@ -11,6 +11,12 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-10-08
+### Dodane
+- **Mecz z zamianą ról** w grze na 2 osoby: 2 rundy; po pierwszej przycisk „Rewanż z zamianą ról” zamienia graczy rolami (może go nacisnąć każdy z graczy), po drugiej „Nowy mecz”.
+- Blok meczu na ekranie końcowym z perspektywy gracza: wyniki rund (kto wygrał, jaką rolą, w jakim czasie) i werdykt. Przy remisie 1:1 wygrywa szybsze zwycięstwo.
+- Wynik meczu prowadzi host i przesyła go gościowi.
+
 ## [0.17.0] - 2026-10-08
 ### Dodane
 - **Sala z pacjentem** w panelu lekarza (rysowana na żywo): pacjent na łóżku oddycha w tempie zależnym od stanu, gorączki i kolonii w prawym sercu, kaszle, poci się przy gorączce, blednieje i sinieje przy złym stanie; kroplówka kapie, gdy lek jest we krwi; monitor na ścianie miga przy alarmie.
@@ -160,7 +166,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.17.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.18.0...HEAD
+[0.18.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.14.0...v0.15.0

@@ -40,6 +40,8 @@ Każdy gracz na swoim komputerze widzi tylko swoją połowę. Połączenie jest 
 
 Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie sterowania.
 
+**Mecz:** w grze na 2 osoby rozgrywacie mecz z 2 rund. Po pierwszej rundzie każdy z graczy może nacisnąć „Rewanż z zamianą ról” — gracze zamieniają się rolami i host wybiera narząd do drugiej rundy (nowy patogen wybiera bakterię albo wirusa). Ekran końcowy pokazuje wynik meczu; przy remisie 1:1 wygrywa ten, kto wygrał swoją rundę szybciej.
+
 ## Patogen
 
 ### Sterowanie

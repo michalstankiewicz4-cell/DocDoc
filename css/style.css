@@ -443,3 +443,10 @@ body[data-role="doc"] .half-doc {
 .monitor[data-alarm="on"] { animation: alarm-pulse 0.9s ease-in-out infinite; }
 @keyframes alarm-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176, 54, 42, 0); border-color: var(--line); } 50% { box-shadow: 0 0 0 4px rgba(176, 54, 42, 0.35); border-color: var(--alert); } }
 @media (prefers-reduced-motion: reduce) { .monitor[data-alarm="on"] { animation: none; border-color: var(--alert); } }
+
+/* ---------- mecz ---------- */
+.end-match { padding: 12px 16px; border-radius: var(--r-m); border: 1px solid var(--line); background: var(--panel); display: grid; gap: 6px; }
+.end-match .es-title { margin: 0; }
+.end-match-rounds { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 3px; font-size: 14px; }
+.end-match-verdict { margin: 0; font-weight: 700; }
+.end-buttons { display: flex; gap: 8px; flex-wrap: wrap; }

@@ -56,6 +56,7 @@
         if (view) { view.tx = C.bacteria.start.x; view.ty = C.bacteria.start.y; }
       });
     });
+    $('end-swap').addEventListener('click', () => DD.Match.swap());
     $('end-again').addEventListener('click', () => {
       DD.send({ type: 'game.start', organ: 'heart' });
       $('end').hidden = true;
@@ -128,7 +129,9 @@
         wasRunning = state.running;
       } else {
         simulate(dt, 6);
+        if (state.over) DD.Match.record(state);
       }
+      if (state.over && !$('end').hidden) DD.Match.renderEnd();
 
       // lekarz w trybie sieciowym nie widzi wnętrza serca — nie renderujemy 3D
       if (N.role !== 'doc') {

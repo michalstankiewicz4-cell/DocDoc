@@ -397,7 +397,10 @@
 
       // koniec gry
       const end = $('end');
-      if (s.over && end.hidden) {
+      // nowa runda (czas gry się cofnął) odblokowuje ekran końcowy po zamianie ról
+      if (DD.Match && s.time < (update._lastT ?? 0) - 0.5) DD.Match.suppressEnd = false;
+      update._lastT = s.time;
+      if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd)) {
         end.hidden = false;
         const kn = s.kind === 'virus' ? 'wirus' : 'bakteria';
         $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`;
@@ -405,9 +408,10 @@
           ? `Zakażenie wyleczone po ${mmss(s.time)}. Patogenem był${s.kind === 'virus' ? ' wirus' : 'a bakteria'}.`
           : `Pacjent w sepsie po ${mmss(s.time)}. Patogenem był${s.kind === 'virus' ? ' wirus' : 'a bakteria'}.`;
         renderStats(s);
+        if (DD.Match) DD.Match.renderEnd();
         $('end-again').focus();
       }
-      if (!s.over) end.hidden = true;
+      if (!s.over) { end.hidden = true; if (DD.Match) DD.Match.suppressEnd = false; }
     }
     return { update };
   };

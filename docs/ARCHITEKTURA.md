@@ -23,6 +23,7 @@ js/tissue-cells.js      kardiomiocyty w ścianie serca (proceduralne, determinis
 js/state.js             stan gry, komendy, krok symulacji, kolizje, szyna komend
 js/input.js             klawiatura -> komendy
 js/net.js               WebRTC: kody, kanały, synchronizacja stanu, statystyki połączenia
+js/match.js             mecz z zamianą ról: wyniki rund, zamiana ról, ekran końcowy
 js/net-status.js        wskaźnik połączenia, ostrzeżenie, panel szczegółów
 js/lobby.js             ekran tworzenia i dołączania do gry
 js/minimap.js           minimapa patogenu

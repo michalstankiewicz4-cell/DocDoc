@@ -217,6 +217,7 @@
       return;
     }
     if (m.m === 'bye') { lost('left'); return; }
+    if (m.m === 'swap' || m.m === 'role' || m.m === 'match') { DD.Match.onMessage(m); return; }
     if (m.m === 'cmd' && N.mode === 'host') {
       if (m.c && typeof m.c.type === 'string' && N.allowed(m.c, N.otherRole(N.role))) DD.CommandBus.push(m.c);
     } else if (m.m === 'log' && N.mode === 'guest') {
