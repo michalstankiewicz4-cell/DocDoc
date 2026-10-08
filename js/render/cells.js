@@ -68,8 +68,8 @@
     }
   `;
 
-  DD.createCells = function () {
-    const max = C.cells.maxRBC;
+  DD.createCells = function (maxOverride) {
+    const max = maxOverride || C.cells.maxRBC;
     const geo = rbcGeometry(0.46);
     const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms: Object.assign({ uThick: { value: 1 } }, DD.SHARED), side: THREE.DoubleSide });
     const mesh = new THREE.InstancedMesh(geo, mat, max);
@@ -85,7 +85,7 @@
 
     // stan cząstek (tylko wizualny)
     const P = new Float32Array(max * 3), Q = new Float32Array(max * 4), W = new Float32Array(max * 3), S = new Float32Array(max);
-    const nSpeck = C.cells.plasmaSpecks;
+    const nSpeck = maxOverride ? Math.round(C.cells.plasmaSpecks * maxOverride / C.cells.maxRBC) : C.cells.plasmaSpecks;
     const speckPos = new Float32Array(nSpeck * 3), speckSize = new Float32Array(nSpeck);
     for (let i = 0; i < nSpeck; i++) speckSize[i] = 0.05 + Math.random() * 0.12;
     const sg = new THREE.BufferGeometry();
@@ -121,12 +121,15 @@
 
     const fv = [0, 0], m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), dq = new THREE.Quaternion(),
       pos = new THREE.Vector3(), scl = new THREE.Vector3(), axis = new THREE.Vector3();
-    let first = true;
+    let first = true, lastCx = 0, lastCy = 0;
 
     function update(dt, state, cx, cy, viewH, aspect) {
       const hy = viewH * 0.6 + 2.5, hx = viewH * aspect * 0.6 + 2.5;
       const zoomK = Math.min(1, Math.pow(17 / Math.max(17, viewH / 0.728), 1.3));
       const want = Math.min(max, Math.floor(C.cells.density * zoomK * (2 * hx) * (2 * hy) * (Z1 - Z0)));
+      // duży skok kamery (np. zdjęcie z innego miejsca) — rozmieść komórki od nowa
+      if (Math.hypot(cx - lastCx, cy - lastCy) > Math.max(hx, hy)) first = true;
+      lastCx = cx; lastCy = cy;
       if (first || want > active) {
         for (let i = first ? 0 : active; i < want; i++) { place(i, cx, cy, hx, hy, P, 3); initRot(i); S[i] = 1; }
         for (let i = 0; i < nSpeck; i++) place(i, cx, cy, hx, hy, speckPos, 3);

@@ -89,13 +89,33 @@
       </dl>
     </section>
 
+    <section class="block" aria-labelledby="h-cam">
+      <div class="block-head">
+        <h2 id="h-cam" class="block-title">Podgląd pacjenta</h2>
+        <p class="hint">Obraz z opóźnieniem <span id="cam-delay">5</span> s</p>
+      </div>
+      <div id="doc-cam" class="doc-cam">
+        <p id="doc-cam-empty" class="cam-msg">Podgląd ruszy po rozpoczęciu gry.</p>
+        <p id="doc-cam-wait" class="cam-msg" hidden>Zbieram obraz…</p>
+        <span class="cam-tag" aria-hidden="true">opóźnienie</span>
+      </div>
+    </section>
+
     <section class="block" aria-labelledby="h-test">
       <h2 id="h-test" class="block-title">Diagnostyka</h2>
       <button id="btn-test" class="test-btn" type="button">
         <span class="test-bar" aria-hidden="true"><span id="test-bar"></span></span>
         <span class="test-row"><span id="test-label">Zleć badanie krwi</span><kbd>B</kbd></span>
       </button>
-      <p class="hint">Wynik pokazuje zaawansowanie zakażenia i odblokowuje leczenie.</p>
+      <p class="hint">Wynik pokazuje zaawansowanie zakażenia, zdjęcie miejsca, w którym była bakteria w chwili pobrania krwi, i odblokowuje leczenie.</p>
+      <figure id="test-photo" class="test-photo" hidden>
+        <img id="test-photo-img" alt="Zdjęcie miejsca pobrania krwi">
+        <figcaption>
+          <span class="muted">Bakteria w chwili pobrania</span>
+          <b id="test-photo-place"></b>
+          <span id="test-photo-time" class="muted"></span>
+        </figcaption>
+      </figure>
     </section>
 
     <section class="block" aria-labelledby="h-act">
@@ -277,6 +297,7 @@
 <script src="js/minimap.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/doctor-ui.js"></script>
+<script src="js/doctor-cam.js"></script>
 <script src="js/net.js"></script>
 <script src="js/lobby.js"></script>
 <script src="js/net-status.js"></script>

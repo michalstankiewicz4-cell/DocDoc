@@ -324,3 +324,22 @@ body[data-role="doc"] .half-doc {
   max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: var(--r-m);
   background: #5a1610; color: #ffe9e4; font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
+
+/* ---------- podgląd lekarza ---------- */
+.block-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.doc-cam {
+  position: relative; width: 100%; max-width: 480px; aspect-ratio: 16 / 9; max-height: 270px;
+  border-radius: var(--r-m); overflow: hidden; background: #140405;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+.doc-cam canvas { position: absolute; inset: 0; display: block; }
+.cam-msg { position: absolute; inset: 0; margin: 0; display: grid; place-items: center; padding: 16px; text-align: center; color: #e9cfc9; font-size: 14px; z-index: 1; }
+.cam-tag {
+  position: absolute; top: 8px; left: 8px; z-index: 1; padding: 2px 8px; border-radius: 999px;
+  font-size: 12px; background: rgba(0, 0, 0, 0.55); color: #ffd9cf;
+}
+.test-photo { margin: 0; display: grid; grid-template-columns: minmax(0, 240px) 1fr; gap: 14px; align-items: center; }
+.test-photo img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r-s); display: block; background: #140405; }
+.test-photo figcaption { display: grid; gap: 2px; font-size: 13px; min-width: 0; }
+.test-photo figcaption b { font-size: 17px; }
+@media (max-width: 520px) { .test-photo { grid-template-columns: 1fr; } }

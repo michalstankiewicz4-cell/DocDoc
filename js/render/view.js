@@ -2,7 +2,9 @@
 (function () {
   const C = DD.CONFIG;
 
-  DD.createView = function (container, state) {
+  // opts: { maxCells, maxPixelRatio } — mniejsze wartości dla podglądu lekarza
+  DD.createView = function (container, state, opts) {
+    opts = opts || {};
     const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
     renderer.setClearColor(0x050101, 1);
     renderer.autoClear = false;
@@ -14,7 +16,7 @@
     const sdfTex = DD.makeSdfTexture(renderer);
     const tissue = DD.createTissue(sdfTex);
     scene.add(tissue);
-    const cells = DD.createCells();
+    const cells = DD.createCells(opts.maxCells);
     scene.add(cells.mesh); scene.add(cells.specks);
     const actors = DD.createActors(scene, state);
     const post = DD.createPost(renderer);
@@ -23,7 +25,7 @@
 
     function resize() {
       const w = container.clientWidth, h = container.clientHeight;
-      V.pr = Math.min(window.devicePixelRatio || 1, 1.5);
+      V.pr = Math.min(window.devicePixelRatio || 1, opts.maxPixelRatio || 1.5);
       renderer.setPixelRatio(V.pr);
       renderer.setSize(w, h, false);
       renderer.domElement.style.width = w + 'px'; renderer.domElement.style.height = h + 'px';
@@ -32,6 +34,7 @@
       cells.speckMat.uniforms.uPx.value = h * V.pr * 0.9;
     }
     window.addEventListener('resize', resize);
+    if (window.ResizeObserver) new ResizeObserver(() => resize()).observe(container);
     resize();
 
     container.addEventListener('wheel', (e) => {
@@ -40,12 +43,13 @@
     }, { passive: false });
 
     let lastBeat = 0;
-    V.frame = function (s, dt) {
+    // o.snap: kamera od razu nad bakterią (bez płynnego dojazdu), np. do zdjęcia
+    V.frame = function (s, dt, o) {
       const b = s.bact;
       // kamera podąża miękko za bakterią
       const k = 1 - Math.exp(-dt * 4.5);
       V.tx += (b.x - V.tx) * k; V.ty += (b.y - V.ty) * k;
-      if (b.transit) { V.tx = b.x; V.ty = b.y; }
+      if (b.transit || (o && o.snap)) { V.tx = b.x; V.ty = b.y; }
       // drgnięcie przy skurczu komór
       if (s.contraction > 0.85 && lastBeat < 0.85) V.shake = 1;
       lastBeat = s.contraction;

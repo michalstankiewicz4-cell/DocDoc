@@ -38,6 +38,9 @@ DD.CONFIG = {
   // oporność: każde użycie leku podnosi oporność o perUse (do max); skuteczność = 1 - oporność
   resistance: { perUse: 0.2, max: 0.8 },
 
+  // podgląd lekarza: gra bakterii z opóźnieniem + zdjęcie miejsca pobrania krwi
+  preview: { delay: 5, history: 30, rate: 20, maxCells: 700 },
+
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 
   cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }

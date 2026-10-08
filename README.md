@@ -43,6 +43,8 @@ Tryb sieciowy działa z GitHub Pages i z lokalnego pliku; nie działa w podgląd
   - **Przeciwciała**: pojawiają się w krwi, płyną z prądem, a w pobliżu bakterii same do niej płyną. Każde przyczepione zabiera życie i spowalnia.
   - **Gorączka**: temperatura rośnie do 39,6 °C, bakteria traci życie, a kolonizacja zwalnia o połowę.
   - **Antybiotyk**: bakteria porusza się wolniej przez 10 s.
+- **Podgląd pacjenta**: lekarz widzi w małym okienku grę bakterii opóźnioną o 5 s.
+- **Zdjęcie z badania**: razem z wynikiem badania lekarz dostaje zdjęcie miejsca, w którym była bakteria w chwili pobrania krwi (czyli 12 s wcześniej), z nazwą miejsca.
 - **Oporność**: każde kolejne użycie tego samego leczenia działa o 20 punktów procentowych słabiej (100%, 80%, 60%, 40%, minimum 20%). Lekarz widzi skuteczność następnej dawki, a bakteria swoją oporność.
 - Spadek życia bakterii do 0 to wygrana lekarza.
 - Minimapa w rogu pokazuje bakterię, kadr kamery i kolonie. PP, PK, LP, LK to przedsionki i komory.
@@ -65,6 +67,7 @@ js/net-status.js      wskaźnik połączenia, ostrzeżenie, panel szczegółów
 js/lobby.js           ekran tworzenia i dołączania do gry
 js/minimap.js         minimapa bakterii (sylwetka z SDF)
 js/audio.js           bicie serca w Web Audio
+js/doctor-cam.js      podgląd lekarza: historia stanu, widok z opóźnieniem, zdjęcie z chwili pobrania krwi
 js/doctor-ui.js       panel lekarza (EKG, parametry, badanie, leczenie, dziennik) i HUD bakterii
 js/main.js            pętla: komendy -> stały krok 60 Hz -> render
 js/render/glsl.js     wspólne shadery: szum, światło mokrej tkanki, pochłanianie we krwi, kaustyki

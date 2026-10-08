@@ -20,7 +20,7 @@
         resist: { antibodies: 0, fever: 0, slow: 0 }
       },
       doctor: {
-        test: { state: 'idle', t: 0, cd: 0 },
+        test: { state: 'idle', t: 0, cd: 0, sampleT: -1 },
         unlocked: false, knownInfection: null, knownHp: null,
         cd: { antibodies: 0, fever: 0, slow: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
@@ -70,7 +70,7 @@
     switch (cmd.type) {
       case 'doc.test':
         if (d.test.state === 'running' || d.test.cd > 0) return;
-        d.test.state = 'running'; d.test.t = D.testDuration;
+        d.test.state = 'running'; d.test.t = D.testDuration; d.test.sampleT = s.time; // chwila pobrania krwi
         log(s, 'doc', 'Zlecono badanie krwi (posiew + morfologia).');
         return;
       case 'doc.antibodies':
