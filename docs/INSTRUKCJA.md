@@ -48,6 +48,9 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `W` `A` `S` `D` | ruch |
 | `E` | załóż kolonię (przy ścianie albo w mięśniu, kosztuje 25 życia) |
 | `Q` | wnikanie w ścianę serca (przy ścianie; drugie `Q` przerywa) |
+| `F` | ukrycie w kolonii / wyjście z ukrycia |
+| `7` `8` `9` `0` | mutacje: szybkość, odporność na gorączkę, otoczka, toksyny |
+| `T` | toksyny (po mutacji) |
 | kółko myszy | przybliżenie i oddalenie kamery |
 | `M` | dźwięk włącz/wyłącz |
 
@@ -75,6 +78,13 @@ Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie w
   - przeciwciała cię nie dosięgną, a antybiotyki i lek przeciwwirusowy działają o połowę słabiej,
   - patogen stale żeruje, a `E` zakłada **ukrytą kolonię** — echo pokazuje ją tylko jako niewyraźne zgrubienie ściany,
   - do krwi wracasz, podpływając do ściany naczynia.
+- **Ukrycie** (`F`, przy własnej kolonii): patogen chowa się w kolonii. Przeciwciała go nie widzą, ale nie może się ruszać. Gorączka i leki nadal działają. Gdy kolonia zostanie zniszczona, patogen wypada z ukrycia.
+- **Mutacje:** rosnące kolonie dają punkty mutacji (widać je w panelu w prawym dolnym rogu). Za punkty (1, 2, 3 za kolejne poziomy) kupujesz:
+  - `7` szybkość (+15% na poziom, 3 poziomy),
+  - `8` odporność na gorączkę (−30% obrażeń na poziom, 2 poziomy),
+  - `9` otoczkę (−30% obrażeń od przeciwciał na poziom, 2 poziomy),
+  - `0` toksyny (odblokowuje `T`).
+- **Toksyny** (`T`): kosztują 10 życia, obniżają stan pacjenta o 6 i przez 15 s zakłócają badania, które lekarz wtedy zleci.
 - **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii, która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
 
 ### Ekran

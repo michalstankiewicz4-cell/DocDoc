@@ -20,7 +20,9 @@
       bact: {
         x: B.start.x, y: B.start.y, vx: 0, vy: 0, fx: 0, fy: 0, dir: -Math.PI / 2,
         ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
-        inTissue: false, burrowT: 0, z: 0,   // patogen w ścianie serca (mięśniu), wnikanie, wysokość do renderu
+        inTissue: false, burrowT: 0, z: 0,
+        hidden: 0,                                     // id kolonii, w której ukrył się patogen (0 = nie)
+        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0 }, toxinCd: 0,   // patogen w ścianie serca (mięśniu), wnikanie, wysokość do renderu
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
         resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
@@ -41,6 +43,7 @@
       // stan pacjenta 0..100: zakażenie i leczenie go obniżają, organizm powoli się regeneruje; 0 = sepsa
       patient: { cond: 100 },
       kind: 'bacteria',  // rodzaj patogenu: 'bacteria' | 'virus' (wybiera gracz patogenu, lekarz go nie zna)
+      toxinT: 0,         // pozostały czas zakłócania badań przez toksyny
       drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 } },
       antibodies: [],
       colonies: [],    // kolonie patogenu: { x, y, nx, ny, born, seed, size 0..1 }
@@ -57,7 +60,8 @@
         tests: 0, firstTestAt: -1, firstTreatAt: -1,
         used: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
         minCond: 100, condByInfection: 0, condByTreatment: 0,
-        coloniesFounded: 0, coloniesLost: 0, deaths: 0
+        coloniesFounded: 0, coloniesLost: 0, deaths: 0,
+        mutations: 0, toxins: 0, hiddenTime: 0
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0          // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
@@ -116,6 +120,9 @@
     if (!s.running || s.over) return;
     switch (cmd.type) {
       case 'bact.colony': foundColony(s); return;
+      case 'bact.hide': hideToggle(s); return;
+      case 'bact.mutate': mutate(s, cmd.what); return;
+      case 'bact.toxin': releaseToxins(s); return;
       case 'bact.burrow': {
         const b = s.bact, Tt = C.tissue;
         if (b.dead || b.transit || b.inTissue) return;
@@ -187,8 +194,9 @@
   }
   function sampleFor(s, kind) {
     const b = s.bact;
+    const tox = s.toxinT > 0;   // toksyny zakłócają wyniki
     if (kind === 'crp') {
-      const v = 4 + b.infection * 2.4 + (rnd(s) * 2 - 1) * D.tests.crp.noise;
+      const v = (4 + b.infection * 2.4) * (tox ? 1.6 : 1) + (rnd(s) * 2 - 1) * D.tests.crp.noise * (tox ? 3 : 1);
       return { value: Math.max(1, Math.round(v)) };
     }
     // posiew wyhodowuje tylko bakterie — przy wirusie wynik jest ujemny
@@ -196,13 +204,15 @@
     if (kind === 'echo') {
       // kolonie w mięśniu widać tylko jako niewyraźne zgrubienie ściany w przybliżonym miejscu
       return { colonies: s.colonies.map((c) => {
-        const j = c.inTissue ? 2.5 : 0;
+        const j = (c.inTissue ? 2.5 : 0) + (tox ? 4 : 0);
         return [Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0];
       }) };
     }
     if (kind === 'abg') {
       const out = {};
       for (const k of ['antibodies', 'fever', 'abxA', 'abxB']) out[k] = (1 - b.resist[k]) * susceptibility(s, k);
+      out.antibodies *= 1 - C.mutations.capsule.step * b.mut.capsule;   // otoczka
+      out.fever *= 1 - C.mutations.fever.step * b.mut.fever;            // odporność na gorączkę
       return out;   // skuteczność kolejnej dawki 0..1
     }
     return null;
@@ -230,6 +240,42 @@
       text = 'Antybiogram gotowy.';
     }
     log(s, 'doc', 'Wynik: ' + text + (first ? ' Odblokowano leczenie.' : ''));
+  }
+
+  // F: ukrycie w najbliższej własnej kolonii (albo wyjście z ukrycia)
+  function hideToggle(s) {
+    const b = s.bact;
+    if (b.hidden) { b.hidden = 0; return; }
+    if (b.dead || b.transit || b.burrowT > 0) return;
+    let best = null, bd = C.hide.radius;
+    for (const c of s.colonies) {
+      if (!!c.inTissue !== !!b.inTissue) continue;
+      const dd = Math.hypot(c.x - b.x, c.y - b.y);
+      if (dd < bd) { bd = dd; best = c; }
+    }
+    if (!best) return;
+    b.hidden = best.id; b.vx = b.vy = 0;
+    for (let i = s.antibodies.length - 1; i >= 0; i--) if (s.antibodies[i].stuck) s.antibodies.splice(i, 1);
+  }
+  // mutacje za punkty z przyrostu kolonii
+  function mutate(s, what) {
+    const b = s.bact, M = C.mutations;
+    if (!M[what] || b.dead) return;
+    const lvl = b.mut[what];
+    if (lvl >= M[what].max) return;
+    const cost = M.cost[lvl];
+    if (b.points < cost) return;
+    b.points -= cost; b.mut[what] = lvl + 1;
+    s.stats.mutations++;
+  }
+  // T: toksyny — pogarszają stan pacjenta i zakłócają badania pobrane w tym czasie
+  function releaseToxins(s) {
+    const b = s.bact, X = C.toxins;
+    if (!b.mut.toxins || b.toxinCd > 0 || b.dead || b.hp <= X.hpCost + 1) return;
+    b.hp -= X.hpCost; b.toxinCd = X.cooldown;
+    s.patient.cond -= X.patientDamage; s.stats.condByInfection += X.patientDamage;
+    s.toxinT = X.distortion;
+    s.stats.toxins++;
   }
 
   function spawnAntibodies(s, eff) {
@@ -375,10 +421,14 @@
       * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul));
     const pen = C.tissue.drugPenetration;
     let mass = 0;
+    if (s.toxinT > 0) s.toxinT = Math.max(0, s.toxinT - dt);
+    if (b.toxinCd > 0) b.toxinCd = Math.max(0, b.toxinCd - dt);
     for (let i = s.colonies.length - 1; i >= 0; i--) {
       const c = s.colonies[i];
       const pk = c.inTissue ? pen : 1;   // leki słabiej docierają do kolonii w mięśniu
+      const before = c.size;
       c.size = Math.min(1, c.size + (grow0 * (1 - halt * pk) - D.abxA.colonyShrink * effA * pk) * dt);
+      if (c.size > before) b.points += (c.size - before) * C.mutations.perGrowth;   // punkty mutacji z przyrostu
       if (c.size <= 0.02) { s.colonies.splice(i, 1); s.stats.coloniesLost++; continue; }
       mass += c.size;
     }
@@ -401,6 +451,19 @@
         best.size -= K.respawnCost;
         if (best.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(best), 1); s.stats.coloniesLost++; }
       }
+    } else if (b.hidden) {
+      // ukryty w kolonii: bez ruchu, odporny na przeciwciała, żeruje
+      const hc = s.colonies.find((c) => c.id === b.hidden);
+      if (!hc) b.hidden = 0;
+      else {
+        b.x = hc.x - (hc.inTissue ? 0 : hc.nx * 0.35); b.y = hc.y - (hc.inTissue ? 0 : hc.ny * 0.35);
+        b.vx = b.vy = 0; b.contact = !hc.inTissue;
+        const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
+        b.feeding = b.hp < maxHp; if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
+        if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; s.stats.dmgFever += fd; }
+        { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV) * dt; b.hp -= dd; s.stats.dmgDrugs = (s.stats.dmgDrugs || 0) + dd; }
+        s.stats.hiddenTime += dt;
+      }
     } else if (b.transit) {
       b.transit.t -= dt;
       if (b.transit.t <= 0) {
@@ -410,7 +473,8 @@
       }
     } else {
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck += (a.eff ?? 1);
-      const mul = b.slowMul * Math.max(0.3, 1 - stuck * 0.08) * (s.kind === 'virus' ? C.virus.speedMul : 1);
+      const mul = b.slowMul * Math.max(0.3, 1 - stuck * 0.08) * (s.kind === 'virus' ? C.virus.speedMul : 1)
+        * (1 + C.mutations.speed.step * b.mut.speed);
       const il = Math.hypot(b.ix, b.iy) || 1;
       b.vx += (b.ix / il) * B.accel * mul * dt * (b.ix || b.iy ? 1 : 0);
       b.vy += (b.iy / il) * B.accel * mul * dt * (b.ix || b.iy ? 1 : 0);
@@ -483,7 +547,7 @@
       const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
       b.feeding = (b.contact || b.inTissue) && b.hp < maxHp;
       if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
-      if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * dt; b.hp -= fd; ST.dmgFever += fd; }
+      if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; ST.dmgFever += fd; }
       // leki bójcze: β-laktam (bakteria), przeciwwirusowy (wirus)
       { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
 
@@ -506,7 +570,7 @@
       if (a.stuck) { a.x = b.x + a.ox; a.y = b.y + a.oy; continue; }
       F.velocity(a.x, a.y, s.time, s.phase, fv);
       let vx = fv[0] * 0.9, vy = fv[1] * 0.9;
-      const alive = !b.transit && !b.dead && !b.inTissue;
+      const alive = !b.transit && !b.dead && !b.inTissue && !b.hidden;
       const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy);
       // cel: patogen, a jeśli go nie ma w pobliżu — najbliższa kolonia
       let tx = 0, ty = 0, td = 1e9, col = null;
@@ -537,8 +601,9 @@
       }
       if (alive && dist < B.radius + 0.4) {
         a.stuck = true; a.ox = a.x - b.x; a.oy = a.y - b.y; a.life = Math.min(a.life, 8);
-        b.hp -= A.damage * (a.eff ?? 1); b.hitFlash = 0.4 + 0.6 * (a.eff ?? 1);
-        s.stats.abHits++; s.stats.dmgAntibodies += A.damage * (a.eff ?? 1);
+        const cap = 1 - C.mutations.capsule.step * b.mut.capsule;   // otoczka osłabia przeciwciała
+        b.hp -= A.damage * (a.eff ?? 1) * cap; b.hitFlash = 0.4 + 0.6 * (a.eff ?? 1) * cap;
+        s.stats.abHits++; s.stats.dmgAntibodies += A.damage * (a.eff ?? 1) * cap;
       }
     }
 

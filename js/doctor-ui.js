@@ -30,6 +30,22 @@
       actionsEl.appendChild(b);
       btns[a.cd] = b;
     }
+    // panel mutacji patogenu
+    const MUTS = [
+      { what: 'speed', key: '7', name: 'Szybkość' },
+      { what: 'fever', key: '8', name: 'Odporność na gorączkę' },
+      { what: 'capsule', key: '9', name: 'Otoczka (przeciwciała)' },
+      { what: 'toxins', key: '0', name: 'Toksyny' }
+    ];
+    const mutBtns = {};
+    for (const m of MUTS) {
+      const b = document.createElement('button');
+      b.className = 'mut-row'; b.type = 'button';
+      b.innerHTML = `<kbd>${m.key}</kbd><span>${m.name}</span><span class="mut-lvl"></span>`;
+      b.addEventListener('click', () => { DD.send({ type: 'bact.mutate', what: m.what }); b.blur(); });
+      $('mut-list').appendChild(b); mutBtns[m.what] = b;
+    }
+
     const testBtns = {};
     for (const t of TESTS) {
       const b = document.createElement('button');
@@ -142,6 +158,9 @@
           ['Czas przy ścianie', num(S.contactTime) + ' s'],
           ['Przejścia przez zastawki', String(S.valveCrossings || 0)],
           ['Wniknięcia w ścianę serca', String(S.tissueEntries || 0)],
+          ['Mutacje', String(S.mutations || 0)],
+          ['Uwolnienia toksyn', String(S.toxins || 0)],
+          ['Czas w ukryciu', num(S.hiddenTime) + ' s'],
           ['Krążenie płucne / duże', `${S.lungsTrips || 0} / ${S.bodyTrips || 0}`],
           ['Odwiedzone jamy serca', `${seen} z ${chambers.length}`],
           ['Najmniej życia', Math.max(0, Math.ceil(S.minHp ?? 0)) + ' pkt']
@@ -250,6 +269,7 @@
       }
       renderResults(s);
 
+
       for (const a of ACTIONS) {
         const el = btns[a.cd], cd = d.cd[a.cd];
         const locked = !d.unlocked;
@@ -302,6 +322,21 @@
         }
       }
       $('s-colonies-n').textContent = s.colonies.length;
+      // mutacje i zdolności
+      const MC = C.mutations;
+      $('mut-pts').textContent = (b.points || 0).toFixed(1).replace('.', ',');
+      for (const m of MUTS) {
+        const lvl = (b.mut && b.mut[m.what]) || 0, max = MC[m.what].max, cost = MC.cost[lvl];
+        const el = mutBtns[m.what];
+        el.querySelector('.mut-lvl').textContent = '●'.repeat(lvl) + '○'.repeat(max - lvl) + (lvl < max ? `  ${cost} pkt` : '');
+        el.disabled = lvl >= max || (b.points || 0) < cost;
+        el.dataset.afford = !el.disabled ? '1' : '0';
+      }
+      const ab = [];
+      if (b.hidden) ab.push(`<b>Ukryty w kolonii</b>: przeciwciała cię nie widzą. F wychodzi.`);
+      else if (s.colonies.some((c) => !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < C.hide.radius)) ab.push('F: ukryj się w kolonii.');
+      if (b.mut && b.mut.toxins) ab.push(b.toxinCd > 0 ? `Toksyny za ${Math.ceil(b.toxinCd)} s.` : `T: toksyny (−${C.toxins.hpCost} życia, stan pacjenta −${C.toxins.patientDamage}, zakłócają badania).`);
+      $('mut-ability').innerHTML = ab.join(' ');
       $('respawn').hidden = !(b.dead > 0);
       if (b.dead > 0) $('respawn-t').textContent = Math.ceil(b.dead);
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;

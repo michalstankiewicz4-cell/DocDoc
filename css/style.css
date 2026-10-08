@@ -68,6 +68,26 @@ kbd {
   color: var(--hud-dim); font-size: 12px; text-shadow: inherit;
 }
 .sound-btn:hover { color: var(--hud); }
+.hud-mut {
+  right: 16px; bottom: 64px; width: min(270px, calc(50% - 24px)); pointer-events: auto;
+  padding: 10px 12px; border-radius: var(--r-m); background: rgba(14, 3, 4, 0.62); backdrop-filter: blur(4px);
+  font-size: 12px; display: grid; gap: 6px;
+}
+.mut-head { margin: 0; display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; }
+.mut-pts { font-weight: 400; color: var(--hud-dim); }
+.mut-pts b { color: var(--biofilm); font-variant-numeric: tabular-nums; }
+.mut-list { display: grid; gap: 3px; }
+.mut-row {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; text-align: left;
+  padding: 3px 6px; border-radius: 6px; border: 1px solid transparent; background: none; color: var(--hud); font-size: 12px; cursor: pointer;
+}
+.mut-row:hover:not(:disabled) { border-color: rgba(198, 230, 106, 0.5); }
+.mut-row:disabled { cursor: default; opacity: 0.55; }
+.mut-row[data-afford="1"] { opacity: 1; }
+.mut-row kbd { margin: 0; }
+.mut-lvl { letter-spacing: 2px; color: var(--biofilm); }
+.mut-ability { margin: 0; color: var(--hud-dim); }
+.mut-ability b { color: var(--hud); }
 .hud-bars { left: 20px; bottom: 54px; width: min(340px, calc(100% - 40px)); display: grid; gap: 8px; }
 .bar-row { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 10px; font-size: 13px; }
 .bar-label { color: var(--hud-dim); }

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.14.0">
+<link rel="stylesheet" href="css/style.css?v=0.15.0">
 </head>
 <body>
 <main class="split">
@@ -52,10 +52,17 @@
       </ul>
     </div>
 
+    <div class="hud hud-mut" aria-label="Mutacje i zdolności">
+      <p class="mut-head">Mutacje <span class="mut-pts">punkty <b id="mut-pts">0</b></span></p>
+      <div id="mut-list" class="mut-list"></div>
+      <p id="mut-ability" class="mut-ability"></p>
+    </div>
+
     <div class="hud hud-keys">
       <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ruch</span>
       <span><kbd>E</kbd> kolonia</span>
       <span><kbd>Q</kbd> w ścianę</span>
+      <span><kbd>F</kbd> ukrycie</span>
       <span><kbd>kółko</kbd> przybliżenie</span>
       <button id="btn-sound" class="sound-btn" type="button"><kbd>M</kbd> <span id="sound-label">Dźwięk włączony</span></button>
     </div>
@@ -348,27 +355,27 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.14.0"></script>
-<script src="js/config.js?v=0.14.0"></script>
-<script src="js/heart-shape.js?v=0.14.0"></script>
-<script src="js/flow.js?v=0.14.0"></script>
-<script src="js/tissue-cells.js?v=0.14.0"></script>
-<script src="js/state.js?v=0.14.0"></script>
-<script src="js/input.js?v=0.14.0"></script>
-<script src="js/render/glsl.js?v=0.14.0"></script>
-<script src="js/render/tissue.js?v=0.14.0"></script>
-<script src="js/render/cells.js?v=0.14.0"></script>
-<script src="js/render/actors.js?v=0.14.0"></script>
-<script src="js/render/post.js?v=0.14.0"></script>
-<script src="js/render/biome.js?v=0.14.0"></script>
-<script src="js/render/view.js?v=0.14.0"></script>
-<script src="js/minimap.js?v=0.14.0"></script>
-<script src="js/audio.js?v=0.14.0"></script>
-<script src="js/doctor-ui.js?v=0.14.0"></script>
-<script src="js/doctor-cam.js?v=0.14.0"></script>
-<script src="js/net.js?v=0.14.0"></script>
-<script src="js/lobby.js?v=0.14.0"></script>
-<script src="js/net-status.js?v=0.14.0"></script>
-<script src="js/main.js?v=0.14.0"></script>
+<script src="js/version.js?v=0.15.0"></script>
+<script src="js/config.js?v=0.15.0"></script>
+<script src="js/heart-shape.js?v=0.15.0"></script>
+<script src="js/flow.js?v=0.15.0"></script>
+<script src="js/tissue-cells.js?v=0.15.0"></script>
+<script src="js/state.js?v=0.15.0"></script>
+<script src="js/input.js?v=0.15.0"></script>
+<script src="js/render/glsl.js?v=0.15.0"></script>
+<script src="js/render/tissue.js?v=0.15.0"></script>
+<script src="js/render/cells.js?v=0.15.0"></script>
+<script src="js/render/actors.js?v=0.15.0"></script>
+<script src="js/render/post.js?v=0.15.0"></script>
+<script src="js/render/biome.js?v=0.15.0"></script>
+<script src="js/render/view.js?v=0.15.0"></script>
+<script src="js/minimap.js?v=0.15.0"></script>
+<script src="js/audio.js?v=0.15.0"></script>
+<script src="js/doctor-ui.js?v=0.15.0"></script>
+<script src="js/doctor-cam.js?v=0.15.0"></script>
+<script src="js/net.js?v=0.15.0"></script>
+<script src="js/lobby.js?v=0.15.0"></script>
+<script src="js/net-status.js?v=0.15.0"></script>
+<script src="js/main.js?v=0.15.0"></script>
 </body>
 </html>

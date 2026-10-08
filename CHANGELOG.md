@@ -11,6 +11,14 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-10-08
+### Dodane
+- **Ukrycie w kolonii** (`F`): bakteria chowa się w biofilmie, wirus w zakażonej komórce. Przeciwciała jej nie widzą, ale nie może się ruszać; nadal żeruje, gorączka i leki działają. Zniszczenie kolonii wyrzuca patogen z ukrycia.
+- **Mutacje** (`7`–`0`) za punkty z przyrostu kolonii: szybkość (3 poziomy), odporność na gorączkę (2), otoczka przeciw przeciwciałom (2), toksyny (1). Koszt kolejnych poziomów: 1, 2, 3 punkty.
+- **Toksyny** (`T`, po mutacji): kosztują 10 życia, obniżają stan pacjenta o 6 i przez 15 s zakłócają badania pobrane w tym czasie (zawyżone, rozrzucone CRP, przesunięte ogniska w echu).
+- Antybiogram uwzględnia otoczkę i odporność na gorączkę.
+- Panel mutacji w HUD patogenu; nowe statystyki: mutacje, toksyny, czas w ukryciu.
+
 ## [0.14.0] - 2026-10-08
 ### Dodane
 - Nowy biom: **mięsień sercowy**. Przy ścianie `Q` rozpoczyna wnikanie (bakteria 2,5 s, wirus 1 s); odpłynięcie od ściany albo drugie `Q` je przerywa.
@@ -137,7 +145,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.11.0...v0.12.0

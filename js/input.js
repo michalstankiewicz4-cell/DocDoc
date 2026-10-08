@@ -3,7 +3,8 @@
 (function () {
   const keys = new Set();
   const BACT_KEYS = { KeyW: 1, KeyA: 1, KeyS: 1, KeyD: 1 };
-  const BACT_ACTIONS = { KeyE: 'bact.colony', KeyQ: 'bact.burrow' };
+  const BACT_ACTIONS = { KeyE: 'bact.colony', KeyQ: 'bact.burrow', KeyF: 'bact.hide', KeyT: 'bact.toxin' };
+  const MUT_KEYS = { Digit7: 'speed', Digit8: 'fever', Digit9: 'capsule', Digit0: 'toxins' };
   const DOC_KEYS = { Digit1: 'doc.antibodies', Digit2: 'doc.fever', Digit3: 'doc.abxA', Digit4: 'doc.abxB', Digit5: 'doc.antiviral' };
   // badania: Z CRP, X (albo B) posiew, C echo, V antybiogram
   const TEST_KEYS = { KeyZ: 'crp', KeyX: 'culture', KeyB: 'culture', KeyC: 'echo', KeyV: 'abg' };
@@ -14,6 +15,7 @@
     if (DOC_KEYS[e.code] && !e.repeat) DD.send({ type: DOC_KEYS[e.code] });
     if (TEST_KEYS[e.code] && !e.repeat) DD.send({ type: 'doc.test', kind: TEST_KEYS[e.code] });
     if (BACT_ACTIONS[e.code] && !e.repeat) DD.send({ type: BACT_ACTIONS[e.code] });
+    if (MUT_KEYS[e.code] && !e.repeat) DD.send({ type: 'bact.mutate', what: MUT_KEYS[e.code] });
   });
   window.addEventListener('keyup', (e) => keys.delete(e.code));
   window.addEventListener('blur', () => keys.clear());

@@ -74,6 +74,18 @@ DD.CONFIG = {
     drugPenetration: 0.5           // ułamek działania antybiotyków / leku przeciwwirusowego na kolonie w tkance
   },
 
+  // zdolności patogenu
+  hide: { radius: 2.2 },                       // F: ukrycie w kolonii (odporność na przeciwciała, brak ruchu)
+  mutations: {
+    perGrowth: 1.6,                            // punkty mutacji za 1,0 przyrostu rozmiaru kolonii
+    speed:   { max: 3, step: 0.15 },           // +15% szybkości na poziom
+    fever:   { max: 2, step: 0.3 },            // −30% obrażeń od gorączki na poziom
+    capsule: { max: 2, step: 0.3 },            // otoczka: −30% obrażeń od przeciwciał na poziom
+    toxins:  { max: 1 },                       // odblokowuje toksyny (T)
+    cost: [1, 2, 3]                            // koszt kolejnych poziomów
+  },
+  toxins: { cooldown: 25, hpCost: 10, patientDamage: 6, distortion: 15 },  // T: stan pacjenta −6, badania zakłócone przez 15 s
+
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 
   cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }
