@@ -41,6 +41,9 @@ DD.CONFIG = {
   // podgląd lekarza: gra bakterii z opóźnieniem + zdjęcie miejsca pobrania krwi
   preview: { delay: 5, history: 30, rate: 20, maxCells: 700 },
 
+  // kaszel pacjenta: szansa na sekundę = base + perInfection * kolonizacja(%)
+  cough: { base: 0.004, perInfection: 0.0011 },
+
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 
   cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }

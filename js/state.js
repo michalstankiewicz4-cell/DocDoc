@@ -39,7 +39,8 @@
         tests: 0, firstTestAt: -1, firstTreatAt: -1,
         used: { antibodies: 0, fever: 0, slow: 0 }
       },
-      valveSide: H.VALVES.map(() => 0)
+      valveSide: H.VALVES.map(() => 0),
+      coughs: 0          // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
     };
   };
 
@@ -225,6 +226,8 @@
     const targetT = d.feverT > 0 ? D.fever.temp : 36.6;
     d.temp += (targetT - d.temp) * Math.min(1, dt * 0.35);
     const feverK = Math.max(0, Math.min(1, (d.temp - 37.2) / (D.fever.temp - 37.2)));
+    // kaszel: tym częstszy, im większe zakażenie
+    if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection) * dt) s.coughs++;
 
     // --- bakteria ---
     b.hitFlash = Math.max(0, b.hitFlash - dt * 2.5);

@@ -79,7 +79,8 @@ Po wygranej jednej ze stron ekran końcowy pokazuje statystyki obu graczy: drog�
 
 ## Dźwięk
 
-- **Patogen** słyszy serce od środka: przytłumione „lub-dub”.
+- **Patogen** słyszy wszystko jak pod wodą: przytłumione „lub-dub” serca i szum krwi, który narasta w skurczu i w silnym prądzie.
+- **Kaszel pacjenta** słyszą obaj gracze, tym częściej, im większa kolonizacja. Patogen słyszy go głucho od środka, lekarz wyraźnie w sali. To wskazówka dla lekarza, że zakażenie postępuje.
 - **Lekarz** słyszy salę szpitalną: „beep” pulsoksymetru przy każdym uderzeniu serca, alarm monitora (trzy tony co 6 s) przy gorączce od 39 °C i dzwonek, gdy przychodzi wynik badania.
 - W trybie deweloperskim słychać obie warstwy, lekarza ciszej.
 

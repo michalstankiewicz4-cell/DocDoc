@@ -60,7 +60,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Plik kontekstu (ten plik)
 - [x] Statystyki na ekranie końcowym
 - [x] Dźwięk lekarza: szpitalne „beep”
-- [ ] Dźwięk patogenu: przytłumiony jak pod wodą, bicie serca, czasem kaszel
+- [x] Dźwięk patogenu: przytłumiony jak pod wodą, bicie serca, czasem kaszel
 - [ ] Stan pacjenta jako trzeci wskaźnik (patogen wygrywa przez sepsę), skutki uboczne leków
 - [ ] Kolonie jako „życia” patogenu + zakładanie kolonii kosztem % zdrowia, dodatkowe wskaźniki
 - [ ] Nowe badania: CRP (szybkie), posiew (dokładny), echo serca (pokazuje kolonie), antybiogram
@@ -78,3 +78,4 @@ Odrzucone przez Michała: sztuczne etapy zakażenia (przebieg ma wynikać z dzia
 Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z zasadą 1), żeby Michał mógł je zmienić.
 
 - Kod zaproszenia nie sprawdza zgodności wersji gry między graczami.
+- Kaszel: szansa na sekundę rośnie z kolonizacją (`config.cough`), tylko dźwięk, bez wpływu na rozgrywkę.

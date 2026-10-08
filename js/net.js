@@ -241,7 +241,8 @@
       d: [TEST.indexOf(d.test.state), r2(d.test.t), r2(d.test.cd), d.unlocked ? 1 : 0, d.knownInfection ?? -1,
         d.resultTime ?? -1, r2(d.cd.antibodies), r2(d.cd.fever), r2(d.cd.slow), r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT)],
       a, c,
-      st: s.over ? s.stats : 0
+      st: s.over ? s.stats : 0,
+      cg: s.coughs
     };
   }
   let sendAcc = 0, sentLogLen = -1, sentLogT = -1, seq = 0;
@@ -271,6 +272,7 @@
       s.time = snap.t + age;
       s.running = !!snap.run; s.over = snap.ov; s.organ = snap.org;
       if (snap.st) s.stats = snap.st;
+      s.coughs = snap.cg || 0;
       const b = s.bact, v = snap.b;
       const far = Math.hypot(v[0] - b.x, v[1] - b.y) > 4;
       b.x = far ? v[0] : b.x + (v[0] - b.x) * k;
@@ -282,6 +284,7 @@
       b.contact = !!v[10]; b.resist = { antibodies: v[11], fever: v[12], slow: v[13] };
       b.transit = snap.tr ? { to: snap.tr[0] === 1 ? 'lungs' : 'body', t: snap.tr[1], total: snap.tr[2] } : null;
       b.place = H.placeName(b.x, b.y);
+      { const f = F.velocity(b.x, b.y, s.time, (s.time * C.bpm / 60) % 1); b.fx = f[0]; b.fy = f[1]; }
       const d = s.doctor, w = snap.d;
       d.test.state = TEST[w[0]] || 'idle'; d.test.t = w[1]; d.test.cd = w[2]; d.unlocked = !!w[3];
       d.knownInfection = w[4] < 0 ? null : w[4]; d.resultTime = w[5] < 0 ? undefined : w[5];
