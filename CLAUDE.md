@@ -43,7 +43,8 @@ Aktualna wersja: zobacz `js/version.js` i `CHANGELOG.md`.
 Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
 - Serce w przekroju (SDF), prąd krwi zależny od cyklu serca, zastawki, struny ścięgniste, krążenie płucne i duże.
 - Patogen: bakteria albo wirus (wybór ukryty przed lekarzem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
-  wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0), toksyny (T).
+  wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0), toksyny (T),
+  pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
 - Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 4 badania (CRP, posiew,
   echo, antybiogram), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
   operacja zastawki, podgląd z opóźnieniem 5 s, zdjęcie z chwili pobrania, alarmy monitora.
@@ -72,6 +73,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Operacja zastawki
 - [x] Pacjent na łóżku (grafika dla lekarza), objawy jako wskazówki, animacja laboratorium, alarmy monitora
 - [x] Mecz z zamianą ról
+- [x] Pożywienie we krwi, rozmnożenie, przeciwciała atakują kopie (v0.19.0)
 
 Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
 - Wygląd kardiomiocytów: wzory w `docs/reference/` (prążkowanie, centralne jądro, wstawki, rozgałęzione włókna, jasne przestrzenie między nimi).
@@ -93,4 +95,7 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Operacja zastawki (`config.doctor.surgery`): 10 s, stan −15, promień 5 j., patogen w pobliżu −40 życia, odnowienie 60 s.
 - Mecz: 2 rundy, remis 1:1 rozstrzyga szybsze zwycięstwo; wynik prowadzi host (`js/match.js`).
 - Kaszel: szansa na sekundę rośnie z kolonizacją i masą kolonii w prawym sercu (`config.cough`), tylko dźwięk i obraz, bez wpływu na rozgrywkę.
+- Pożywienie i kopie (`config.food`, `config.copies`): 110 drobin, glukoza +10, aminokwasy +15, lipidy +25; kopia za 100 pożywienia, najwyżej 6.
+  Kopie dryfują z prądem (bez sterowania), nie zakładają kolonii, giną od jednego przeciwciała. Przeciwciało wybiera cel losowo spośród patogenu i kopii w zasięgu.
+  Patogen nie je w mięśniu ani w ukryciu.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk).

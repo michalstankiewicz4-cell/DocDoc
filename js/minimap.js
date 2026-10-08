@@ -54,6 +54,10 @@
         if (c.inTissue) ctx.stroke(); else ctx.fill();   // w mięśniu: pierścień
       }
 
+      // kopie patogenu (przyciemnione)
+      ctx.fillStyle = 'rgba(111, 227, 180, 0.55)';
+      for (const c of s.copies || []) { ctx.beginPath(); ctx.arc(toX(c.x), toY(c.y), 2.2, 0, 6.283); ctx.fill(); }
+
       // kadr kamery
       if (view) {
         const vh = 2 * view.zoom * Math.tan(C.camera.fov * Math.PI / 360);

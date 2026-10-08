@@ -51,6 +51,7 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `E` | załóż kolonię (przy ścianie albo w mięśniu, kosztuje 25 życia) |
 | `Q` | wnikanie w ścianę serca (przy ścianie; drugie `Q` przerywa) |
 | `F` | ukrycie w kolonii / wyjście z ukrycia |
+| `R` | rozmnożenie: kopia patogenu (przy pełnym pasku pożywienia) |
 | `7` `8` `9` `0` | mutacje: szybkość, odporność na gorączkę, otoczka, toksyny |
 | `T` | toksyny (po mutacji) |
 | kółko myszy | przybliżenie i oddalenie kamery |
@@ -80,6 +81,9 @@ Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie w
   - przeciwciała cię nie dosięgną, a antybiotyki i lek przeciwwirusowy działają o połowę słabiej,
   - patogen stale żeruje, a `E` zakłada **ukrytą kolonię** — echo pokazuje ją tylko jako niewyraźne zgrubienie ściany,
   - do krwi wracasz, podpływając do ściany naczynia.
+- **Pożywienie:** we krwi płyną z prądem drobiny pożywienia: glukoza (białe kryształki, +10), aminokwasy (bursztynowe kuleczki, +15) i lipidy (żółte kropelki, +25). Patogen zjada je, wpływając w nie (we krwi, nie w mięśniu ani w ukryciu). Pasek „Pożywienie” ma 100 punktów.
+- **Rozmnożenie** (`R`, przy pełnym pasku): powstaje kopia patogenu, która wygląda tak samo jak on i dryfuje z prądem krwi. Najwyżej 6 kopii naraz. Kopie nie zakładają kolonii i nie są sterowane.
+  - Przeciwciało w pobliżu wybiera cel losowo spośród patogenu i jego kopii, więc kopie odciągają część przeciwciał. Trafiona kopia ginie razem z przeciwciałem.
 - **Ukrycie** (`F`, przy własnej kolonii): patogen chowa się w kolonii. Przeciwciała go nie widzą, ale nie może się ruszać. Gorączka i leki nadal działają. Gdy kolonia zostanie zniszczona, patogen wypada z ukrycia.
 - **Mutacje:** rosnące kolonie dają punkty mutacji (widać je w panelu w prawym dolnym rogu). Za punkty (1, 2, 3 za kolejne poziomy) kupujesz:
   - `7` szybkość (+15% na poziom, 3 poziomy),
@@ -90,8 +94,8 @@ Przed startem gracz patogenu wybiera **bakterię** albo **wirusa** (na ekranie w
 - **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii, która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
 
 ### Ekran
-- **Lewy dolny róg:** życie, kolonizacja i aktywne efekty (gorączka, antybiotyk, przyczepione przeciwciała, oporność).
-- **Prawy górny róg:** minimapa. PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie.
+- **Lewy dolny róg:** życie, kolonizacja, stan pacjenta, pożywienie, liczba kolonii i kopii oraz aktywne efekty (gorączka, antybiotyk, przyczepione przeciwciała, oporność).
+- **Prawy górny róg:** minimapa. PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie, przyciemnione kropki to kopie patogenu.
 
 ## Lekarz
 
@@ -122,7 +126,7 @@ Każdą akcję można też kliknąć w panelu.
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
 
 2. **Leczenie:**
-   - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na bakterie i wirusy.
+   - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na bakterie i wirusy. Gdy patogen ma kopie, część przeciwciał atakuje kopie zamiast niego.
    - **Gorączka** podnosi temperaturę do 39,6 °C. Patogen traci życie, a kolonie rosną wolniej. Działa na oba patogeny, ale obciąża pacjenta.
    - **β-laktam** (bakteriobójczy) niszczy bakterię i kurczy kolonie.
    - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.

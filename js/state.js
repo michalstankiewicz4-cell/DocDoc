@@ -22,7 +22,8 @@
         ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
         inTissue: false, burrowT: 0, z: 0,
         hidden: 0,                                     // id kolonii, w której ukrył się patogen (0 = nie)
-        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0 }, toxinCd: 0,   // patogen w ścianie serca (mięśniu), wnikanie, wysokość do renderu
+        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0 }, toxinCd: 0,
+        food: 0,                                       // pasek pożywienia (0..100), pełny pozwala się rozmnożyć
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
         resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
@@ -48,6 +49,9 @@
       drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 } },
       antibodies: [],
       colonies: [],    // kolonie patogenu: { x, y, nx, ny, born, seed, size 0..1 }
+      food: [],        // pożywienie we krwi: { id, x, y, z, kind }
+      copies: [],      // kopie patogenu (wabiki): { id, x, y, vx, vy, dir, born }
+      nextId: 1,
       nextColonyId: 1,
       chords: [],      // geometria strun ścięgnistych (liczona co krok, wspólna dla kolizji i renderu)
       leaflets: [],    // płatki zastawek
@@ -62,7 +66,8 @@
         used: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
         minCond: 100, condByInfection: 0, condByTreatment: 0,
         coloniesFounded: 0, coloniesLost: 0, deaths: 0,
-        mutations: 0, toxins: 0, hiddenTime: 0
+        mutations: 0, toxins: 0, hiddenTime: 0,
+        eaten: 0, copiesMade: 0, copiesLost: 0, decoyHits: 0
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0,         // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
@@ -123,6 +128,7 @@
     switch (cmd.type) {
       case 'bact.colony': foundColony(s); return;
       case 'bact.hide': hideToggle(s); return;
+      case 'bact.copy': makeCopy(s); return;
       case 'bact.mutate': mutate(s, cmd.what); return;
       case 'bact.toxin': releaseToxins(s); return;
       case 'bact.burrow': {
@@ -253,6 +259,29 @@
       text = 'Antybiogram gotowy.';
     }
     log(s, 'doc', 'Wynik: ' + text + (first ? ' Odblokowano leczenie.' : ''));
+  }
+
+  // pożywienie: losowy punkt w świetle naczyń
+  const FOOD_KINDS = ['glucose', 'amino', 'lipid'];
+  function placeFood(s, f) {
+    const W = C.world;
+    for (let t = 0; t < 40; t++) {
+      f.x = W.minX + rnd(s) * (W.maxX - W.minX); f.y = W.minY + rnd(s) * (W.maxY - W.minY);
+      if (H.sample(f.x, f.y) < -1.0 && f.y < 50) break;
+    }
+    f.z = (rnd(s) - 0.5) * 1.6;
+    f.kind = FOOD_KINDS[Math.floor(rnd(s) * 3)];
+    f.id = s.nextId++;
+    return f;
+  }
+  // R: rozmnożenie — kopia patogenu za pełny pasek pożywienia
+  function makeCopy(s) {
+    const b = s.bact, Q = C.copies;
+    if (b.dead || b.transit || b.inTissue || b.hidden || b.food < Q.cost || s.copies.length >= Q.max) return;
+    b.food -= Q.cost;
+    const a = rnd(s) * 6.283;
+    s.copies.push({ id: s.nextId++, x: b.x + Math.cos(a) * 0.7, y: b.y + Math.sin(a) * 0.7, vx: Math.cos(a) * 2, vy: Math.sin(a) * 2, dir: a, born: s.time, wob: rnd(s) * 6.283 });
+    s.stats.copiesMade++;
   }
 
   // F: ukrycie w najbliższej własnej kolonii (albo wyjście z ukrycia)
@@ -599,6 +628,36 @@
     }
 
     // --- przeciwciała ---
+    // --- pożywienie: płynie z prądem, zjadane przez patogen ---
+    const FD = C.food;
+    while (s.food.length < FD.count) s.food.push(placeFood(s, {}));
+    const canEat = !b.dead && !b.transit && !b.inTissue && !b.hidden;
+    for (const f of s.food) {
+      F.velocity(f.x, f.y, s.time, s.phase, fv);
+      f.x += fv[0] * 0.95 * dt; f.y += fv[1] * 0.95 * dt;
+      const fdd = H.sample(f.x, f.y);
+      if (fdd > -0.3) { H.grad(f.x, f.y, g2); f.x -= g2[0] * (fdd + 0.3); f.y -= g2[1] * (fdd + 0.3); }
+      let gone = f.y > 52 || f.x > 58 || f.y < -56;
+      if (!gone && canEat && b.food < 100 && Math.hypot(f.x - b.x, f.y - b.y) < FD.eatRadius) {
+        b.food = Math.min(100, b.food + FD.kinds[f.kind]); s.stats.eaten++; gone = true;
+      }
+      if (gone) placeFood(s, f);
+    }
+
+    // --- kopie patogenu: płyną z prądem i lekko się ruszają ---
+    for (let i = s.copies.length - 1; i >= 0; i--) {
+      const c = s.copies[i];
+      F.velocity(c.x, c.y, s.time, s.phase, fv);
+      c.wob += dt * (0.8 + (c.id % 5) * 0.2);
+      const sw = C.copies.swim;
+      c.vx += Math.cos(c.wob) * sw * dt * 3; c.vy += Math.sin(c.wob * 1.3) * sw * dt * 3;
+      const dk = Math.exp(-3 * dt); c.vx *= dk; c.vy *= dk;
+      c.x += (c.vx + fv[0] * B.flowCoupling) * dt; c.y += (c.vy + fv[1] * B.flowCoupling) * dt;
+      if (Math.hypot(c.vx, c.vy) > 0.3) c.dir = Math.atan2(c.vy, c.vx);
+      collideLeaflets(s, c, B.radius); collideWalls(c, B.radius);
+      for (const ex of H.EXITS) if (ex.test(c.x, c.y)) { const p = H.INLETS[ex.to][Math.floor(rnd(s) * 2)]; c.x = p.x; c.y = p.y; }
+    }
+
     const A = D.antibodies;
     for (let i = s.antibodies.length - 1; i >= 0; i--) {
       const a = s.antibodies[i];
@@ -609,9 +668,26 @@
       let vx = fv[0] * 0.9, vy = fv[1] * 0.9;
       const alive = !b.transit && !b.dead && !b.inTissue && !b.hidden;
       const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy);
-      // cel: patogen, a jeśli go nie ma w pobliżu — najbliższa kolonia
+      // cel: patogen albo jedna z jego kopii w zasięgu, wybrany losowo — przeciwciało nie odróżnia oryginału od kopii
+      const R = A.homingRadius;
+      if (a.tgt === 'p' && !(alive && dist < R * 1.3)) a.tgt = null;
+      let tc = null;
+      if (typeof a.tgt === 'number') {
+        tc = s.copies.find((c) => c.id === a.tgt);
+        if (!tc || Math.hypot(tc.x - a.x, tc.y - a.y) > R * 1.3) { a.tgt = null; tc = null; }
+      }
+      if (a.tgt == null) {
+        const cands = [];
+        if (alive && dist < R) cands.push('p');
+        for (const c of s.copies) if (Math.hypot(c.x - a.x, c.y - a.y) < R) cands.push(c.id);
+        if (cands.length) {
+          a.tgt = cands[Math.floor(rnd(s) * cands.length)];
+          if (typeof a.tgt === 'number') tc = s.copies.find((c) => c.id === a.tgt);
+        }
+      }
       let tx = 0, ty = 0, td = 1e9, col = null;
-      if (alive && dist < A.homingRadius) { tx = dx; ty = dy; td = dist; }
+      if (a.tgt === 'p') { tx = dx; ty = dy; td = dist; }
+      else if (tc) { tx = tc.x - a.x; ty = tc.y - a.y; td = Math.hypot(tx, ty); }
       else {
         for (const c of s.colonies) {
           if (c.inTissue) continue;   // przeciwciała nie docierają do kolonii w mięśniu
@@ -622,6 +698,13 @@
       if (td < A.homingRadius) {
         const k = A.speed * (1 - td / A.homingRadius * 0.5);
         vx += tx / td * k; vy += ty / td * k;
+      }
+      if (tc && td < B.radius + 0.4) {
+        // trafiona kopia ginie razem z przeciwciałem
+        s.copies.splice(s.copies.indexOf(tc), 1);
+        s.stats.copiesLost++; s.stats.decoyHits++;
+        s.antibodies.splice(i, 1);
+        continue;
       }
       if (col && td < 0.6 + col.size * 0.5) {
         col.size -= K.abDamage * (a.eff ?? 1);

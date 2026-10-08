@@ -35,7 +35,7 @@ js/main.js              pętla gry, tryby (lokalny / host / gość), wybór tryb
 js/render/glsl.js       wspólne shadery: szum, światło mokrej tkanki, pochłanianie we krwi, kaustyki
 js/render/tissue.js     tkanka: gęsta siatka przemieszczana z tekstury SDF
 js/render/cells.js      krwinki (instancing, kształt Evansa–Funga) i drobiny osocza
-js/render/actors.js     patogen, przeciwciała, kolonie, zastawki, struny, mięśnie brodawkowate
+js/render/actors.js     patogen i jego kopie, pożywienie, przeciwciała, kolonie, zastawki, struny, mięśnie brodawkowate
 js/render/biome.js      biom mięśnia: kardiomiocyty (prążkowanie, jądra, wstawki), kolagen
 js/render/post.js       post-processing: bloom, głębia ostrości, aberracja, ACES, winieta, ziarno
 js/render/view.js       widok 3D: kamera, światło, łańcuch renderu
@@ -70,6 +70,8 @@ Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, w
 - **Kanały:** `cmd` (niezawodny, uporządkowany) dla komend, dziennika, ping/pong i pożegnania; `st` (bez retransmisji) dla paczek stanu z numerem sekwencyjnym.
 - **Role:** `DD.send` sprawdza `N.allowed(cmd, rola)` przed wysłaniem, a host sprawdza ponownie po odebraniu.
 - **Gość** wygładza pozycje między paczkami i odrzuca paczki starsze od ostatniej.
+
+Pożywienie (`fo`) i kopie (`cp`) idą płaskimi tablicami `[x, y, rodzaj|kierunek, id]`; gość wygładza element tylko wtedy, gdy pod tym samym indeksem jest ten sam `id`.
 
 Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `guestFrame()`.
 

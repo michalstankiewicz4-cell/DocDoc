@@ -185,6 +185,9 @@
           ['Mutacje', String(S.mutations || 0)],
           ['Uwolnienia toksyn', String(S.toxins || 0)],
           ['Czas w ukryciu', num(S.hiddenTime) + ' s'],
+          ['Zjedzone pożywienie', String(S.eaten || 0)],
+          ['Kopie (stracone)', `${S.copiesMade || 0} (${S.copiesLost || 0})`],
+          ['Przeciwciała zwiedzione przez kopie', String(S.decoyHits || 0)],
           ['Krążenie płucne / duże', `${S.lungsTrips || 0} / ${S.bodyTrips || 0}`],
           ['Odwiedzone jamy serca', `${seen} z ${chambers.length}`],
           ['Najmniej życia', Math.max(0, Math.ceil(S.minHp ?? 0)) + ' pkt']
@@ -361,6 +364,11 @@
         }
       }
       $('s-colonies-n').textContent = s.colonies.length;
+      // pożywienie i kopie
+      const food = b.food || 0, ncop = (s.copies || []).length;
+      $('h-food').style.transform = `scaleX(${food / 100})`;
+      $('h-food-val').textContent = Math.floor(food);
+      $('s-copies-n').textContent = ncop; $('s-copies-max').textContent = C.copies.max;
       // mutacje i zdolności
       const MC = C.mutations;
       $('mut-pts').textContent = (b.points || 0).toFixed(1).replace('.', ',');
@@ -374,6 +382,7 @@
       const ab = [];
       if (b.hidden) ab.push(`<b>Ukryty w kolonii</b>: przeciwciała cię nie widzą. F wychodzi.`);
       else if (s.colonies.some((c) => !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < C.hide.radius)) ab.push('F: ukryj się w kolonii.');
+      if (food >= C.copies.cost && ncop < C.copies.max) ab.push('<b>R: rozmnóż się</b> (kopia odciąga przeciwciała).');
       if (b.mut && b.mut.toxins) ab.push(b.toxinCd > 0 ? `Toksyny za ${Math.ceil(b.toxinCd)} s.` : `T: toksyny (−${C.toxins.hpCost} życia, stan pacjenta −${C.toxins.patientDamage}, zakłócają badania).`);
       $('mut-ability').innerHTML = ab.join(' ');
       $('respawn').hidden = !(b.dead > 0);

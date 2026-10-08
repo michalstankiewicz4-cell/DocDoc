@@ -95,6 +95,7 @@ kbd {
 .bar-fill { display: block; height: 100%; transform-origin: left; transform: scaleX(0); transition: transform 0.15s linear; }
 .fill-hp { background: var(--microbe); box-shadow: 0 0 10px var(--microbe); transform: scaleX(1); }
 .fill-cond { background: #ff8a78; box-shadow: 0 0 10px #ff8a78; transform: scaleX(1); }
+.fill-food { background: #f2c94c; box-shadow: 0 0 10px #f2c94c; transform: scaleX(0); }
 .fill-inf { background: var(--biofilm); box-shadow: 0 0 10px var(--biofilm); }
 .bar-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
 .hud-note { margin: 0; font-size: 13px; color: var(--biofilm); }

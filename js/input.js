@@ -3,7 +3,7 @@
 (function () {
   const keys = new Set();
   const BACT_KEYS = { KeyW: 1, KeyA: 1, KeyS: 1, KeyD: 1 };
-  const BACT_ACTIONS = { KeyE: 'bact.colony', KeyQ: 'bact.burrow', KeyF: 'bact.hide', KeyT: 'bact.toxin' };
+  const BACT_ACTIONS = { KeyE: 'bact.colony', KeyQ: 'bact.burrow', KeyF: 'bact.hide', KeyT: 'bact.toxin', KeyR: 'bact.copy' };
   const MUT_KEYS = { Digit7: 'speed', Digit8: 'fever', Digit9: 'capsule', Digit0: 'toxins' };
   const DOC_KEYS = { Digit1: 'doc.antibodies', Digit2: 'doc.fever', Digit3: 'doc.abxA', Digit4: 'doc.abxB', Digit5: 'doc.antiviral' };
   // badania: Z CRP, X (albo B) posiew, C echo, V antybiogram

@@ -26,6 +26,8 @@
         b: { x: b.x, y: b.y, vx: b.vx, vy: b.vy, dir: b.dir, hp: b.hp, slowT: b.slowT, hitFlash: b.hitFlash, dead: b.dead, inTissue: b.inTissue, z: b.z,
           transit: b.transit ? { to: b.transit.to, t: b.transit.t, total: b.transit.total } : null },
         ab: s.antibodies.map((a) => ({ x: a.x, y: a.y, z: a.z, stuck: a.stuck, ox: a.ox, oy: a.oy, rot: a.rot, life: a.life, eff: a.eff })),
+        cp: (s.copies || []).map((c) => ({ id: c.id, x: c.x, y: c.y, dir: c.dir })),
+        fo: (s.food || []).map((f) => ({ id: f.id, x: f.x, y: f.y, z: f.z, kind: f.kind })),
         temp: s.doctor.temp
       });
       while (hist.length && hist[0].t < s.time - P.history) hist.shift();
@@ -43,7 +45,7 @@
     const ghost = {
       time: 0, phase: 0, contraction: 0, running: true, over: null,
       valves: H.VALVES.map((v) => ({ id: v.id, open: 0 })), leaflets: [], chords: [],
-      bact: null, antibodies: [], colonies: [], doctor: { temp: 36.6 }
+      bact: null, antibodies: [], colonies: [], copies: [], food: [], doctor: { temp: 36.6 }
     };
     function buildGhost(pair, live) {
       const { e0, e1, k } = pair;
@@ -65,6 +67,11 @@
         const y = e1.ab[i];
         return Object.assign({}, x, { x: lerp(x.x, y.x, k), y: lerp(x.y, y.y, k), rot: lerp(x.rot, y.rot, k) });
       });
+      g.copies = e0.cp.map((x) => {
+        const y = e1.cp.find((c) => c.id === x.id);
+        return y ? { id: x.id, x: lerp(x.x, y.x, k), y: lerp(x.y, y.y, k), dir: x.dir } : x;
+      });
+      g.food = e0.fo;
       g.colonies = live.colonies.filter((c) => c.born <= g.time);
       g.kind = live.kind;
       g.doctor.temp = e0.temp;

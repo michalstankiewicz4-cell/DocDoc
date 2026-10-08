@@ -11,6 +11,13 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-10-09
+### Dodane
+- **Pożywienie we krwi:** glukoza (białe kryształki), aminokwasy (bursztynowe kuleczki) i lipidy (żółte kropelki) płyną z prądem. Patogen zjada je, wpływając w nie, i napełnia pasek „Pożywienie” (+10 / +15 / +25 do 100).
+- **Rozmnożenie** (`R`): za pełny pasek pożywienia powstaje kopia patogenu (najwyżej 6), która dryfuje z prądem krwi.
+- **Kopie jako wabiki:** przeciwciało wybiera cel losowo spośród patogenu i kopii w zasięgu; trafiona kopia ginie razem z przeciwciałem.
+- Kopie na minimapie i w podglądzie lekarza, licznik kopii w HUD, nowe statystyki końcowe (zjedzone pożywienie, kopie, przeciwciała zwiedzione przez kopie).
+
 ## [0.18.0] - 2026-10-08
 ### Dodane
 - **Mecz z zamianą ról** w grze na 2 osoby: 2 rundy; po pierwszej przycisk „Rewanż z zamianą ról” zamienia graczy rolami (może go nacisnąć każdy z graczy), po drugiej „Nowy mecz”.
@@ -166,7 +173,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.18.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.15.0...v0.16.0

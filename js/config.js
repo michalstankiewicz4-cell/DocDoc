@@ -88,6 +88,14 @@ DD.CONFIG = {
   },
   toxins: { cooldown: 25, hpCost: 10, patientDamage: 6, distortion: 15 },  // T: stan pacjenta −6, badania zakłócone przez 15 s
 
+  // pożywienie we krwi: patogen zjada je, wpływając w nie; pełny pasek pożywienia pozwala się rozmnożyć (R)
+  food: {
+    count: 110, eatRadius: 0.6,
+    kinds: { glucose: 10, amino: 15, lipid: 25 }   // ile pożywienia daje każdy rodzaj
+  },
+  // kopie patogenu: wabiki dla przeciwciał (płyną z prądem, giną od jednego trafienia)
+  copies: { max: 6, cost: 100, swim: 2.5 },
+
   camera: { fov: 40, zoomMin: 7, zoomMax: 75, zoomStart: 17 },
 
   cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.18.0">
+<link rel="stylesheet" href="css/style.css?v=0.19.0">
 </head>
 <body>
 <main class="split">
@@ -41,9 +41,15 @@
         <span class="bar"><span id="h-cond" class="bar-fill fill-cond"></span></span>
         <span id="h-cond-val" class="bar-val">100%</span>
       </div>
+      <div class="bar-row">
+        <span class="bar-label">Pożywienie</span>
+        <span class="bar"><span id="h-food" class="bar-fill fill-food"></span></span>
+        <span id="h-food-val" class="bar-val">0</span>
+      </div>
       <p id="h-contact" class="hud-note" hidden></p>
       <ul class="chips">
         <li id="s-colonies" class="chip chip-res">Kolonie: <b id="s-colonies-n">0</b></li>
+        <li id="s-copies" class="chip chip-res">Kopie: <b id="s-copies-n">0</b>/<span id="s-copies-max">6</span></li>
         <li id="s-fever" class="chip chip-fever" hidden>Gorączka osłabia</li>
         <li id="s-slow" class="chip chip-slow" hidden>Antybiotyk spowalnia</li>
         <li id="s-ab" class="chip chip-ab" hidden>Przyczepione przeciwciała: <b id="s-ab-n">0</b></li>
@@ -63,6 +69,7 @@
       <span><kbd>E</kbd> kolonia</span>
       <span><kbd>Q</kbd> w ścianę</span>
       <span><kbd>F</kbd> ukrycie</span>
+      <span><kbd>R</kbd> rozmnóż</span>
       <span><kbd>kółko</kbd> przybliżenie</span>
       <button id="btn-sound" class="sound-btn" type="button"><kbd>M</kbd> <span id="sound-label">Dźwięk włączony</span></button>
     </div>
@@ -377,29 +384,29 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.18.0"></script>
-<script src="js/config.js?v=0.18.0"></script>
-<script src="js/heart-shape.js?v=0.18.0"></script>
-<script src="js/flow.js?v=0.18.0"></script>
-<script src="js/tissue-cells.js?v=0.18.0"></script>
-<script src="js/state.js?v=0.18.0"></script>
-<script src="js/input.js?v=0.18.0"></script>
-<script src="js/render/glsl.js?v=0.18.0"></script>
-<script src="js/render/tissue.js?v=0.18.0"></script>
-<script src="js/render/cells.js?v=0.18.0"></script>
-<script src="js/render/actors.js?v=0.18.0"></script>
-<script src="js/render/post.js?v=0.18.0"></script>
-<script src="js/render/biome.js?v=0.18.0"></script>
-<script src="js/render/view.js?v=0.18.0"></script>
-<script src="js/minimap.js?v=0.18.0"></script>
-<script src="js/audio.js?v=0.18.0"></script>
-<script src="js/doctor-ui.js?v=0.18.0"></script>
-<script src="js/patient-room.js?v=0.18.0"></script>
-<script src="js/doctor-cam.js?v=0.18.0"></script>
-<script src="js/net.js?v=0.18.0"></script>
-<script src="js/lobby.js?v=0.18.0"></script>
-<script src="js/match.js?v=0.18.0"></script>
-<script src="js/net-status.js?v=0.18.0"></script>
-<script src="js/main.js?v=0.18.0"></script>
+<script src="js/version.js?v=0.19.0"></script>
+<script src="js/config.js?v=0.19.0"></script>
+<script src="js/heart-shape.js?v=0.19.0"></script>
+<script src="js/flow.js?v=0.19.0"></script>
+<script src="js/tissue-cells.js?v=0.19.0"></script>
+<script src="js/state.js?v=0.19.0"></script>
+<script src="js/input.js?v=0.19.0"></script>
+<script src="js/render/glsl.js?v=0.19.0"></script>
+<script src="js/render/tissue.js?v=0.19.0"></script>
+<script src="js/render/cells.js?v=0.19.0"></script>
+<script src="js/render/actors.js?v=0.19.0"></script>
+<script src="js/render/post.js?v=0.19.0"></script>
+<script src="js/render/biome.js?v=0.19.0"></script>
+<script src="js/render/view.js?v=0.19.0"></script>
+<script src="js/minimap.js?v=0.19.0"></script>
+<script src="js/audio.js?v=0.19.0"></script>
+<script src="js/doctor-ui.js?v=0.19.0"></script>
+<script src="js/patient-room.js?v=0.19.0"></script>
+<script src="js/doctor-cam.js?v=0.19.0"></script>
+<script src="js/net.js?v=0.19.0"></script>
+<script src="js/lobby.js?v=0.19.0"></script>
+<script src="js/match.js?v=0.19.0"></script>
+<script src="js/net-status.js?v=0.19.0"></script>
+<script src="js/main.js?v=0.19.0"></script>
 </body>
 </html>

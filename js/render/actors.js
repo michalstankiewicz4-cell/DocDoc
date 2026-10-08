@@ -164,6 +164,29 @@
     colMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); colMesh.frustumCulled = false; colMesh.count = 0;
     scene.add(colMesh);
 
+    // --- pożywienie we krwi: glukoza (kryształki), aminokwasy (bursztynowe kuleczki), lipidy (żółte kropelki) ---
+    const foodMax = 200;
+    const FOOD_LOOK = {
+      glucose: { geo: new THREE.OctahedronGeometry(0.11, 0), mat: { albedo: 0xf4f7ff, sssCol: 0xd8e8ff, sss: 0.5, rough: 0.12, wet: 1.0, rim: 1.6, rimCol: 0xffffff, emit: 0x202630 } },
+      amino:   { geo: new THREE.IcosahedronGeometry(0.09, 1), mat: { albedo: 0xd98a2b, sssCol: 0xffb040, sss: 0.9, rough: 0.3, wet: 0.7, rim: 1.2, rimCol: 0xffd28a, emit: 0x2a1404 } },
+      lipid:   { geo: new THREE.SphereGeometry(0.13, 12, 8), mat: { albedo: 0xf2d25a, sssCol: 0xfff080, sss: 1.2, rough: 0.08, wet: 1.0, rim: 1.8, rimCol: 0xfff4b0, emit: 0x2a2204, alpha: 0.85 } }
+    };
+    const foodMesh = {};
+    for (const k in FOOD_LOOK) {
+      const m = new THREE.InstancedMesh(FOOD_LOOK[k].geo, surfMat(FOOD_LOOK[k].mat), foodMax);
+      m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.frustumCulled = false; m.count = 0;
+      scene.add(m); foodMesh[k] = m;
+    }
+
+    // --- kopie patogenu: te same siatki co oryginał (wabiki mają wyglądać identycznie) ---
+    const copyPool = [];
+    for (let i = 0; i < C.copies.max; i++) {
+      const cb = bact.clone(), cv = virus.clone();
+      cb.visible = cv.visible = false;
+      scene.add(cb); scene.add(cv);
+      copyPool.push({ b: cb, v: cv });
+    }
+
     // --- płatki zastawek ---
     // płatek: zakrzywiona błona od dna do brzegu przekroju, brzeg wolny falisty i niższy przy końcu
     const leafGeo = (function () {
@@ -240,6 +263,31 @@
       flagMat.uniforms.uSlow.value = A.bodyMat.uniforms.uSlow.value;
       const hpK = b.hp / C.bacteria.hp;
       bact.scale.setScalar(0.85 + 0.15 * hpK);
+
+      // pożywienie
+      const fc = { glucose: 0, amino: 0, lipid: 0 };
+      for (const f of s.food) {
+        const m = foodMesh[f.kind]; if (!m || fc[f.kind] >= foodMax) continue;
+        v.set(f.x, f.y, f.z || 0);
+        e.set(animT * 0.6 + f.id, animT * 0.4 + f.id * 1.7, 0); q.setFromEuler(e);
+        s3.setScalar(1 + 0.08 * Math.sin(animT * 3 + f.id));
+        m4.compose(v, q, s3); m.setMatrixAt(fc[f.kind]++, m4);
+      }
+      for (const k in foodMesh) { foodMesh[k].count = fc[k]; foodMesh[k].instanceMatrix.needsUpdate = true; }
+
+      // kopie patogenu
+      copyPool.forEach((P, i) => {
+        const c = s.copies[i];
+        P.b.visible = !!c && !isVirus; P.v.visible = !!c && isVirus;
+        if (!c) return;
+        if (isVirus) { P.v.position.set(c.x, c.y, 0); P.v.rotation.set(animT * 0.7 + c.id, animT * 0.45, animT * 0.3); P.v.scale.setScalar(1.6); }
+        else {
+          P.b.position.set(c.x, c.y, 0);
+          P.b.rotation.set(0, 0, c.dir - Math.PI / 2);
+          P.b.rotateY(Math.sin(animT * 3 + c.id) * 0.25);
+          P.b.scale.setScalar(1);
+        }
+      });
 
       // przeciwciała
       let n = 0;
