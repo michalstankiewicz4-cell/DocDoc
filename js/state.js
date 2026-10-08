@@ -111,9 +111,10 @@
       case 'game.start': {
         if (!H.START[cmd.organ]) return;   // narządy, w których można zacząć: serce, nerka, wątroba
         // cmd.kind: gatunek (C.species) albo dawne 'bacteria' / 'virus'
-        const species = G.speciesOf(cmd.kind || s.nextKind);
+        // bez wskazanego rodzaju: ostatni wybór gracza patogenu, a gdy go nie ma — rodzaj z poprzedniej rundy
+        const species = G.speciesOf(cmd.kind || s.nextKind || (s.running || s.over ? s.species : undefined));
         const kind = C.species[species].kind;
-        const nextKind = s.nextKind;
+        const nextKind = species;   // kolejna runda bez wyboru zostaje przy tym rodzaju
         Object.assign(s, G.create(), { running: true, organ: cmd.organ, kind, species, nextKind });
         { const st = H.START[cmd.organ]; s.bact.x = st.x; s.bact.y = st.y; }
         s.seed = (Math.random() * 4294967296) >>> 0;   // każda runda inna (liczy tylko host)

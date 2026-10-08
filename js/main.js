@@ -60,7 +60,7 @@
     });
     $('end-swap').addEventListener('click', () => DD.Match.swap());
     $('end-again').addEventListener('click', () => {
-      DD.send({ type: 'game.start', organ: state.organ || 'heart' });
+      DD.send({ type: 'game.start', organ: state.organ || 'heart', kind: N.role === 'doc' ? undefined : DD.chosenKind });
       $('end').hidden = true;
     });
 

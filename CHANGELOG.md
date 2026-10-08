@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.29.1] - 2026-10-09
+### Naprawione
+- „Zagraj jeszcze raz” zaczynało z innym patogenem (domyślną pałeczką okrężnicy), gdy wybór rodzaju pochodził z zapamiętanego ustawienia. Teraz nowa runda bierze wybrany rodzaj, a bez wyboru — rodzaj z poprzedniej rundy.
+
 ## [0.29.0] - 2026-10-09
 ### Dodane
 - **Start w wątrobie:** przycisk „Wątroba” na ekranie wyboru narządu; patogen zaczyna w żyle centralnej zrazika.
@@ -246,7 +250,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.1...HEAD
+[0.29.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.28.1...v0.29.0
 [0.28.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.28.0...v0.28.1
 [0.28.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.27.0...v0.28.0
