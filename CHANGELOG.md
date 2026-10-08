@@ -11,6 +11,18 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-08
+### Dodane
+- Zakładanie kolonii klawiszem `E` przy ścianie, kosztem 25 punktów życia patogenu.
+- Kolonie rosną same; kolonizacja to suma ich rozmiarów.
+- Żerowanie: kontakt ze ścianą odnawia życie patogenu.
+- Kolonie jako „życia”: zniszczony patogen odradza się po 3 s w największej kolonii, która traci część masy.
+- Przeciwciała atakują też kolonie, gdy patogenu nie ma w pobliżu. Antybiotyk wstrzymuje wzrost kolonii, gorączka go spowalnia.
+- Licznik kolonii w HUD, kolonie na minimapie wielkością odpowiadają rozmiarowi, nowe statystyki (założone i zniszczone kolonie, odrodzenia).
+### Zmienione
+- Lekarz wygrywa dopiero wtedy, gdy nie ma ani patogenu, ani kolonii.
+- Kolonizacja nie rośnie już od samego kontaktu ze ścianą, tylko z kolonii.
+
 ## [0.10.0] - 2026-10-08
 ### Dodane
 - Stan pacjenta (0–100%): spada od zakażenia, gorączki i skutków ubocznych leków, powoli wraca, dopóki kolonizacja jest mała.
@@ -89,7 +101,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.7.0...v0.8.0

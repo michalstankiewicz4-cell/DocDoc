@@ -3,12 +3,14 @@
 (function () {
   const keys = new Set();
   const BACT_KEYS = { KeyW: 1, KeyA: 1, KeyS: 1, KeyD: 1 };
+  const BACT_ACTIONS = { KeyE: 'bact.colony' };
   const DOC_KEYS = { KeyB: 'doc.test', Digit1: 'doc.antibodies', Digit2: 'doc.fever', Digit3: 'doc.slow' };
 
   window.addEventListener('keydown', (e) => {
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
     if (BACT_KEYS[e.code]) { keys.add(e.code); e.preventDefault(); }
     if (DOC_KEYS[e.code] && !e.repeat) DD.send({ type: DOC_KEYS[e.code] });
+    if (BACT_ACTIONS[e.code] && !e.repeat) DD.send({ type: BACT_ACTIONS[e.code] });
   });
   window.addEventListener('keyup', (e) => keys.delete(e.code));
   window.addEventListener('blur', () => keys.clear());

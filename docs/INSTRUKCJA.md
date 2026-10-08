@@ -13,7 +13,7 @@ Gra toczy się wewnątrz serca pacjenta, pokazanego w przekroju.
 | Kto | Wygrywa, gdy |
 | --- | --- |
 | Patogen | stan pacjenta spadnie do 0% (sepsa) |
-| Lekarz | życie patogenu spadnie do 0 |
+| Lekarz | nie zostanie ani patogen, ani żadna kolonia |
 
 ## Stan pacjenta
 
@@ -46,6 +46,7 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | Klawisz | Działanie |
 | --- | --- |
 | `W` `A` `S` `D` | ruch |
+| `E` | załóż kolonię (przy ścianie, kosztuje 25 życia) |
 | kółko myszy | przybliżenie i oddalenie kamery |
 | `M` | dźwięk włącz/wyłącz |
 
@@ -54,7 +55,11 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 - **Zastawki** otwierają się i zamykają w rytmie serca: trójdzielna i mitralna w rozkurczu, pnia płucnego i aorty w skurczu.
 - **Struny ścięgniste** w komorach są przeszkodami.
 - **Krwiobieg:** wypłynięcie pniem płucnym przenosi patogen przez płuca do lewego przedsionka, a aortą przez krążenie duże z powrotem do prawego przedsionka.
-- **Kolonizacja:** kontakt ze ścianą serca zwiększa kolonizację i co kilka procent tworzy widoczną kolonię (biofilm).
+- **Żerowanie:** gdy patogen dotyka ściany serca, odzyskuje życie.
+- **Kolonie:** przy ścianie `E` zakłada kolonię za 25 punktów życia. Kolonia rośnie sama, a suma rozmiarów kolonii to kolonizacja, która obciąża pacjenta.
+  - Antybiotyk wstrzymuje wzrost kolonii, a gorączka go spowalnia.
+  - Przeciwciała, które nie mają w pobliżu patogenu, atakują kolonie.
+- **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii, która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
 
 ### Ekran
 - **Lewy dolny róg:** życie, kolonizacja i aktywne efekty (gorączka, antybiotyk, przyczepione przeciwciała, oporność).

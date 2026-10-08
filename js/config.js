@@ -22,9 +22,12 @@ DD.CONFIG = {
     start: { x: -29, y: 34 } // żyła główna górna, wlot do prawego przedsionka
   },
 
-  infection: {
-    ratePerSec: 2.0,    // % kolonizacji na sekundę kontaktu z tkanką
-    colonyEvery: 6      // co ile % powstaje widoczna kolonia
+  // kolonie: zakładane klawiszem E przy ścianie kosztem życia; rosną same; kolonizacja = suma rozmiarów * infectionPerSize
+  colony: {
+    cost: 25, cooldown: 2, startSize: 0.25, growth: 0.022, infectionPerSize: 20,
+    feed: 3.5,                                   // życie/s odzyskiwane przy kontakcie ze ścianą
+    respawnDelay: 3, respawnHp: 60, respawnCost: 0.3,
+    abDamage: 0.12                               // ile rozmiaru kolonii zabiera jedno przeciwciało
   },
 
   doctor: {

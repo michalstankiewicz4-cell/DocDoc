@@ -186,7 +186,7 @@
       animT += dt;
       const b = s.bact;
       // bakteria
-      bact.visible = !b.transit;
+      bact.visible = !b.transit && !b.dead;
       bact.position.set(b.x, b.y, 0);
       bact.rotation.set(0, 0, b.dir - Math.PI / 2);
       bact.rotateY(Math.sin(animT * 3) * 0.25);
@@ -217,7 +217,7 @@
       // kolonie: każda kolonia = skupisko kulek na ścianie
       n = 0;
       for (const c of s.colonies) {
-        const grow = Math.min(1, (s.time - c.born) * 0.5);
+        const grow = Math.min(1, (s.time - c.born) * 0.5) * (0.45 + 0.9 * (c.size ?? 1));
         for (let k = 0; k < 9 && n < colMax; k++) {
           const h1 = Math.sin(c.seed * 91.7 + k * 12.9898) * 43758.5453, r1 = h1 - Math.floor(h1);
           const h2 = Math.sin(c.seed * 37.1 + k * 78.233) * 12345.678, r2 = h2 - Math.floor(h2);

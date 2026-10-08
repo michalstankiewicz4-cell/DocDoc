@@ -81,7 +81,9 @@
         'end-stats-bact': [
           ['Przebyta droga', num(S.distance) + ' j.'],
           ['Najwyższa kolonizacja', Math.floor(S.maxInfection || 0) + '%'],
-          ['Kolonie', String(s.colonies.length)],
+          ['Założone kolonie', String(S.coloniesFounded || 0)],
+          ['Zniszczone kolonie', String(S.coloniesLost || 0)],
+          ['Odrodzenia', String(S.deaths || 0)],
           ['Czas przy ścianie', num(S.contactTime) + ' s'],
           ['Przejścia przez zastawki', String(S.valveCrossings || 0)],
           ['Krążenie płucne / duże', `${S.lungsTrips || 0} / ${S.bodyTrips || 0}`],
@@ -184,7 +186,16 @@
       $('h-hp-val').textContent = Math.ceil(b.hp);
       $('h-inf').style.transform = `scaleX(${b.infection / 100})`;
       $('h-inf-val').textContent = Math.floor(b.infection) + '%';
-      $('h-contact').hidden = !b.contact || !!b.transit;
+      const K = C.colony;
+      const canFound = b.contact && !b.transit && !b.dead;
+      $('h-contact').hidden = !canFound;
+      if (canFound) {
+        $('h-contact').textContent = (b.feeding ? 'Żerujesz na tkance, życie wraca. ' : 'Przy ścianie. ')
+          + (b.colonyCd > 0 ? `Kolonia możliwa za ${Math.ceil(b.colonyCd)} s.` : b.hp > K.cost + 1 ? `E zakłada kolonię (−${K.cost} życia).` : 'Za mało życia na kolonię.');
+      }
+      $('s-colonies-n').textContent = s.colonies.length;
+      $('respawn').hidden = !(b.dead > 0);
+      if (b.dead > 0) $('respawn-t').textContent = Math.ceil(b.dead);
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;
       $('s-fever').hidden = !(d.temp > 37.4);
       $('s-slow').hidden = !(b.slowT > 0);
@@ -204,7 +215,7 @@
         end.hidden = false;
         $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : 'Wygrywa bakteria';
         $('end-text').textContent = s.over === 'doctor'
-          ? `Bakteria zniszczona po ${mmss(s.time)}. Kolonizacja zatrzymana na ${Math.floor(b.infection)}%.`
+          ? `Zakażenie wyleczone po ${mmss(s.time)}: nie ma ani bakterii, ani kolonii.`
           : `Pacjent w sepsie po ${mmss(s.time)}. Bakterii zostało ${Math.ceil(b.hp)} punktów życia.`;
         renderStats(s);
         $('end-again').focus();

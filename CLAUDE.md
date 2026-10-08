@@ -49,7 +49,7 @@ Gotowe:
 - Minimapa, dźwięk bicia serca, tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia.
 - Wersjonowanie, CHANGELOG, automatyczne wydania, dokumentacja.
 
-Warunki wygranej: patogen — stan pacjenta 0% (sepsa), lekarz — życie patogenu 0.
+Warunki wygranej: patogen — stan pacjenta 0% (sepsa), lekarz — brak patogenu i kolonii.
 
 ## Lista zadań (zlecone przez Michała, kolejność od najłatwiejszego)
 
@@ -62,7 +62,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Dźwięk lekarza: szpitalne „beep”
 - [x] Dźwięk patogenu: przytłumiony jak pod wodą, bicie serca, czasem kaszel
 - [x] Stan pacjenta jako trzeci wskaźnik (patogen wygrywa przez sepsę), skutki uboczne leków
-- [ ] Kolonie jako „życia” patogenu + zakładanie kolonii kosztem % zdrowia, dodatkowe wskaźniki
+- [x] Kolonie jako „życia” patogenu + zakładanie kolonii kosztem % zdrowia, dodatkowe wskaźniki
 - [ ] Nowe badania: CRP (szybkie), posiew (dokładny), echo serca (pokazuje kolonie), antybiogram
 - [ ] Wybór patogenu: bakteria albo wirus; klasy antybiotyków
 - [ ] Przejście przez ścianę naczyń do tkanki (nowy, ładny biom), ukryte kolonie, z których odradza się patogen; lekarz musi je wykryć
@@ -79,4 +79,5 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 
 - Kod zaproszenia nie sprawdza zgodności wersji gry między graczami.
 - Stan pacjenta: liczby w `config.patient` (spadek od kolonizacji, gorączki, koszt dawek, regeneracja poniżej 40% kolonizacji).
+- Kolonie (`config.colony`): koszt 25 życia, wzrost ~45 s do pełnego rozmiaru, odrodzenie w największej kolonii, żerowanie przy ścianie odnawia życie. Przeciwciała atakują kolonie, antybiotyk wstrzymuje ich wzrost.
 - Kaszel: szansa na sekundę rośnie z kolonizacją (`config.cough`), tylko dźwięk, bez wpływu na rozgrywkę.

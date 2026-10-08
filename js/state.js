@@ -14,7 +14,7 @@
       valves: H.VALVES.map(v => ({ id: v.id, open: 0 })),
       bact: {
         x: B.start.x, y: B.start.y, vx: 0, vy: 0, fx: 0, fy: 0, dir: -Math.PI / 2,
-        ix: 0, iy: 0, hp: B.hp, infection: 0, nextColony: C.infection.colonyEvery,
+        ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
         resist: { antibodies: 0, fever: 0, slow: 0 }
@@ -28,7 +28,8 @@
       // stan pacjenta 0..100: zakażenie i leczenie go obniżają, organizm powoli się regeneruje; 0 = sepsa
       patient: { cond: 100 },
       antibodies: [],
-      colonies: [],
+      colonies: [],    // kolonie patogenu: { x, y, nx, ny, born, seed, size 0..1 }
+      nextColonyId: 1,
       chords: [],      // geometria strun ścięgnistych (liczona co krok, wspólna dla kolizji i renderu)
       leaflets: [],    // płatki zastawek
       log: [],
@@ -40,7 +41,8 @@
         abHits: 0, dmgAntibodies: 0, dmgFever: 0,
         tests: 0, firstTestAt: -1, firstTreatAt: -1,
         used: { antibodies: 0, fever: 0, slow: 0 },
-        minCond: 100, condByInfection: 0, condByTreatment: 0
+        minCond: 100, condByInfection: 0, condByTreatment: 0,
+        coloniesFounded: 0, coloniesLost: 0, deaths: 0
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0          // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
@@ -87,8 +89,9 @@
         s.bact.iy = Math.max(-1, Math.min(1, cmd.y));
         return;
     }
-    if (!s.running) return;
+    if (!s.running || s.over) return;
     switch (cmd.type) {
+      case 'bact.colony': foundColony(s); return;
       case 'doc.test':
         if (d.test.state === 'running' || d.test.cd > 0) return;
         d.test.state = 'running'; d.test.t = D.testDuration; d.test.sampleT = s.time; // chwila pobrania krwi
@@ -117,6 +120,17 @@
         return;
     }
   };
+
+  // założenie kolonii przy ścianie kosztem życia patogenu
+  function foundColony(s) {
+    const b = s.bact, K = C.colony;
+    if (b.dead || b.transit || !b.contact || b.colonyCd > 0 || b.hp <= K.cost + 1) return;
+    b.hp -= K.cost; b.colonyCd = K.cooldown;
+    H.grad(b.x, b.y, g2);
+    const sd = H.sample(b.x, b.y);
+    s.colonies.push({ id: s.nextColonyId++, x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize });
+    s.stats.coloniesFounded++;
+  }
 
   function spawnAntibodies(s, eff) {
     // lek podany dożylnie miesza się z krwią: przeciwciała pojawiają się w całym krwiobiegu serca
@@ -249,10 +263,30 @@
       ST.minCond = Math.min(ST.minCond, s.patient.cond);
     }
 
+    // --- kolonie: rosną same; antybiotyk wstrzymuje wzrost, gorączka go spowalnia ---
+    const K = C.colony;
+    const grow = K.growth * (b.slowT > 0 ? 0 : 1) * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul));
+    let mass = 0;
+    for (const c of s.colonies) { c.size = Math.min(1, c.size + grow * dt); mass += c.size; }
+    b.infection = Math.min(100, mass * K.infectionPerSize);
+    s.stats.maxInfection = Math.max(s.stats.maxInfection, b.infection);
+
     // --- bakteria ---
     b.hitFlash = Math.max(0, b.hitFlash - dt * 2.5);
     if (b.slowT > 0) b.slowT = Math.max(0, b.slowT - dt);
-    if (b.transit) {
+    if (b.colonyCd > 0) b.colonyCd = Math.max(0, b.colonyCd - dt);
+    if (b.dead > 0) {
+      // odrodzenie w największej kolonii
+      b.dead = Math.max(0, b.dead - dt);
+      if (b.dead === 0 && s.colonies.length) {
+        let best = s.colonies[0];
+        for (const c of s.colonies) if (c.size > best.size) best = c;
+        b.x = best.x - best.nx * 0.6; b.y = best.y - best.ny * 0.6; b.vx = b.vy = 0;
+        b.hp = K.respawnHp; b.transit = null;
+        best.size -= K.respawnCost;
+        if (best.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(best), 1); s.stats.coloniesLost++; }
+      }
+    } else if (b.transit) {
       b.transit.t -= dt;
       if (b.transit.t <= 0) {
         const opts = H.INLETS[b.transit.to];
@@ -292,16 +326,9 @@
         if (side) s.valveSide[i] = side; else if (Math.abs(along) >= 3) s.valveSide[i] = 0;
       });
       if (b.contact) ST.contactTime += dt;
-      ST.maxInfection = Math.max(ST.maxInfection, b.infection);
-      if (b.contact) {
-        b.infection = Math.min(100, b.infection + C.infection.ratePerSec * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul)) * dt);
-        if (b.infection >= b.nextColony) {
-          b.nextColony += C.infection.colonyEvery;
-          H.grad(b.x, b.y, g2);
-          const sd = H.sample(b.x, b.y);
-          s.colonies.push({ x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s) });
-        }
-      }
+      // żerowanie na tkance odnawia życie
+      b.feeding = b.contact && b.hp < B.hp;
+      if (b.feeding) b.hp = Math.min(B.hp, b.hp + K.feed * dt);
       if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * dt; b.hp -= fd; ST.dmgFever += fd; }
 
       for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
@@ -323,10 +350,27 @@
       if (a.stuck) { a.x = b.x + a.ox; a.y = b.y + a.oy; continue; }
       F.velocity(a.x, a.y, s.time, s.phase, fv);
       let vx = fv[0] * 0.9, vy = fv[1] * 0.9;
+      const alive = !b.transit && !b.dead;
       const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy);
-      if (!b.transit && dist < A.homingRadius) {
-        const k = A.speed * (1 - dist / A.homingRadius * 0.5);
-        vx += dx / dist * k; vy += dy / dist * k;
+      // cel: patogen, a jeśli go nie ma w pobliżu — najbliższa kolonia
+      let tx = 0, ty = 0, td = 1e9, col = null;
+      if (alive && dist < A.homingRadius) { tx = dx; ty = dy; td = dist; }
+      else {
+        for (const c of s.colonies) {
+          const cx = c.x - a.x, cy = c.y - a.y, cd = Math.hypot(cx, cy);
+          if (cd < A.homingRadius && cd < td) { tx = cx; ty = cy; td = cd; col = c; }
+        }
+      }
+      if (td < A.homingRadius) {
+        const k = A.speed * (1 - td / A.homingRadius * 0.5);
+        vx += tx / td * k; vy += ty / td * k;
+      }
+      if (col && td < 0.6 + col.size * 0.5) {
+        col.size -= K.abDamage * (a.eff ?? 1);
+        s.stats.abHits++;
+        if (col.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(col), 1); s.stats.coloniesLost++; }
+        s.antibodies.splice(i, 1);
+        continue;
       }
       a.x += vx * dt; a.y += vy * dt;
       collideLeaflets(s, a, 0.2);
@@ -334,7 +378,7 @@
       for (const ex of H.EXITS) if (ex.test(a.x, a.y)) {
         const p = H.INLETS[ex.to][Math.floor(rnd(s) * 2)]; a.x = p.x; a.y = p.y;
       }
-      if (!b.transit && dist < B.radius + 0.4) {
+      if (alive && dist < B.radius + 0.4) {
         a.stuck = true; a.ox = a.x - b.x; a.oy = a.y - b.y; a.life = Math.min(a.life, 8);
         b.hp -= A.damage * (a.eff ?? 1); b.hitFlash = 0.4 + 0.6 * (a.eff ?? 1);
         s.stats.abHits++; s.stats.dmgAntibodies += A.damage * (a.eff ?? 1);
@@ -342,7 +386,12 @@
     }
 
     // --- koniec gry ---
-    if (b.hp <= 0) { b.hp = 0; s.over = 'doctor'; log(s, 'sys', 'Bakteria zniszczona. Wygrywa lekarz.'); }
+    if (b.hp <= 0 && !b.dead) {
+      b.hp = 0; s.stats.deaths++;
+      for (let i = s.antibodies.length - 1; i >= 0; i--) if (s.antibodies[i].stuck) s.antibodies.splice(i, 1);
+      if (s.colonies.length) b.dead = K.respawnDelay;
+    }
+    if (b.hp <= 0 && !s.colonies.length) { s.over = 'doctor'; log(s, 'sys', 'Zakażenie wyleczone: nie ma ani bakterii, ani kolonii. Wygrywa lekarz.'); }
     else if (s.patient.cond <= 0) { s.patient.cond = 0; s.over = 'bacteria'; log(s, 'sys', 'Sepsa: stan pacjenta krytyczny. Wygrywa bakteria.'); }
   };
 

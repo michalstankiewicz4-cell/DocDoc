@@ -48,7 +48,7 @@
 
       // kolonie
       ctx.fillStyle = '#c6e66a';
-      for (const c of s.colonies) { ctx.beginPath(); ctx.arc(toX(c.x), toY(c.y), 2.2, 0, 6.283); ctx.fill(); }
+      for (const c of s.colonies) { ctx.beginPath(); ctx.arc(toX(c.x), toY(c.y), 1.6 + 2.6 * (c.size ?? 1), 0, 6.283); ctx.fill(); }
 
       // kadr kamery
       if (view) {
