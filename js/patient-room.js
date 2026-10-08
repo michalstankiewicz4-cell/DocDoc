@@ -36,6 +36,8 @@
       if (m.right > 0.2) list.push(['Kaszel', 'warm']);
       if (m.left > 0.35) list.push(['Zaburzenia rytmu serca', m.left > 0.9 ? 'high' : 'warm']);
       if (m.legs > 0.25) list.push(['Obrzęk nóg', 'warm']);
+      if (m.liver > 0.3) list.push(['Żółtaczka', m.liver > 0.9 ? 'high' : 'warm']);
+      if (m.kidney > 0.3) list.push(['Krew w moczu', m.kidney > 0.9 ? 'high' : 'warm']);
       if (cond < 55) list.push(['Bladość', cond < 30 ? 'high' : 'warm']);
       if (cond < 25) list.push(['Sinica', 'high']);
       return list;
@@ -92,17 +94,30 @@
 
       // łóżko
       ctx.fillStyle = '#a7b5b0'; ctx.fillRect(110, 150, 320, 10); ctx.fillRect(116, 160, 6, 40); ctx.fillRect(418, 160, 6, 40);
+      // worek na mocz przy łóżku: krew w moczu, gdy kolonie siedzą w nerce
+      { const hem = m.kidney > 0.3 ? clamp((m.kidney - 0.3) / 0.6, 0.3, 1) : 0;
+        const urine = rgb(mix([236, 214, 118], [168, 34, 36], hem));
+        ctx.strokeStyle = 'rgba(200, 210, 200, 0.95)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(300, 150); ctx.bezierCurveTo(310, 176, 336, 170, 344, 172); ctx.stroke();
+        ctx.strokeStyle = urine; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(301, 152); ctx.bezierCurveTo(311, 176, 336, 170, 344, 172); ctx.stroke();
+        ctx.fillStyle = '#8a9a95'; ctx.fillRect(338, 160, 26, 3);                       // wieszak na ramie łóżka
+        ctx.fillStyle = 'rgba(235, 242, 240, 0.9)'; roundRect(340, 164, 22, 30, 4); ctx.fill();
+        ctx.fillStyle = urine; roundRect(341, 176, 20, 17, 3); ctx.fill();
+        ctx.strokeStyle = '#9fb0aa'; ctx.lineWidth = 0.8; for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.moveTo(343, 170 + k * 7); ctx.lineTo(348, 170 + k * 7); ctx.stroke(); } }
       ctx.fillStyle = '#7f8f8a'; ctx.fillRect(104, 112, 8, 88); ctx.fillRect(428, 128, 8, 72);
       ctx.fillStyle = '#f4f7f6'; roundRect(112, 134, 316, 20, 6); ctx.fill();
       ctx.fillStyle = '#ffffff'; roundRect(118, 118, 62, 22, 10); ctx.fill();   // poduszka
 
       // pacjent: skóra zależna od stanu i gorączki
       // bladość przy złym stanie, zaczerwienienie przy gorączce
-      const skin = rgb(mix(mix([232, 184, 156], [214, 207, 200], (60 - cond) / 50), [240, 144, 128], feverK * 0.7));
+      // żółtaczka: kolonie w wątrobie barwią skórę na żółto
+      const jaund = m.liver > 0.3 ? clamp((m.liver - 0.3) / 0.6, 0.25, 1) : 0;
+      const skin = rgb(mix(mix(mix([232, 184, 156], [214, 207, 200], (60 - cond) / 50), [240, 144, 128], feverK * 0.7), [222, 196, 96], jaund * 0.75));
       const headY = 118 - cough * 6, headX = 150 + cough * 2;
       ctx.fillStyle = skin; ctx.beginPath(); ctx.ellipse(headX, headY, 17, 15, 0, 0, 6.283); ctx.fill();
       ctx.fillStyle = '#5b4436'; ctx.beginPath(); ctx.ellipse(headX - 6, headY - 7, 13, 9, -0.3, 0, 6.283); ctx.fill();
       ctx.strokeStyle = '#6b4a3c'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(headX + 5, headY - 1); ctx.lineTo(headX + 10, headY - 1); ctx.stroke();
+      if (jaund > 0) { ctx.fillStyle = `rgba(230, 200, 60, ${0.5 + jaund * 0.5})`; ctx.beginPath(); ctx.ellipse(headX + 7.5, headY + 1.6, 2.4, 1.2, 0, 0, 6.283); ctx.fill(); }   // żółte białka oczu
       ctx.strokeStyle = cond < 25 ? '#6a7fb8' : '#b56a62'; ctx.beginPath();
       if (coughT > 0 || rr > 26) ctx.ellipse(headX + 13, headY + 7, 2.5, 2 + Math.abs(cough) * 2, 0, 0, 6.283);
       else { ctx.moveTo(headX + 9, headY + 8); ctx.lineTo(headX + 14, headY + 8); }

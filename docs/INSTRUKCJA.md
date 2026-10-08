@@ -90,7 +90,7 @@ Rodzaje w obrębie bakterii albo wirusów różnią się tylko wyglądem i wraż
   - **tętnica krezkowa górna** prowadzi przez jelita do **żyły wrotnej**, która też wpływa do wątroby,
   - **tętnica nerkowa** prowadzi do **nerki**: tętnice międzypłatowe między piramidami, tętnica łukowata na granicy kory i rdzenia, kłębuszki w korze, dalej żyły międzypłatowe i żyła nerkowa do żyły głównej dolnej,
   - dół aorty brzusznej prowadzi przez nogi do żyły głównej dolnej, która płynie w górę przez wątrobę do prawego przedsionka.
-  - W jamie brzusznej można zakładać kolonie i żerować, ale nie można wnikać w ścianę (`Q` działa tylko w sercu). Echo serca nie widzi kolonii w jamie brzusznej.
+  - W jamie brzusznej można zakładać kolonie i żerować, ale nie można wnikać w ścianę (`Q` działa tylko w sercu). Echo serca nie widzi kolonii w jamie brzusznej. Kolonie w wątrobie dają żółtaczkę, a w nerce krew w moczu.
 - **Żerowanie:** gdy patogen dotyka ściany serca, odzyskuje życie.
 - **Kolonie:** przy ścianie `E` zakłada kolonię za 25 punktów życia. Kolonia rośnie sama, a suma rozmiarów kolonii to kolonizacja, która obciąża pacjenta.
   - Antybiotyk wstrzymuje wzrost kolonii, a gorączka go spowalnia.
@@ -163,6 +163,8 @@ Każdą akcję można też kliknąć w panelu.
    | kaszel, duszność | kolonie w prawym sercu (krążenie płucne) albo zły stan pacjenta |
    | zaburzenia rytmu (dodatkowe, szerokie pobudzenia na EKG) | kolonie w lewym sercu |
    | obrzęk nóg | kolonie przy żyle głównej dolnej |
+   | żółtaczka (żółta skóra i białka oczu) | kolonie w wątrobie |
+   | krew w moczu (czerwony mocz w worku przy łóżku) | kolonie w nerce |
    | gorączka i poty | temperatura od 37,8 °C |
    | bladość, sinica | stan pacjenta poniżej 55% / 25% |
 
