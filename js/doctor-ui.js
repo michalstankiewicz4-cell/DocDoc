@@ -10,6 +10,12 @@
     { cmd: 'doc.slow',       key: '3', cd: 'slow',       name: 'Antybiotyk',   desc: 'Wlew bakteriostatyczny. Bakteria porusza się wolniej.' }
   ];
   const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, slow: D.slow.cooldown };
+  const TESTS = [
+    { kind: 'crp', key: 'Z', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
+    { kind: 'culture', key: 'X', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
+    { kind: 'echo', key: 'C', name: 'Echo serca', desc: 'Położenie i wielkość kolonii na ścianach.' },
+    { kind: 'abg', key: 'V', name: 'Antybiogram', desc: 'Wrażliwość na leczenie. Wymaga dodatniego posiewu.' }
+  ];
 
   DD.createUI = function () {
     const actionsEl = $('actions');
@@ -22,7 +28,53 @@
       actionsEl.appendChild(b);
       btns[a.cd] = b;
     }
-    $('btn-test').addEventListener('click', () => DD.send({ type: 'doc.test' }));
+    const testBtns = {};
+    for (const t of TESTS) {
+      const b = document.createElement('button');
+      b.className = 'test-btn'; b.id = 'test-' + t.kind; b.type = 'button';
+      b.innerHTML = `<span class="test-bar" aria-hidden="true"><span></span></span><span class="test-row"><span class="test-name">${t.name}</span><kbd>${t.key}</kbd></span><span class="test-desc">${t.desc}</span><span class="test-state"></span>`;
+      b.addEventListener('click', () => DD.send({ type: 'doc.test', kind: t.kind }));
+      $('tests').appendChild(b);
+      testBtns[t.kind] = b;
+    }
+
+    // obraz echa: wycinek wachlarza jak w USG, ściany serca z SDF, kolonie jako jasne ogniska
+    const echoC = $('res-echo-c'), echoCtx = echoC.getContext('2d');
+    let echoBg = null;
+    function drawEcho(res) {
+      const W = C.world, H = DD.Heart;
+      const w = 240, h = 232, pr = Math.min(2, window.devicePixelRatio || 1);
+      echoC.width = w * pr; echoC.height = h * pr; echoC.style.width = w + 'px'; echoC.style.height = h + 'px';
+      const ctx = echoCtx; ctx.setTransform(pr, 0, 0, pr, 0, 0);
+      if (!echoBg) {
+        echoBg = document.createElement('canvas'); echoBg.width = w; echoBg.height = h;
+        const b = echoBg.getContext('2d'), img = b.createImageData(w, h);
+        for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+          const x = W.minX + (i + 0.5) / w * (W.maxX - W.minX), y = W.maxY - (j + 0.5) / h * (W.maxY - W.minY);
+          const d = H.sample(x, y), k = (j * w + i) * 4;
+          // krew ciemna, ściany jasne (echogeniczne), ziarno plamkowe jak w USG
+          const speck = Math.random();
+          let v = d < 0 ? 18 + speck * 18 : d < 8 ? 120 + speck * 90 - d * 6 : 30 + speck * 25;
+          img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
+        }
+        b.putImageData(img, 0, 0);
+      }
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
+      ctx.save();
+      // wachlarz głowicy
+      ctx.beginPath(); ctx.moveTo(w / 2, -30); ctx.arc(w / 2, -30, h * 1.2, Math.PI * 0.16, Math.PI * 0.84); ctx.closePath(); ctx.clip();
+      ctx.drawImage(echoBg, 0, 0);
+      for (const [x, y, size] of res.colonies) {
+        const px = (x - W.minX) / (W.maxX - W.minX) * w, py = (W.maxY - y) / (W.maxY - W.minY) * h;
+        const r = 2.5 + size * 5;
+        const g = ctx.createRadialGradient(px, py, 0, px, py, r * 1.8);
+        g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.5, 'rgba(255,255,255,0.7)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, r * 1.8, 0, 6.283); ctx.fill();
+      }
+      ctx.restore();
+      ctx.fillStyle = 'rgba(160, 220, 255, 0.85)'; ctx.font = '11px system-ui, sans-serif';
+      ctx.fillText('P', 6, 14); ctx.fillText('L', w - 14, 14);
+    }
 
     // EKG
     const ecg = $('ecg'), ctx = ecg.getContext('2d');
@@ -91,7 +143,7 @@
           ['Najmniej życia', Math.max(0, Math.ceil(S.minHp ?? 0)) + ' pkt']
         ],
         'end-stats-doc': [
-          ['Badania krwi', String(S.tests || 0)],
+          ['Zlecone badania', String(S.tests || 0)],
           ['Pierwsze badanie', at(S.firstTestAt)],
           ['Pierwsze leczenie', at(S.firstTreatAt)],
           ['Podane przeciwciała', String(used.antibodies || 0)],
@@ -110,6 +162,40 @@
       }
     }
 
+    // karty wyników (tylko gdy przyszedł nowy wynik)
+    let shownSeq = -1;
+    function renderResults(s) {
+      const d = s.doctor;
+      if (d.resultSeq === shownSeq) return;
+      shownSeq = d.resultSeq;
+      const T = d.tests;
+      $('results-block').hidden = !(T.crp.res || T.culture.res || T.echo.res || T.abg.res);
+      const time = (el, t) => { el.querySelector('.res-time').textContent = 'pobranie ' + mmss(t.sampleT); };
+      if (T.crp.res) {
+        $('res-crp').hidden = false; time($('res-crp'), T.crp);
+        const v = T.crp.res.value;
+        $('res-crp-v').textContent = v;
+        $('res-crp-l').textContent = v < 10 ? 'W normie' : v < 50 ? 'Podwyższone' : v < 150 ? 'Wysokie' : 'Bardzo wysokie';
+      } else $('res-crp').hidden = true;
+      if (T.culture.res) {
+        $('res-culture').hidden = false; time($('res-culture'), T.culture);
+        const r = T.culture.res;
+        $('res-culture-v').textContent = r.positive ? `Dodatni, kolonizacja ${r.infection}%` : 'Ujemny';
+      } else $('res-culture').hidden = true;
+      if (T.echo.res) {
+        $('res-echo').hidden = false; time($('res-echo'), T.echo);
+        drawEcho(T.echo.res);
+        const n = T.echo.res.colonies.length;
+        $('res-echo-l').textContent = n ? `Ogniska na ścianach: ${n}` : 'Bez widocznych zmian';
+      } else $('res-echo').hidden = true;
+      if (T.abg.res) {
+        $('res-abg').hidden = false; time($('res-abg'), T.abg);
+        const lbl = (r) => r < 0.2 ? ['wrażliwa', 'ok'] : r < 0.5 ? ['średnio wrażliwa', 'warm'] : ['oporna', 'high'];
+        const rows = [['Przeciwciała', T.abg.res.antibodies], ['Gorączka', T.abg.res.fever], ['Antybiotyk', T.abg.res.slow]];
+        $('res-abg-l').innerHTML = rows.map(([k, r]) => { const [t, c] = lbl(r); return `<div><dt>${k}</dt><dd data-state="${c}">${t}, skuteczność ${Math.round((1 - r) * 100)}%</dd></div>`; }).join('');
+      } else $('res-abg').hidden = true;
+    }
+
     function update(s) {
       const d = s.doctor, b = s.bact;
       drawEcg(s);
@@ -117,12 +203,12 @@
       $('v-hr').textContent = C.bpm;
       $('v-temp').textContent = fmt(d.temp);
       $('vital-temp').dataset.state = d.temp > 38 ? 'high' : d.temp > 37.2 ? 'warm' : 'ok';
-      if (d.knownInfection == null) {
+      if (d.estInfection == null) {
         $('v-inf').textContent = '—';
-        $('v-inf-note').textContent = 'zleć badanie krwi';
+        $('v-inf-note').textContent = 'zleć badanie';
       } else {
-        $('v-inf').textContent = d.knownInfection + '%';
-        $('v-inf-note').textContent = 'stan sprzed ' + mmss(s.time - (d.resultTime ?? s.time));
+        $('v-inf').textContent = (d.estExact ? '' : '≈') + d.estInfection + '%';
+        $('v-inf-note').textContent = (d.estExact ? 'posiew, ' : 'z CRP, ') + 'stan sprzed ' + mmss(s.time - (d.estT ?? s.time));
       }
       const cond = Math.max(0, s.patient.cond);
       $('v-cond').textContent = Math.ceil(cond);
@@ -130,24 +216,31 @@
       $('v-cond-note').textContent = cond < 30 ? 'krytyczny, grozi sepsa' : cond < 65 ? 'pogarsza się' : 'stabilny';
       $('h-cond').style.transform = `scaleX(${cond / 100})`;
       $('h-cond-val').textContent = Math.ceil(cond) + '%';
-      $('vital-inf').dataset.state = d.knownInfection == null ? 'unknown' : d.knownInfection > 50 ? 'high' : 'warm';
+      $('vital-inf').dataset.state = d.estInfection == null ? 'unknown' : d.estInfection > 50 ? 'high' : 'warm';
       $('clock').textContent = mmss(s.time);
 
-      // badanie
-      const tb = $('btn-test'), bar = $('test-bar');
-      if (d.test.state === 'running') {
-        tb.disabled = true;
-        $('test-label').textContent = `Badanie w toku, wynik za ${Math.ceil(d.test.t)} s`;
-        bar.style.transform = `scaleX(${1 - d.test.t / D.testDuration})`;
-      } else if (d.test.cd > 0) {
-        tb.disabled = true;
-        $('test-label').textContent = `Kolejne badanie za ${Math.ceil(d.test.cd)} s`;
-        bar.style.transform = 'scaleX(1)';
-      } else {
-        tb.disabled = !s.running || !!s.over;
-        $('test-label').textContent = d.unlocked ? 'Powtórz badanie krwi' : 'Zleć badanie krwi';
-        bar.style.transform = 'scaleX(0)';
+      // badania
+      const cultPos = d.tests.culture.res && d.tests.culture.res.positive;
+      for (const t of TESTS) {
+        const T = d.tests[t.kind], el = testBtns[t.kind], cfg = D.tests[t.kind];
+        const bar = el.querySelector('.test-bar span'), st = el.querySelector('.test-state');
+        const needCulture = t.kind === 'abg' && !cultPos;
+        if (T.state === 'running') {
+          el.disabled = true; el.dataset.state = 'running';
+          st.textContent = `W toku, wynik za ${Math.ceil(T.t)} s`;
+          bar.style.transform = `scaleX(${1 - T.t / cfg.duration})`;
+        } else if (T.cd > 0) {
+          el.disabled = true; el.dataset.state = 'cooldown';
+          st.textContent = `Kolejne za ${Math.ceil(T.cd)} s`;
+          bar.style.transform = 'scaleX(0)';
+        } else {
+          el.disabled = !s.running || !!s.over || needCulture;
+          el.dataset.state = needCulture ? 'locked' : 'ready';
+          st.textContent = needCulture ? 'Najpierw dodatni posiew' : `Gotowe, wynik po ${cfg.duration} s`;
+          bar.style.transform = 'scaleX(0)';
+        }
       }
+      renderResults(s);
 
       for (const a of ACTIONS) {
         const el = btns[a.cd], cd = d.cd[a.cd];

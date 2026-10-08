@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.11.0">
+<link rel="stylesheet" href="css/style.css?v=0.12.0">
 </head>
 <body>
 <main class="split">
@@ -120,19 +120,40 @@
 
     <section class="block" aria-labelledby="h-test">
       <h2 id="h-test" class="block-title">Diagnostyka</h2>
-      <button id="btn-test" class="test-btn" type="button">
-        <span class="test-bar" aria-hidden="true"><span id="test-bar"></span></span>
-        <span class="test-row"><span id="test-label">Zleć badanie krwi</span><kbd>B</kbd></span>
-      </button>
-      <p class="hint">Wynik pokazuje zaawansowanie zakażenia, zdjęcie miejsca, w którym była bakteria w chwili pobrania krwi, i odblokowuje leczenie.</p>
-      <figure id="test-photo" class="test-photo" hidden>
-        <img id="test-photo-img" alt="Zdjęcie miejsca pobrania krwi">
-        <figcaption>
-          <span class="muted">Bakteria w chwili pobrania</span>
-          <b id="test-photo-place"></b>
-          <span id="test-photo-time" class="muted"></span>
-        </figcaption>
-      </figure>
+      <div id="tests" class="tests"></div>
+      <p class="hint">Badania mogą biec równolegle. Wynik opisuje chwilę pobrania próbki. Pierwszy wynik odblokowuje leczenie.</p>
+    </section>
+
+    <section class="block" aria-labelledby="h-res" id="results-block" hidden>
+      <h2 id="h-res" class="block-title">Wyniki badań</h2>
+      <div class="results">
+        <article id="res-crp" class="result" hidden>
+          <h3>CRP <span class="res-time muted"></span></h3>
+          <p class="res-big"><b id="res-crp-v"></b> mg/l</p>
+          <p id="res-crp-l" class="res-note"></p>
+        </article>
+        <article id="res-culture" class="result result-wide" hidden>
+          <h3>Posiew krwi <span class="res-time muted"></span></h3>
+          <p class="res-big"><b id="res-culture-v"></b></p>
+          <figure id="test-photo" class="test-photo" hidden>
+            <img id="test-photo-img" alt="Zdjęcie miejsca pobrania krwi">
+            <figcaption>
+              <span class="muted">Patogen w chwili pobrania</span>
+              <b id="test-photo-place"></b>
+              <span id="test-photo-time" class="muted"></span>
+            </figcaption>
+          </figure>
+        </article>
+        <article id="res-echo" class="result" hidden>
+          <h3>Echo serca <span class="res-time muted"></span></h3>
+          <canvas id="res-echo-c" class="echo-canvas" aria-label="Obraz echa serca"></canvas>
+          <p id="res-echo-l" class="res-note"></p>
+        </article>
+        <article id="res-abg" class="result" hidden>
+          <h3>Antybiogram <span class="res-time muted"></span></h3>
+          <dl id="res-abg-l" class="abg"></dl>
+        </article>
+      </div>
     </section>
 
     <section class="block" aria-labelledby="h-act">
@@ -314,25 +335,25 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.11.0"></script>
-<script src="js/config.js?v=0.11.0"></script>
-<script src="js/heart-shape.js?v=0.11.0"></script>
-<script src="js/flow.js?v=0.11.0"></script>
-<script src="js/state.js?v=0.11.0"></script>
-<script src="js/input.js?v=0.11.0"></script>
-<script src="js/render/glsl.js?v=0.11.0"></script>
-<script src="js/render/tissue.js?v=0.11.0"></script>
-<script src="js/render/cells.js?v=0.11.0"></script>
-<script src="js/render/actors.js?v=0.11.0"></script>
-<script src="js/render/post.js?v=0.11.0"></script>
-<script src="js/render/view.js?v=0.11.0"></script>
-<script src="js/minimap.js?v=0.11.0"></script>
-<script src="js/audio.js?v=0.11.0"></script>
-<script src="js/doctor-ui.js?v=0.11.0"></script>
-<script src="js/doctor-cam.js?v=0.11.0"></script>
-<script src="js/net.js?v=0.11.0"></script>
-<script src="js/lobby.js?v=0.11.0"></script>
-<script src="js/net-status.js?v=0.11.0"></script>
-<script src="js/main.js?v=0.11.0"></script>
+<script src="js/version.js?v=0.12.0"></script>
+<script src="js/config.js?v=0.12.0"></script>
+<script src="js/heart-shape.js?v=0.12.0"></script>
+<script src="js/flow.js?v=0.12.0"></script>
+<script src="js/state.js?v=0.12.0"></script>
+<script src="js/input.js?v=0.12.0"></script>
+<script src="js/render/glsl.js?v=0.12.0"></script>
+<script src="js/render/tissue.js?v=0.12.0"></script>
+<script src="js/render/cells.js?v=0.12.0"></script>
+<script src="js/render/actors.js?v=0.12.0"></script>
+<script src="js/render/post.js?v=0.12.0"></script>
+<script src="js/render/view.js?v=0.12.0"></script>
+<script src="js/minimap.js?v=0.12.0"></script>
+<script src="js/audio.js?v=0.12.0"></script>
+<script src="js/doctor-ui.js?v=0.12.0"></script>
+<script src="js/doctor-cam.js?v=0.12.0"></script>
+<script src="js/net.js?v=0.12.0"></script>
+<script src="js/lobby.js?v=0.12.0"></script>
+<script src="js/net-status.js?v=0.12.0"></script>
+<script src="js/main.js?v=0.12.0"></script>
 </body>
 </html>

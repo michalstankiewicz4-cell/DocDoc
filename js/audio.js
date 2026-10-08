@@ -116,14 +116,14 @@
   }
 
   // ---------- wywoływane co klatkę ----------
-  let alarmT = 0, lastTestState = 'idle', lastCoughs = 0;
+  let alarmT = 0, lastTestState = 0, lastCoughs = 0;
   A.update = function (s, role, dt) {
     const phase = s.phase;
     const p0 = A.lastPhase, p1 = phase;
     A.lastPhase = phase;
-    const testState = s.doctor.test.state;
-    const resultNow = lastTestState === 'running' && testState === 'done';
-    lastTestState = testState;
+    const seq = s.doctor.resultSeq || 0;
+    const resultNow = seq > lastTestState;
+    lastTestState = seq;
     const coughNow = s.coughs > lastCoughs;
     lastCoughs = s.coughs;
     if (!A.ctx || !A.on || A.ctx.state !== 'running') return;

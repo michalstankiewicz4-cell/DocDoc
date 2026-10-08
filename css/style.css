@@ -361,3 +361,32 @@ body[data-role="doc"] .half-doc {
 .end-stats dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
 .end-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
 @media (max-width: 640px) { .end-stats { grid-template-columns: 1fr; } }
+
+/* ---------- badania i wyniki ---------- */
+.tests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tests .test-btn { display: grid; gap: 2px; padding: 12px 14px; font-size: 14px; font-weight: 400; }
+.tests .test-btn[data-state="ready"] { background: var(--ink); color: var(--panel); }
+.tests .test-btn[data-state="ready"] .test-desc { color: #b8cfc8; }
+.test-name { font-weight: 700; font-size: 15px; }
+.test-desc { font-size: 12px; color: var(--muted); position: relative; }
+.test-state { font-size: 12px; font-weight: 700; position: relative; }
+.tests .test-btn[data-state="running"] .test-state { color: var(--trace); }
+.tests .test-btn[data-state="cooldown"] .test-state { color: var(--amber); }
+.tests .test-btn[data-state="locked"] { opacity: 0.6; }
+.results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.result { min-width: 0; padding: 12px 14px; border-radius: var(--r-m); background: var(--panel); border: 1px solid var(--line); display: grid; gap: 6px; align-content: start; }
+.result-wide { grid-column: 1 / -1; }
+.result h3 { margin: 0; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; }
+.res-time { font-weight: 400; font-size: 12px; }
+.res-big { margin: 0; font-size: 15px; }
+.res-big b { font-size: 26px; font-variant-numeric: tabular-nums; }
+.res-note { margin: 0; font-size: 13px; color: var(--muted); }
+.echo-canvas { display: block; width: 240px; max-width: 100%; height: auto; border-radius: var(--r-s); background: #000; }
+.abg { margin: 0; display: grid; gap: 4px; font-size: 13px; }
+.abg > div { display: flex; justify-content: space-between; gap: 8px; }
+.abg dt { color: var(--muted); }
+.abg dd { margin: 0; font-weight: 700; }
+.abg dd[data-state="ok"] { color: var(--trace); }
+.abg dd[data-state="warm"] { color: var(--amber); }
+.abg dd[data-state="high"] { color: var(--alert); }
+@media (max-width: 640px) { .tests, .results { grid-template-columns: 1fr; } }

@@ -8,6 +8,11 @@
   const G = {};
 
   G.create = function () {
+    const s = createRaw();
+    s.doctor.test = s.doctor.tests.culture; // zgodność: d.test = posiew
+    return s;
+  };
+  function createRaw() {
     return {
       time: 0, phase: 0, contraction: 0,
       running: false, over: null, organ: null,
@@ -20,7 +25,13 @@
         resist: { antibodies: 0, fever: 0, slow: 0 }
       },
       doctor: {
-        test: { state: 'idle', t: 0, cd: 0, sampleT: -1 },
+        tests: {
+          crp: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          culture: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          echo: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          abg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
+        },
+        resultSeq: 0,
         unlocked: false, knownInfection: null, knownHp: null,
         cd: { antibodies: 0, fever: 0, slow: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
@@ -47,7 +58,7 @@
       valveSide: H.VALVES.map(() => 0),
       coughs: 0          // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
     };
-  };
+  }
 
   function log(s, who, text) {
     s.log.push({ t: s.time, who, text });
@@ -92,12 +103,7 @@
     if (!s.running || s.over) return;
     switch (cmd.type) {
       case 'bact.colony': foundColony(s); return;
-      case 'doc.test':
-        if (d.test.state === 'running' || d.test.cd > 0) return;
-        d.test.state = 'running'; d.test.t = D.testDuration; d.test.sampleT = s.time; // chwila pobrania krwi
-        s.stats.tests++; if (s.stats.firstTestAt < 0) s.stats.firstTestAt = s.time;
-        log(s, 'doc', 'Zlecono badanie krwi (posiew + morfologia).');
-        return;
+      case 'doc.test': orderTest(s, cmd.kind || 'culture'); return;
       case 'doc.antibodies':
         if (!d.unlocked || d.cd.antibodies > 0) return;
         d.cd.antibodies = D.antibodies.cooldown;
@@ -130,6 +136,50 @@
     const sd = H.sample(b.x, b.y);
     s.colonies.push({ id: s.nextColonyId++, x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize });
     s.stats.coloniesFounded++;
+  }
+
+  // ---------- BADANIA ----------
+  const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram' };
+  function orderTest(s, kind) {
+    const d = s.doctor, T = d.tests[kind], cfg = D.tests[kind];
+    if (!T || T.state === 'running' || T.cd > 0) return;
+    if (kind === 'abg' && !(d.tests.culture.res && d.tests.culture.res.positive)) return; // wymaga dodatniego posiewu
+    T.state = 'running'; T.t = cfg.duration; T.sampleT = s.time;
+    T.pending = sampleFor(s, kind);    // wynik opisuje chwilę pobrania
+    s.stats.tests++; if (s.stats.firstTestAt < 0) s.stats.firstTestAt = s.time;
+    log(s, 'doc', `Zlecono badanie: ${TEST_NAME[kind]}.`);
+  }
+  function sampleFor(s, kind) {
+    const b = s.bact;
+    if (kind === 'crp') {
+      const v = 4 + b.infection * 2.4 + (rnd(s) * 2 - 1) * D.tests.crp.noise;
+      return { value: Math.max(1, Math.round(v)) };
+    }
+    if (kind === 'culture') return { positive: b.infection > 0.5 || !b.dead, infection: Math.round(b.infection) };
+    if (kind === 'echo') return { colonies: s.colonies.map((c) => [Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, Math.round(c.size * 100) / 100]) };
+    if (kind === 'abg') return { antibodies: b.resist.antibodies, fever: b.resist.fever, slow: b.resist.slow };
+    return null;
+  }
+  function finishTest(s, kind, T) {
+    const d = s.doctor;
+    T.state = 'done'; T.cd = D.tests[kind].cooldown; T.res = T.pending; T.pending = null; T.resultT = s.time;
+    d.resultSeq++;
+    const first = !d.unlocked; d.unlocked = true;
+    const r = T.res;
+    let text = '';
+    if (kind === 'crp') {
+      text = `CRP ${r.value} mg/l.`;
+      d.estInfection = Math.max(0, Math.min(100, Math.round((r.value - 4) / 2.4))); d.estT = T.sampleT; d.estExact = false;
+    } else if (kind === 'culture') {
+      text = r.positive ? `Posiew dodatni, kolonizacja ${r.infection}%.` : 'Posiew ujemny.';
+      d.knownInfection = r.infection; d.resultTime = T.sampleT;
+      d.estInfection = r.infection; d.estT = T.sampleT; d.estExact = true;
+    } else if (kind === 'echo') {
+      text = r.colonies.length ? `Echo serca: zmiany na ścianach (${r.colonies.length}).` : 'Echo serca bez zmian.';
+    } else if (kind === 'abg') {
+      text = 'Antybiogram gotowy.';
+    }
+    log(s, 'doc', 'Wynik: ' + text + (first ? ' Odblokowano leczenie.' : ''));
   }
 
   function spawnAntibodies(s, eff) {
@@ -235,15 +285,11 @@
     const b = s.bact, d = s.doctor;
 
     // --- lekarz ---
-    if (d.test.state === 'running') {
-      d.test.t -= dt;
-      if (d.test.t <= 0) {
-        d.test.state = 'done'; d.test.cd = D.testCooldown;
-        d.knownInfection = Math.round(b.infection); d.knownHp = Math.round(b.hp); d.resultTime = s.time;
-        const first = !d.unlocked; d.unlocked = true;
-        log(s, 'doc', `Wynik: posiew dodatni, kolonizacja ok. ${d.knownInfection}%.` + (first ? ' Odblokowano leczenie.' : ''));
-      }
-    } else if (d.test.cd > 0) d.test.cd = Math.max(0, d.test.cd - dt);
+    for (const kind in d.tests) {
+      const T = d.tests[kind];
+      if (T.state === 'running') { T.t -= dt; if (T.t <= 0) finishTest(s, kind, T); }
+      else if (T.cd > 0) T.cd = Math.max(0, T.cd - dt);
+    }
     for (const k in d.cd) d.cd[k] = Math.max(0, d.cd[k] - dt);
     if (d.feverT > 0) d.feverT = Math.max(0, d.feverT - dt);
     const targetT = d.feverT > 0 ? D.fever.temp : 36.6;

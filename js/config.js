@@ -31,8 +31,13 @@ DD.CONFIG = {
   },
 
   doctor: {
-    testDuration: 12,   // s — badanie krwi
-    testCooldown: 20,
+    // badania: czas do wyniku i odstęp przed powtórzeniem (s). Wyniki opisują chwilę pobrania.
+    tests: {
+      crp:     { duration: 4,  cooldown: 10, noise: 12 },   // szybkie, przybliżone (szum ±noise mg/l)
+      culture: { duration: 12, cooldown: 20 },              // posiew: dokładna kolonizacja + zdjęcie miejsca
+      echo:    { duration: 8,  cooldown: 25 },              // echo serca: położenie i wielkość kolonii
+      abg:     { duration: 18, cooldown: 30 }               // antybiogram: wrażliwość na leczenie (po dodatnim posiewie)
+    },
     antibodies: { cooldown: 18, count: 36, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },
     slow:       { cooldown: 22, duration: 10, speedMul: 0.45 }

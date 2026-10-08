@@ -239,10 +239,13 @@
         r2(b.hitFlash), b.contact ? 1 : 0, r2(b.resist.antibodies), r2(b.resist.fever), r2(b.resist.slow),
         r2(b.dead), r2(b.colonyCd), b.feeding ? 1 : 0],
       tr: b.transit ? [b.transit.to === 'lungs' ? 1 : 2, r2(b.transit.t), b.transit.total] : 0,
-      d: [TEST.indexOf(d.test.state), r2(d.test.t), r2(d.test.cd), d.unlocked ? 1 : 0, d.knownInfection ?? -1,
+      d: [0, 0, 0, d.unlocked ? 1 : 0, d.knownInfection ?? -1,
         d.resultTime ?? -1, r2(d.cd.antibodies), r2(d.cd.fever), r2(d.cd.slow), r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT), r2(s.patient.cond)],
       a, c,
       st: s.over ? s.stats : 0,
+      // badania bez wyników oczekujących (gość dostaje wynik dopiero, gdy jest gotowy)
+      dt: Object.fromEntries(Object.entries(d.tests).map(([k, T]) => [k, Object.assign({}, T, { pending: null })])),
+      dk: [d.resultSeq, d.estInfection ?? -1, d.estT ?? -1, d.estExact ? 1 : 0],
       cg: s.coughs
     };
   }
@@ -273,6 +276,8 @@
       s.time = snap.t + age;
       s.running = !!snap.run; s.over = snap.ov; s.organ = snap.org;
       if (snap.st) s.stats = snap.st;
+      if (snap.dt) { s.doctor.tests = snap.dt; s.doctor.test = snap.dt.culture; }
+      if (snap.dk) { s.doctor.resultSeq = snap.dk[0]; s.doctor.estInfection = snap.dk[1] < 0 ? null : snap.dk[1]; s.doctor.estT = snap.dk[2]; s.doctor.estExact = !!snap.dk[3]; }
       s.coughs = snap.cg || 0;
       const b = s.bact, v = snap.b;
       const far = Math.hypot(v[0] - b.x, v[1] - b.y) > 4;
@@ -288,9 +293,9 @@
       b.place = H.placeName(b.x, b.y);
       { const f = F.velocity(b.x, b.y, s.time, (s.time * C.bpm / 60) % 1); b.fx = f[0]; b.fy = f[1]; }
       const d = s.doctor, w = snap.d;
-      d.test.state = TEST[w[0]] || 'idle'; d.test.t = w[1]; d.test.cd = w[2]; d.unlocked = !!w[3];
+      d.unlocked = !!w[3];
       d.knownInfection = w[4] < 0 ? null : w[4]; d.resultTime = w[5] < 0 ? undefined : w[5];
-      d.cd.antibodies = w[6]; d.cd.fever = w[7]; d.cd.slow = w[8]; d.feverT = w[9]; d.feverEff = w[10]; d.temp = w[11]; d.test.sampleT = w[12]; s.patient.cond = w[13];
+      d.cd.antibodies = w[6]; d.cd.fever = w[7]; d.cd.slow = w[8]; d.feverT = w[9]; d.feverEff = w[10]; d.temp = w[11]; s.patient.cond = w[13];
       // przeciwciała
       const A = snap.a, n = A.length / 9;
       if (s.antibodies.length !== n) s.antibodies.length = n;

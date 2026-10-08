@@ -11,6 +11,17 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-08
+### Dodane
+- Cztery badania, które mogą biec równolegle; każdy wynik opisuje chwilę pobrania próbki:
+  - **CRP** (`Z`, 4 s): szybkie, przybliżone — poziom stanu zapalnego z szumem pomiaru,
+  - **Posiew krwi** (`X` lub `B`, 12 s): dokładna kolonizacja i zdjęcie miejsca pobrania,
+  - **Echo serca** (`C`, 8 s): obraz w stylu USG z kolonii widocznych jako jasne ogniska,
+  - **Antybiogram** (`V`, 18 s, po dodatnim posiewie): wrażliwość patogenu na każde leczenie.
+- Karty wyników badań w panelu lekarza; parametr „Zakażenie” na monitorze pokazuje wynik dokładny (posiew) albo szacunek (≈, z CRP).
+### Zmienione
+- Pierwszy wynik dowolnego badania odblokowuje leczenie.
+
 ## [0.11.0] - 2026-10-08
 ### Dodane
 - Zakładanie kolonii klawiszem `E` przy ścianie, kosztem 25 punktów życia patogenu.
@@ -101,7 +112,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.8.0...v0.9.0

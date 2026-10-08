@@ -70,7 +70,10 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 ### Sterowanie
 | Klawisz | Działanie |
 | --- | --- |
-| `B` | badanie krwi |
+| `Z` | CRP |
+| `X` (albo `B`) | posiew krwi |
+| `C` | echo serca |
+| `V` | antybiogram |
 | `1` | przeciwciała |
 | `2` | gorączka |
 | `3` | antybiotyk |
@@ -78,7 +81,15 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 Każdą akcję można też kliknąć w panelu.
 
 ### Jak grać
-1. **Badanie krwi** trwa 12 s. Wynik pokazuje kolonizację z chwili pobrania krwi i zdjęcie miejsca, w którym wtedy był patogen. Pierwszy wynik odblokowuje leczenie.
+1. **Badania** mogą biec równolegle, a każdy wynik opisuje chwilę pobrania próbki. Pierwszy wynik dowolnego badania odblokowuje leczenie.
+
+   | Badanie | Czas | Co pokazuje |
+   | --- | --- | --- |
+   | CRP | 4 s | poziom stanu zapalnego (przybliżony, z szumem pomiaru); monitor pokazuje z niego szacunek zakażenia „≈” |
+   | Posiew krwi | 12 s | dokładną kolonizację i zdjęcie miejsca, w którym był patogen |
+   | Echo serca | 8 s | obraz serca w stylu USG, kolonie jako jasne ogniska (położenie i wielkość) |
+   | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
+
 2. **Leczenie:**
    - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu same do niego płyną. Każde przyczepione zabiera życie i spowalnia.
    - **Gorączka** podnosi temperaturę do 39,6 °C. Patogen traci życie, a kolonizacja zwalnia o połowę.
