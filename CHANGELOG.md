@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-10-08
+### Dodane
+- `CLAUDE.md`: kontekst projektu do wznowienia pracy w nowej rozmowie (zasady pracy, stan, lista zadań, decyzje).
+
 ## [0.6.2] - 2026-10-08
 ### Dodane
 - Dokumentacja: nowy README, instrukcja obsługi `docs/INSTRUKCJA.md`, opis budowy kodu `docs/ARCHITEKTURA.md`.
@@ -60,7 +64,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.5.0...v0.6.0
