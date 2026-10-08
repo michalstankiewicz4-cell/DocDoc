@@ -58,7 +58,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Wersjonowanie + CHANGELOG
 - [x] Dokumentacja: README, instrukcja, architektura
 - [x] Plik kontekstu (ten plik)
-- [ ] Statystyki na ekranie końcowym
+- [x] Statystyki na ekranie końcowym
 - [ ] Dźwięk lekarza: szpitalne „beep”
 - [ ] Dźwięk patogenu: przytłumiony jak pod wodą, bicie serca, czasem kaszel
 - [ ] Stan pacjenta jako trzeci wskaźnik (patogen wygrywa przez sepsę), skutki uboczne leków

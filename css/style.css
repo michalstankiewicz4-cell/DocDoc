@@ -344,3 +344,18 @@ body[data-role="doc"] .half-doc {
 .test-photo figcaption { display: grid; gap: 2px; font-size: 13px; min-width: 0; }
 .test-photo figcaption b { font-size: 17px; }
 @media (max-width: 520px) { .test-photo { grid-template-columns: 1fr; } }
+
+/* ---------- ekran końcowy ---------- */
+.end-card { width: min(720px, 100%); }
+.end-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.end-stats section { min-width: 0; padding: 14px 16px; border-radius: var(--r-m); background: var(--panel); border: 1px solid var(--line); }
+.es-title { margin: 0 0 8px; font-size: 16px; }
+.es-bact { color: #1f7a5a; }
+.es-doc { color: var(--ink); }
+.end-stats dl { margin: 0; display: grid; gap: 5px; font-size: 13px; }
+.end-stats dl > div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #e3ebe7; padding-bottom: 4px; }
+.end-stats dl > div:last-child { border-bottom: 0; }
+.end-stats dt { color: var(--muted); }
+.end-stats dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.end-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+@media (max-width: 640px) { .end-stats { grid-template-columns: 1fr; } }

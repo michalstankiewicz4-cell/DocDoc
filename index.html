@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.6.3">
+<link rel="stylesheet" href="css/style.css?v=0.7.0">
 </head>
 <body>
 <main class="split">
@@ -276,33 +276,46 @@
 
 <!-- Koniec gry -->
 <div id="end" class="overlay overlay-end" hidden>
-  <div class="overlay-card overlay-card-small">
+  <div class="overlay-card end-card">
     <h2 id="end-title" class="end-title"></h2>
     <p id="end-text"></p>
-    <button id="end-again" class="primary" type="button">Zagraj jeszcze raz</button>
+    <div class="end-stats">
+      <section aria-labelledby="es-bact">
+        <h3 id="es-bact" class="es-title es-bact">Bakteria</h3>
+        <dl id="end-stats-bact"></dl>
+      </section>
+      <section aria-labelledby="es-doc">
+        <h3 id="es-doc" class="es-title es-doc">Lekarz</h3>
+        <dl id="end-stats-doc"></dl>
+      </section>
+    </div>
+    <div class="end-foot">
+      <button id="end-again" class="primary" type="button">Zagraj jeszcze raz</button>
+      <span class="muted">wersja <span class="js-version"></span></span>
+    </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.6.3"></script>
-<script src="js/config.js?v=0.6.3"></script>
-<script src="js/heart-shape.js?v=0.6.3"></script>
-<script src="js/flow.js?v=0.6.3"></script>
-<script src="js/state.js?v=0.6.3"></script>
-<script src="js/input.js?v=0.6.3"></script>
-<script src="js/render/glsl.js?v=0.6.3"></script>
-<script src="js/render/tissue.js?v=0.6.3"></script>
-<script src="js/render/cells.js?v=0.6.3"></script>
-<script src="js/render/actors.js?v=0.6.3"></script>
-<script src="js/render/post.js?v=0.6.3"></script>
-<script src="js/render/view.js?v=0.6.3"></script>
-<script src="js/minimap.js?v=0.6.3"></script>
-<script src="js/audio.js?v=0.6.3"></script>
-<script src="js/doctor-ui.js?v=0.6.3"></script>
-<script src="js/doctor-cam.js?v=0.6.3"></script>
-<script src="js/net.js?v=0.6.3"></script>
-<script src="js/lobby.js?v=0.6.3"></script>
-<script src="js/net-status.js?v=0.6.3"></script>
-<script src="js/main.js?v=0.6.3"></script>
+<script src="js/version.js?v=0.7.0"></script>
+<script src="js/config.js?v=0.7.0"></script>
+<script src="js/heart-shape.js?v=0.7.0"></script>
+<script src="js/flow.js?v=0.7.0"></script>
+<script src="js/state.js?v=0.7.0"></script>
+<script src="js/input.js?v=0.7.0"></script>
+<script src="js/render/glsl.js?v=0.7.0"></script>
+<script src="js/render/tissue.js?v=0.7.0"></script>
+<script src="js/render/cells.js?v=0.7.0"></script>
+<script src="js/render/actors.js?v=0.7.0"></script>
+<script src="js/render/post.js?v=0.7.0"></script>
+<script src="js/render/view.js?v=0.7.0"></script>
+<script src="js/minimap.js?v=0.7.0"></script>
+<script src="js/audio.js?v=0.7.0"></script>
+<script src="js/doctor-ui.js?v=0.7.0"></script>
+<script src="js/doctor-cam.js?v=0.7.0"></script>
+<script src="js/net.js?v=0.7.0"></script>
+<script src="js/lobby.js?v=0.7.0"></script>
+<script src="js/net-status.js?v=0.7.0"></script>
+<script src="js/main.js?v=0.7.0"></script>
 </body>
 </html>

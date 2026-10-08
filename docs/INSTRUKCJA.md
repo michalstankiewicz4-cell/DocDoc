@@ -73,6 +73,10 @@ Każdą akcję można też kliknąć w panelu.
 4. **Podgląd pacjenta** pokazuje grę patogenu z 5-sekundowym opóźnieniem.
 5. **Dziennik** zapisuje badania, wyniki i podane leki.
 
+## Koniec rundy
+
+Po wygranej jednej ze stron ekran końcowy pokazuje statystyki obu graczy: drogę bakterii, najwyższą kolonizację, przejścia przez zastawki, odwiedzone jamy serca, a dla lekarza liczbę badań, czas pierwszego badania i leczenia, użyte leki i zadane obrażenia. „Zagraj jeszcze raz” zaczyna nową rundę.
+
 ## Dźwięk
 
 Dźwięk włącza się po pierwszym kliknięciu albo klawiszu, bo przeglądarki wcześniej go blokują. `M` wycisza, a wybór zostaje zapamiętany.

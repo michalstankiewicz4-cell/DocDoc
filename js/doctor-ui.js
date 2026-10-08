@@ -69,6 +69,42 @@
     const fmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
     const mmss = (t) => { const m = Math.floor(t / 60), s = Math.floor(t % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; };
 
+    // statystyki rundy na ekranie końcowym
+    function renderStats(s) {
+      const S = s.stats || {};
+      const chambers = DD.Heart.ELLIPSES.map((e) => e.name);
+      const seen = (S.places || []).filter((p) => chambers.includes(p)).length;
+      const num = (v, d = 0) => (v ?? 0).toFixed(d).replace('.', ',');
+      const at = (t) => (t >= 0 ? mmss(t) : 'nie było');
+      const used = S.used || {};
+      const rows = {
+        'end-stats-bact': [
+          ['Przebyta droga', num(S.distance) + ' j.'],
+          ['Najwyższa kolonizacja', Math.floor(S.maxInfection || 0) + '%'],
+          ['Kolonie', String(s.colonies.length)],
+          ['Czas przy ścianie', num(S.contactTime) + ' s'],
+          ['Przejścia przez zastawki', String(S.valveCrossings || 0)],
+          ['Krążenie płucne / duże', `${S.lungsTrips || 0} / ${S.bodyTrips || 0}`],
+          ['Odwiedzone jamy serca', `${seen} z ${chambers.length}`],
+          ['Najmniej życia', Math.max(0, Math.ceil(S.minHp ?? 0)) + ' pkt']
+        ],
+        'end-stats-doc': [
+          ['Badania krwi', String(S.tests || 0)],
+          ['Pierwsze badanie', at(S.firstTestAt)],
+          ['Pierwsze leczenie', at(S.firstTreatAt)],
+          ['Podane przeciwciała', String(used.antibodies || 0)],
+          ['Wywołane gorączki', String(used.fever || 0)],
+          ['Podane antybiotyki', String(used.slow || 0)],
+          ['Trafienia przeciwciał', String(S.abHits || 0)],
+          ['Obrażenia od przeciwciał', num(S.dmgAntibodies) + ' pkt'],
+          ['Obrażenia od gorączki', num(S.dmgFever) + ' pkt']
+        ]
+      };
+      for (const id in rows) {
+        $(id).innerHTML = rows[id].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+      }
+    }
+
     function update(s) {
       const d = s.doctor, b = s.bact;
       drawEcg(s);
@@ -160,6 +196,7 @@
         $('end-text').textContent = s.over === 'doctor'
           ? `Bakteria zniszczona po ${mmss(s.time)}. Kolonizacja zatrzymana na ${Math.floor(b.infection)}%.`
           : `Zakażenie rozwinęło się w ${mmss(s.time)}. Bakterii zostało ${Math.ceil(b.hp)} punktów życia.`;
+        renderStats(s);
         $('end-again').focus();
       }
       if (!s.over) end.hidden = true;

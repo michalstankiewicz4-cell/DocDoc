@@ -240,7 +240,8 @@
       tr: b.transit ? [b.transit.to === 'lungs' ? 1 : 2, r2(b.transit.t), b.transit.total] : 0,
       d: [TEST.indexOf(d.test.state), r2(d.test.t), r2(d.test.cd), d.unlocked ? 1 : 0, d.knownInfection ?? -1,
         d.resultTime ?? -1, r2(d.cd.antibodies), r2(d.cd.fever), r2(d.cd.slow), r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT)],
-      a, c
+      a, c,
+      st: s.over ? s.stats : 0
     };
   }
   let sendAcc = 0, sentLogLen = -1, sentLogT = -1, seq = 0;
@@ -269,6 +270,7 @@
       const age = Math.min(0.25, (performance.now() - snapAt) / 1000);
       s.time = snap.t + age;
       s.running = !!snap.run; s.over = snap.ov; s.organ = snap.org;
+      if (snap.st) s.stats = snap.st;
       const b = s.bact, v = snap.b;
       const far = Math.hypot(v[0] - b.x, v[1] - b.y) > 4;
       b.x = far ? v[0] : b.x + (v[0] - b.x) * k;

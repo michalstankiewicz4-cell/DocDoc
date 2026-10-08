@@ -30,7 +30,16 @@
       chords: [],      // geometria strun ścięgnistych (liczona co krok, wspólna dla kolizji i renderu)
       leaflets: [],    // płatki zastawek
       log: [],
-      seed: 1
+      seed: 1,
+      // statystyki rundy (ekran końcowy)
+      stats: {
+        distance: 0, contactTime: 0, maxInfection: 0, minHp: B.hp,
+        valveCrossings: 0, lungsTrips: 0, bodyTrips: 0, places: [],
+        abHits: 0, dmgAntibodies: 0, dmgFever: 0,
+        tests: 0, firstTestAt: -1, firstTreatAt: -1,
+        used: { antibodies: 0, fever: 0, slow: 0 }
+      },
+      valveSide: H.VALVES.map(() => 0)
     };
   };
 
@@ -46,6 +55,8 @@
   // skuteczność leku = 1 - oporność; po podaniu oporność rośnie
   function useDrug(s, key) {
     const R = C.resistance, r = s.bact.resist;
+    s.stats.used[key]++;
+    if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
     const eff = 1 - r[key];
     r[key] = Math.min(R.max, r[key] + R.perUse);
     return eff;
@@ -71,6 +82,7 @@
       case 'doc.test':
         if (d.test.state === 'running' || d.test.cd > 0) return;
         d.test.state = 'running'; d.test.t = D.testDuration; d.test.sampleT = s.time; // chwila pobrania krwi
+        s.stats.tests++; if (s.stats.firstTestAt < 0) s.stats.firstTestAt = s.time;
         log(s, 'doc', 'Zlecono badanie krwi (posiew + morfologia).');
         return;
       case 'doc.antibodies':
@@ -237,6 +249,7 @@
       F.velocity(b.x, b.y, s.time, s.phase, fv);
       b.fx = fv[0]; b.fy = fv[1];
       // przy ścianie prąd słabnie (warstwa przyścienna) — tam bakteria może się trzymać
+      const ox = b.x, oy = b.y;
       b.x += (b.vx + fv[0] * B.flowCoupling) * dt;
       b.y += (b.vy + fv[1] * B.flowCoupling) * dt;
       if (Math.hypot(b.vx, b.vy) > 0.4) b.dir = Math.atan2(b.vy, b.vx);
@@ -245,6 +258,18 @@
       collideLeaflets(s, b, B.radius);
       b.contact = collideWalls(b, B.radius + 0.05) || H.sample(b.x, b.y) > -(B.radius + 0.3);
 
+      const ST = s.stats;
+      ST.distance += Math.hypot(b.x - ox, b.y - oy);
+      // przejście przez zastawkę = zmiana strony płaszczyzny pierścienia w jego obrębie
+      H.VALVES.forEach((v, i) => {
+        const rx = b.x - v.c[0], ry = b.y - v.c[1];
+        const along = rx * v.d[0] + ry * v.d[1], across = rx * v.p[0] + ry * v.p[1];
+        const side = Math.abs(across) < Math.max(v.w1, v.w2) + 0.5 && Math.abs(along) < 3 ? Math.sign(along) : 0;
+        if (side && s.valveSide[i] && side !== s.valveSide[i]) ST.valveCrossings++;
+        if (side) s.valveSide[i] = side; else if (Math.abs(along) >= 3) s.valveSide[i] = 0;
+      });
+      if (b.contact) ST.contactTime += dt;
+      ST.maxInfection = Math.max(ST.maxInfection, b.infection);
       if (b.contact) {
         b.infection += C.infection.ratePerSec * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul)) * dt;
         if (b.infection >= b.nextColony) {
@@ -254,13 +279,16 @@
           s.colonies.push({ x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s) });
         }
       }
-      if (feverK > 0) b.hp -= D.fever.dps * feverK * d.feverEff * dt;
+      if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * dt; b.hp -= fd; ST.dmgFever += fd; }
 
       for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
+        if (ex.to === 'lungs') ST.lungsTrips++; else ST.bodyTrips++;
         log(s, 'sys', ex.to === 'lungs' ? 'Bakteria płynie przez krążenie płucne.' : 'Bakteria płynie przez krążenie duże.');
       }
       b.place = H.placeName(b.x, b.y);
+      if (b.place && !ST.places.includes(b.place)) ST.places.push(b.place);
+      ST.minHp = Math.min(ST.minHp, b.hp);
     }
 
     // --- przeciwciała ---
@@ -286,6 +314,7 @@
       if (!b.transit && dist < B.radius + 0.4) {
         a.stuck = true; a.ox = a.x - b.x; a.oy = a.y - b.y; a.life = Math.min(a.life, 8);
         b.hp -= A.damage * (a.eff ?? 1); b.hitFlash = 0.4 + 0.6 * (a.eff ?? 1);
+        s.stats.abHits++; s.stats.dmgAntibodies += A.damage * (a.eff ?? 1);
       }
     }
 
