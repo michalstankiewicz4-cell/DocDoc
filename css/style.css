@@ -734,3 +734,13 @@ body[data-role="doc"] .half-doc {
 @keyframes pr-in { from { opacity: 0; transform: translate(-50%, -12px); } to { opacity: 1; transform: translateX(-50%); } }
 @media (max-width: 560px) { .pr-cols { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .ptype-reveal { animation: none; } }
+
+/* ---------- wybór języka ---------- */
+#start .overlay-card { position: relative; }
+.lang-pick { position: absolute; top: clamp(16px, 3vw, 28px); right: clamp(16px, 3vw, 28px); display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.lang-pick button {
+  border: 0; background: transparent; color: var(--muted); font: 600 13px/1 var(--font); letter-spacing: 0.06em;
+  padding: 7px 12px; cursor: pointer;
+}
+.lang-pick button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.lang-pick button:focus-visible { outline: 2px solid var(--trace); outline-offset: -2px; }

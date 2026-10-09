@@ -46,7 +46,7 @@ Nie wszystko musi dziać się w układzie krwionośnym — np. astma i palacz w 
 
 | | Zadanie | Opis |
 | --- | --- | --- |
-| ⬜ | Wybór języka | Przełącznik polski / angielski na ekranie startowym, zapamiętany w przeglądarce; cały interfejs po angielsku. |
+| ✅ | Wybór języka (v0.35.0) | Przełącznik polski / angielski na ekranie startowym, zapamiętany w przeglądarce; cały interfejs po angielsku. |
 
 ## Etap 5. Lekarz widzi mniej, patogen więcej ukrywa
 

@@ -26,6 +26,7 @@
   }
   // tekst przycięty do szerokości (z wielokropkiem)
   function fitText(ctx, txt, maxW) {
+    txt = DD.t(txt);   // przycinamy tekst już przetłumaczony
     if (ctx.measureText(txt).width <= maxW) return txt;
     while (txt.length > 1 && ctx.measureText(txt + '…').width > maxW) txt = txt.slice(0, -1);
     return txt + '…';

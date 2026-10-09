@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.35.0] - 2026-10-09
+### Dodane
+- **Język angielski:** przełącznik PL / EN na ekranie startowym (zapamiętany w przeglądarce). Tłumaczony jest cały interfejs: menu, lobby, HUD patogenu, panel lekarza, wyniki badań, dziennik, napisy na urządzeniach, ekran końcowy i statystyki. W grze na 2 osoby każdy gracz widzi swój język.
+
 ## [0.34.0] - 2026-10-09
 ### Dodane
 - **Losowanie pacjenta:** na początku rundy gra losuje pacjenta — dziecko, senior, sportowiec, diabetyk albo osoba po przeszczepie. Pacjent zmienia szanse obu stron (wzrost i koszt kolonii, objawy, skuteczność leków i przeciwciał, regeneracja, odnowienie badań, ilość pożywienia i glukozy we krwi).
@@ -316,7 +320,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.34.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.35.0...HEAD
+[0.35.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.1...v0.32.0

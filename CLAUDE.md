@@ -90,7 +90,8 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Uzupełnienie dokumentacji (v0.30.2)
 - [x] Etapy 1–2 planu (`docs/PLAN.md`): poprawki, SEO, loader, zakończenie, filmy, tło (v0.31–0.33)
 - [x] Losowanie pacjenta (v0.34.0), balans w `docs/BALANS.md`
-- [ ] Dalej wg `docs/PLAN.md`: wybór języka PL/EN, ukrywanie informacji, nowe badania i leczenie, grzyb, rak, obszary poza krwiobiegiem
+- [x] Wybór języka PL / EN (v0.35.0)
+- [ ] Dalej wg `docs/PLAN.md`: ukrywanie informacji, nowe badania i leczenie, grzyb, rak, obszary poza krwiobiegiem
 - [x] Poprawki: powrót z mięśnia, zamiana ról; pasek przewijania; ekran startowy, loader, nazwa; SEO (v0.30.3–v0.31.1)
 - [x] Zakończenie rundy, filmy, zwijane statystyki (v0.32.0)
 
@@ -142,4 +143,5 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Zakończenie (v0.32.0): 5 s (`config.ending`); przy wygranej lekarza serce nie staje (tylko pauza), pisk monitora tylko przy sepsie. Film: WebM, gdy przeglądarka go obsługuje, inaczej MP4; bez wcześniejszego gestu gra bez dźwięku; przycisk „Pomiń”.
 - Zoom (`config.camera`): 17, kółkiem 14–21 (Michał: „tylko delikatna regulacja”). W mięśniu kamera nadal zbliża się automatycznie (×0,6).
 - Pacjenci (`config.patients`, v0.34.0): losowanie równomierne przez hosta (`cmd.patient` wymusza), mnożniki i uzasadnienie w `docs/BALANS.md`; brak pożywienia „mało” dałem seniorowi (×0,6), diabetykowi więcej pożywienia (×1,4) i 70% glukozy. Plansza 4,5 s (`config.ui.revealTime`).
+- Język (v0.35.0): domyślnie polski, wybór w `localStorage` (`pz-lang`), zmiana przeładowuje stronę. Kod pisze po polsku, `js/i18n.js` tłumaczy przy wyświetlaniu (MutationObserver + canvas) wg `js/lang/en.js`. **Każdy nowy tekst w grze wymaga wpisu w `js/lang/en.js`**; brakujące widać w `DD.i18nMiss` (z `DD.i18nDebug = true` także teksty bez polskich znaków). Liczby nadal z przecinkiem dziesiętnym (np. 36,9 °C).
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk; wątroba > 0,3 żółtaczka; nerka > 0,3 krew w moczu; > 0,9 objaw nasilony).

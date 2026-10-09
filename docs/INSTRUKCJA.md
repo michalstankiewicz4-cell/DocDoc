@@ -38,6 +38,11 @@ Na początku każdej rundy gra losuje pacjenta. Obaj gracze widzą go przez kilk
 
 Dokładne liczby: [BALANS.md](BALANS.md).
 
+## Język
+
+Na ekranie startowym przełącznik **PL / EN** zmienia język całego interfejsu (gra przeładowuje stronę i zapamiętuje wybór w przeglądarce).
+W grze na 2 osoby każdy gracz może mieć inny język.
+
 ## Tryby gry
 
 ### Tryb deweloperski

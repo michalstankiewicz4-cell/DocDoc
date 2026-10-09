@@ -19,6 +19,8 @@ img/                    og.jpg (podgląd linku), icon.svg (ikona strony)
 robots.txt, sitemap.xml dla wyszukiwarek
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
 js/version.js           DD.VERSION
+js/lang/en.js           słownik angielski: tekst polski → angielski ({0} wstawka, {#0} wstawka liczbowa)
+js/i18n.js              język interfejsu: DD.t, tłumaczenie dokumentu (MutationObserver) i napisów na canvasie przy języku EN
 js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species), pacjenci (C.patients, opis w docs/BALANS.md), leki, badania, pożywienie, kopie, kamera, UI
 js/heart-shape.js       geometria serca, wątroby i nerki (SDF, maski narządów, nazwy miejsc, wyjścia z mapy): SDF z elips i naczyń + dokładna transformata odległości
 js/flow.js              pole przepływu (3 pola bazowe mieszane wg fazy cyklu) + curl noise
@@ -107,6 +109,10 @@ Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `gue
 - **Komórki** żyją w oknie wokół kamery i są niesione tym samym polem przepływu.
 - **Uniformy wspólne** (`DD.SHARED`) ustawia każdy widok tuż przed własnym renderem, więc dwa widoki (gra i zdjęcie do mikroskopu) mogą działać naraz.
 
+## Język (`js/i18n.js`)
+
+Kod gry i HTML są po polsku. Przy języku angielskim `i18n.js` tłumaczy w chwili wyświetlenia: węzły tekstowe i atrybuty (`title`, `aria-label`, `placeholder`, `alt`) przez `MutationObserver` oraz napisy z `fillText` / `strokeText` / `measureText`. Wstawki szablonów tłumaczy rekurencyjnie (też listy „a, b” i „nazwa liczba”); nazwy pisane małą literą znajduje po wersji z wielkiej. Dzięki temu stan gry i sieć się nie zmieniają, a każdy gracz ma swój język. Elementy z `data-no-i18n` są pomijane. Zmiana języka zapisuje `pz-lang` w `localStorage` i przeładowuje stronę.
+
 ## Testy
 
 - **Logika w Node:** `global.window = global`, potem `require` plików `config`, `heart-shape`, `flow`, `state`, `tissue-cells`; `DD.Heart.init()`, `DD.Flow.init()`, a dalej `DD.Game.create()`, `apply()` i `step()`.
@@ -118,4 +124,5 @@ Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `gue
 2. Logikę dodaj w `js/state.js` jako nową komendę albo element `step()`. Nie zmieniaj stanu z UI.
 3. Jeśli gość ma to widzieć, uzupełnij `encode()` i `guestFrame()` w `js/net.js`. Jeśli to komenda, dodaj ją do uprawnień ról.
 4. UI dopisz w `js/doctor-ui.js` albo osobnym pliku i dołącz skrypt w `index.html` przed `main.js`.
-5. Zaktualizuj `docs/INSTRUKCJA.md`, dodaj wpis w `CHANGELOG.md` i podbij wersję (`node tools/bump.js`).
+5. Każdy nowy tekst widoczny dla gracza dopisz do `js/lang/en.js` (szablon z `{0}` / `{#0}`, gdy tekst ma wstawki). Sprawdzenie: język EN, `DD.i18nDebug = true` przed startem, potem `DD.i18nMiss` w konsoli.
+6. Zaktualizuj `docs/INSTRUKCJA.md`, dodaj wpis w `CHANGELOG.md` i podbij wersję (`node tools/bump.js`).
