@@ -720,29 +720,6 @@
       } else $('res-abg').hidden = true;
     }
 
-    // film na koniec rundy: media/doctor.mp4 (wygrał lekarz) albo media/priest.mp4 (wygrał patogen)
-    const endFilm = (function () {
-      const box = $('end-film'), vid = $('end-film-v');
-      let forStats = null, st = 'none';
-      function finish() { if (st !== 'playing') return; st = 'done'; vid.pause(); box.hidden = true; }
-      vid.addEventListener('ended', finish);
-      vid.addEventListener('error', finish);
-      $('end-film-skip').addEventListener('click', finish);
-      return {
-        state(s) { if (forStats !== s.stats) { forStats = s.stats; st = 'none'; } return st; },
-        play(s) {
-          st = 'playing'; box.hidden = false;
-          const name = s.over === 'doctor' ? 'doctor' : 'priest';
-          // WebM (VP9) dla przeglądarek bez H.264, MP4 dla pozostałych
-          vid.src = vid.canPlayType('video/webm; codecs="vp9, opus"') ? `media/${name}.webm` : `media/${name}.mp4`;
-          vid.currentTime = 0; vid.muted = !(DD.Audio && DD.Audio.on);
-          // dźwięk wymaga wcześniejszego gestu gracza; gdy przeglądarka odmówi, gramy bez dźwięku
-          vid.play().catch(() => { vid.muted = true; vid.play().catch(finish); });
-          setTimeout(finish, 9000);   // zabezpieczenie, gdyby film się nie skończył
-        },
-        reset() { if (st === 'playing') { vid.pause(); box.hidden = true; } st = 'none'; forStats = null; }
-      };
-    })();
     const KIND_NAME = { bacteria: 'bakteria', virus: 'wirus', fungus: 'grzyb', cancer: 'nowotwór' };
     // nazwa patogenu małą literą (np. „gronkowiec złocisty”), bez gatunku — nazwa rodzaju
     const kindEls = [...document.querySelectorAll('.js-kind-name')];   // miejsca z nazwą patogenu (stałe)
@@ -965,10 +942,8 @@
       // nowa runda (czas gry się cofnął) odblokowuje ekran końcowy po zamianie ról
       if (DD.Match && s.time < (update._lastT ?? 0) - 0.5) DD.Match.suppressEnd = false;
       update._lastT = s.time;
-      // po zwycięstwie: najpierw film (lekarz albo ksiądz), potem ekran końcowy
-      if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd) && endFilm.state(s) !== 'done') {
-        if (endFilm.state(s) === 'none') endFilm.play(s);
-      } else if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd)) {
+      // po zwycięstwie: ekran końcowy
+      if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd)) {
         end.hidden = false;
         const kn = KIND_NAME[s.kind] || 'bakteria';
         DD.setText($('end-title'), s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`);
@@ -979,7 +954,7 @@
         if (DD.Match) DD.Match.renderEnd();
         $('end-again').focus();
       }
-      if (!s.over) { end.hidden = true; endFilm.reset(); if (DD.Match) DD.Match.suppressEnd = false; }
+      if (!s.over) { end.hidden = true; if (DD.Match) DD.Match.suppressEnd = false; }
     }
     return { update };
   };

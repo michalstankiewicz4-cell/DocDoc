@@ -15,7 +15,6 @@ Dokument dla programistów. Opisuje budowę kodu i zasady, których trzymamy si�
 
 ```
 index.html              układ ekranu, nakładki (ładowanie, start, lobby, koniec gry), metadane SEO, kolejność skryptów
-media/                  filmy na koniec rundy (doctor, priest; MP4 i WebM)
 img/                    og.jpg (podgląd linku), icon.svg (ikona strony), wiki/ (zdjęcia z gry do wiki lekarza)
 robots.txt, sitemap.xml dla wyszukiwarek
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
@@ -107,7 +106,7 @@ Kolonie raka to guzy: rosną do `C.cancer.smallCap`, a z mutacją `angio` do `ma
 
 ## Zakończenie rundy
 
-Warunek wygranej ustawia `s.ending = { win, t }` (a nie od razu `s.over`). Przez `C.ending.duration` sekund rozgrywka stoi, a przy sepsie spadają `s.hr` (tętno) i `s.flowMul` (prąd; `Flow.scale`). Faza serca jest sumowana (`s.phase += dt · bpm · hr`), więc gość dostaje ją w paczce (`ph`, `hr`, `fm`, `en`). Po czasie `s.over = win`; UI pokazuje film (`endFilm` w `doctor-ui.js`), potem ekran końcowy.
+Warunek wygranej ustawia `s.ending = { win, t }` (a nie od razu `s.over`). Przez `C.ending.duration` sekund rozgrywka stoi, a przy sepsie spadają `s.hr` (tętno) i `s.flowMul` (prąd; `Flow.scale`). Faza serca jest sumowana (`s.phase += dt · bpm · hr`), więc gość dostaje ją w paczce (`ph`, `hr`, `fm`, `en`). Po czasie `s.over = win`; UI pokazuje ekran końcowy.
 
 ## Sieć (`js/net.js`)
 

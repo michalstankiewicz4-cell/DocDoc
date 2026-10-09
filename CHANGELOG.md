@@ -11,6 +11,11 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.45.0] - 2026-10-09
+
+### Usunięte
+- Filmy na koniec rundy (`media/doctor.*`, `media/priest.*`) — usunięte z repozytorium i z gry (prośba Michała). Po zakończeniu rundy od razu pojawia się ekran końcowy.
+
 ## [0.44.2] - 2026-10-09
 ### Zmienione (porządki w kodzie, bez zmian w zasadach gry)
 - Panel lekarza i HUD zapisują teksty tylko przy zmianie (`DD.setText` / `DD.setHTML`) — mniej pracy przeglądarki co klatkę, zwłaszcza po angielsku (wcześniej każda klatka tłumaczyła te same napisy od nowa). Kolory EKG czytane z CSS raz, a nie w każdej klatce.
@@ -404,7 +409,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.2...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.45.0...HEAD
+[0.45.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.2...v0.45.0
 [0.44.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.1...v0.44.2
 [0.44.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.0...v0.44.1
 [0.44.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.43.0...v0.44.0

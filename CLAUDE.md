@@ -63,7 +63,7 @@ Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
   przeciwwirusowy, przeciwgrzybiczy, chemioterapia), zabiegi (operacja zastawki, radioterapia narządu), oporność nabyta i naturalna,
   mikroskop z szukaniem patogenu na preparacie i zdjęciem z chwili pobrania, alarmy monitora z regulacją głośności, wiki lekarza (baza wiedzy).
 - Dźwięk: patogen „pod wodą” (serce, szum krwi, kaszel), lekarz w sali (beep pulsoksymetru, alarmy, dzwonek wyniku).
-- Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, zakończenie z filmem, statystyki końcowe, powrót do menu.
+- Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, zakończenie rundy (bez filmów od v0.45.0), statystyki końcowe, powrót do menu.
 - Język angielski (domyślny) i polski, SEO, loader.
 - Wersjonowanie, CHANGELOG, automatyczne wydania, dokumentacja (INSTRUKCJA, ARCHITEKTURA, BALANS, PLAN).
 
@@ -164,8 +164,7 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Start w nerce (`Heart.START.kidney`): punkt na tętnicy łukowatej (kąt 2,1 rad). Start w wątrobie (`START.liver`): żyła centralna środkowego zrazika. Strzałka w mikroskopie po 15 s (`HINT_AFTER`); zdjęcie patogenu widoczne dopiero po znalezieniu.
 - Minimapa patogenu ukryta na prośbę Michała (nie usuwać kodu): `config.ui.minimap = false`.
 - Ekran lekarza (v0.30.0, styl wybrany przez Michała: „ciemny monitor medyczny” + sylwetka): kolory kanałów w `.half-doc` (CSS), wybór z menu od razu zleca, przeciwciała widać na pompie 8 s po podaniu, sylwetka podświetla obszary z `DD.symptomList` (prawa nerka pacjenta).
-- Film na koniec (v0.37.0): na środku, szerokość clamp(280 px, 30vw, 720 px), przyciemnione tło.
-- Zakończenie (v0.32.0): 5 s (`config.ending`); przy wygranej lekarza serce nie staje (tylko pauza), pisk monitora tylko przy sepsie. Film: WebM, gdy przeglądarka go obsługuje, inaczej MP4; bez wcześniejszego gestu gra bez dźwięku; przycisk „Pomiń”.
+- Zakończenie (v0.32.0): 5 s (`config.ending`); przy wygranej lekarza serce nie staje (tylko pauza), pisk monitora tylko przy sepsie. Filmy końcowe usunięte w v0.45.0 (prośba Michała) — po zakończeniu od razu ekran końcowy.
 - Zoom (`config.camera`): 17, kółkiem 14–21 (Michał: „tylko delikatna regulacja”). W mięśniu kamera nadal zbliża się automatycznie (×0,6).
 - Pacjenci (`config.patients`, v0.34.0): losowanie równomierne przez hosta (`cmd.patient` wymusza), mnożniki i uzasadnienie w `docs/BALANS.md`; brak pożywienia „mało” dałem seniorowi (×0,6), diabetykowi więcej pożywienia (×1,4) i 70% glukozy. Plansza 4,5 s (`config.ui.revealTime`).
 - Język (v0.35.0): od v0.36.1 domyślnie angielski (prośba Michała), flagi przy przełączniku (SVG w `index.html`), wybór w `localStorage` (`pz-lang`), zmiana przeładowuje stronę. Kod pisze po polsku, `js/i18n.js` tłumaczy przy wyświetlaniu (MutationObserver + canvas) wg `js/lang/en.js`. **Każdy nowy tekst w grze wymaga wpisu w `js/lang/en.js`**; brakujące widać w `DD.i18nMiss` (z `DD.i18nDebug = true` także teksty bez polskich znaków). Liczby nadal z przecinkiem dziesiętnym (np. 36,9 °C).

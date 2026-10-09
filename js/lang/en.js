@@ -611,7 +611,6 @@ DD.I18N_EN = {
   'Sepsa: stan pacjenta krytyczny. Wygrywa patogen.': 'Sepsis: patient condition critical. The pathogen wins.',
 
   // ---------- koniec rundy, mecz ----------
-  'Pomiń': 'Skip',
   'Statystyki rundy': 'Round statistics',
   'Mecz': 'Match',
   'Zagraj jeszcze raz': 'Play again',

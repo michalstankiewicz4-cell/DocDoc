@@ -677,20 +677,7 @@ body[data-role="doc"] .half-doc {
 .loader-text { margin: 0; font-size: 14px; color: rgba(247, 233, 228, 0.65); }
 @media (prefers-reduced-motion: reduce) { .loader-ecg path { animation: none; stroke-dashoffset: 0; } }
 
-/* ---------- zakończenie rundy: film i zwijane statystyki ---------- */
-.end-film {
-  position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.55);
-  display: grid; place-items: center; align-content: center; gap: 12px;
-}
-/* film na środku, ~30% szerokości ekranu (prośba Michała) */
-.end-film video {
-  width: clamp(280px, 30vw, 720px); max-height: 60vh; object-fit: contain; background: #000;
-  border-radius: 12px; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
-}
-.end-film-skip {
-  padding: 8px 16px; border-radius: 999px; cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.45); color: #fff; font-weight: 700;
-}
+/* ---------- zakończenie rundy: zwijane statystyki ---------- */
 .end-details > summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
 .end-details[open] > summary { margin-bottom: 10px; }
 

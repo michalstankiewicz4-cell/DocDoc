@@ -265,7 +265,7 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń. Chemioter
 
 Na ekranie końcowym: „Zagraj jeszcze raz”, w meczu „Rewanż z zamianą ról” i „Wróć do menu” (w grze na 2 osoby kończy połączenie).
 
-Po zwycięstwie gra trwa jeszcze około 5 sekund. Przy sepsie (wyniszczeniu) serce zwalnia aż do zatrzymania, prąd krwi ustaje, a monitor lekarza przechodzi w ciągły pisk, który powoli cichnie. Potem obaj gracze widzą krótki film na środku ekranu (wygrana lekarza albo wygrana patogenu, można go pominąć), a na końcu podsumowanie. Statystyki rozwija się przyciskiem „Statystyki rundy”.
+Po zwycięstwie gra trwa jeszcze około 5 sekund. Przy sepsie (wyniszczeniu) serce zwalnia aż do zatrzymania, prąd krwi ustaje, a monitor lekarza przechodzi w ciągły pisk, który powoli cichnie. Potem obaj gracze widzą podsumowanie. Statystyki rozwija się przyciskiem „Statystyki rundy”.
 
 Po wygranej jednej ze stron ekran końcowy podaje rodzaj patogenu i statystyki obu graczy:
 - **patogen:** przebyta droga, najwyższa kolonizacja, kolonie założone i zniszczone, odrodzenia, czas przy ścianie, przejścia przez zastawki, wniknięcia w ścianę, mutacje, toksyny, sygnały chemiczne, u grzyba kolonie ze strzępek, magazyny zarodników i kolonie z zarodników, u nowotworu przerzuty, czas w ukryciu, zjedzone pożywienie, kopie (utworzone, zniszczone, obumarłe), przeciwciała zwiedzione przez kopie, przejścia przez krążenie płucne i duże, odwiedzone jamy serca, najmniej życia;

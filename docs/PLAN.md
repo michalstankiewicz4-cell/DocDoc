@@ -22,7 +22,7 @@ Status: ✅ zrobione, 🔧 w trakcie, ⬜ do zrobienia.
 | | Zadanie | Opis |
 | --- | --- | --- |
 | ✅ | Zakończenie gry (~5 s) | U lekarza piszczenie monitora powoli cichnie, u patogenu serce zwalnia i prąd krwi ustaje; dopiero potem podsumowanie. |
-| ✅ | Filmy na koniec | Wygrał lekarz → obaj gracze widzą `doctor.mp4`, wygrał patogen → `priest.mp4`. |
+| ✅ | Filmy na koniec | Wygrał lekarz → `doctor.mp4`, wygrał patogen → `priest.mp4`. Usunięte w v0.45.0 (prośba Michała). |
 | ✅ | Tło we krwi | Trochę pęcherzyków tlenu i drobnych elementów, które nie wchodzą w interakcję z graczem. |
 
 ## Etap 3. Losowanie pacjenta (środowisko gry) ✅ v0.34.0
@@ -66,7 +66,7 @@ Część z nich ma sens dopiero przy nowych patogenach (etap 7–8).
 | | Zadanie | Wersja |
 | --- | --- | --- |
 | ✅ | Angielski jako domyślny język, flagi przy przełączniku | v0.36.1 |
-| ✅ | Film na koniec na środku (~30% ekranu) | v0.37.0 |
+| ✅ | Film na koniec na środku (~30% ekranu) | v0.37.0 (filmy usunięte w v0.45.0) |
 | ✅ | Wiki lekarza (baza wiedzy ze zdjęciami) | v0.39.0 |
 | ✅ | Głośność monitora (beep, alarmy, linia płaska), „Wróć do menu” | v0.40.0–0.40.1 |
 | ✅ | Uzupełnienie całej dokumentacji | v0.41.1 |
