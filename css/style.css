@@ -86,6 +86,7 @@ kbd {
 .mut-row[data-afford="1"] { opacity: 1; }
 .mut-row kbd { margin: 0; }
 .mut-lvl { letter-spacing: 2px; color: var(--biofilm); }
+.mut-cost { margin-left: 8px; letter-spacing: 0.5px; }
 .mut-ability { margin: 0; color: var(--hud-dim); }
 .mut-ability b { color: var(--hud); }
 .hud-bars { left: 20px; bottom: 64px; width: min(340px, calc(100% - 40px)); display: grid; gap: 8px; }

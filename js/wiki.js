@@ -15,7 +15,8 @@
   const KIND = {
     bacteria: [T('Bakteria', 'Bacterium'), '#6fe3b4'],
     virus: [T('Wirus', 'Virus'), '#c9a2ff'],
-    fungus: [T('Grzyb', 'Fungus'), '#f0e2b8']
+    fungus: [T('Grzyb', 'Fungus'), '#f0e2b8'],
+    cancer: [T('Nowotwór', 'Cancer'), '#e58aa8']
   };
   const GRAM = { staph: '+', strep: '+', ecoli: '−', candida: '+' };
 
@@ -27,7 +28,9 @@
       ['virus', T(`Mniejsze (${C.virus.hp} życia zamiast ${C.bacteria.hp}), wolniejsze (×${String(C.virus.speedMul).replace('.', ',')}), kolonie rosną szybciej (×${String(C.virus.growthMul).replace('.', ',')}). Posiew zawsze ujemny, CRP mimo to rośnie, w rozmazie przeważają limfocyty. Antybiotyki nie działają.`,
         `Smaller (${C.virus.hp} vitality instead of ${C.bacteria.hp}), slower (×${C.virus.speedMul}), colonies grow faster (×${C.virus.growthMul}). Culture always negative while CRP still rises, lymphocytes dominate. Antibiotics do not work.`)],
       ['fungus', T(`Grzybnia: z każdej kolonii na ścianie rośnie strzępka; po ${C.fungus.branchLen} j. na jej końcu powstaje nowa kolonia (do ${C.fungus.maxColonies}). Magazyny zarodników wypuszczają zarodniki do krwi i są słabo wrażliwe na leki (×${String(C.fungus.storeShrink).replace('.', ',')}). Posiew dodatni, neutrofile, grzyby w moczu. Działa tylko lek przeciwgrzybiczy.`,
-        `Mycelium: a hypha grows from every wall colony; after ${C.fungus.branchLen} u. a new colony forms at its tip (up to ${C.fungus.maxColonies}). Spore stores release spores into the blood and resist drugs (×${C.fungus.storeShrink}). Culture positive, neutrophils, fungi in urine. Only the antifungal works.`)]
+        `Mycelium: a hypha grows from every wall colony; after ${C.fungus.branchLen} u. a new colony forms at its tip (up to ${C.fungus.maxColonies}). Spore stores release spores into the blood and resist drugs (×${C.fungus.storeShrink}). Culture positive, neutrophils, fungi in urine. Only the antifungal works.`)],
+      ['cancer', T(`Komórki pacjenta: posiew, PCR i rozmaz bez zmian, w mikroskopie komórki atypowe. Kolonie to guzy: bez własnych naczyń zatrzymują się na małym rozmiarze (${String(C.cancer.smallCap).replace('.', ',')}); po angiogenezie rosną dalej (średni od ${String(C.cancer.stages[0]).replace('.', ',')}, duży od ${String(C.cancer.stages[1]).replace('.', ',')}). Duże guzy wyłączają narząd i dają przerzuty. Działają chemio- i radioterapia; przeciwciała o połowę słabiej.`,
+        `The patient’s own cells: culture, PCR and differential unchanged, atypical cells under the microscope. Colonies are tumours: without their own vessels they stop at a small size (${C.cancer.smallCap}); after angiogenesis they keep growing (medium from ${C.cancer.stages[0]}, large from ${C.cancer.stages[1]}). Large tumours shut organs down and metastasise. Chemo- and radiotherapy work; antibodies at half strength.`)]
     ];
     let h = `<h3>${T('Rodzaje', 'Types')}</h3><div class="wk-grid wk-grid-3">`;
     for (const [k, txt] of kinds) {
@@ -42,7 +45,8 @@
       if ((sp.biofilm ?? 1) !== 1) traits.push(T(`przeciwciała niszczą kolonie o ${pct(1 - sp.biofilm)} słabiej`, `antibodies damage colonies ${pct(1 - sp.biofilm)} less`));
       if (sp.natural) traits.push(T(`naturalna oporność: ${sp.natural === 'abxA' ? 'β-laktam' : 'makrolid'} (${pct(D.naturalResistance)} skuteczności)`, `natural resistance: ${sp.natural === 'abxA' ? 'β-lactam' : 'macrolide'} (${pct(D.naturalResistance)} efficacy)`));
       if (sp.kind === 'virus') traits.push(T(`lek przeciwwirusowy: ${pct(sp.antiviral ?? 1)}`, `antiviral: ${pct(sp.antiviral ?? 1)}`));
-      const tests = sp.kind === 'virus'
+      const tests = sp.kind === 'cancer' ? T('posiew i PCR ujemne · rozmaz prawidłowy · komórki atypowe', 'culture and PCR negative · normal differential · atypical cells')
+        : sp.kind === 'virus'
         ? T('posiew ujemny · limfocyty · mikroskop elektronowy', 'culture negative · lymphocytes · electron microscope')
         : T(`posiew dodatni · neutrofile · Gram${GRAM[id] || ''}`, `culture positive · neutrophils · Gram${GRAM[id] || ''}`);
       h += `<article class="wk-row">
@@ -97,7 +101,8 @@
     abxA: [T('Bakteriobójczy: rani bakterię i kurczy kolonie.', 'Bactericidal: damages the bacterium and shrinks colonies.'), '#7fd0ff', T('bakterie', 'bacteria')],
     abxB: [T('Bakteriostatyczny: spowalnia bakterię i wstrzymuje wzrost kolonii.', 'Bacteriostatic: slows the bacterium and stops colony growth.'), '#b9a2ff', T('bakterie', 'bacteria')],
     antiviral: [T('Rani wirusa, spowalnia go i wstrzymuje wzrost kolonii. Skuteczność zależy od wirusa.', 'Damages the virus, slows it and stops colony growth. Efficacy depends on the virus.'), '#ff9ad0', T('wirusy', 'viruses')],
-    antifungal: [T('Rani grzyba, kurczy grzybnię i wstrzymuje strzępki; magazyny zarodników słabiej.', 'Damages the fungus, shrinks the mycelium and stops hyphae; spore stores less.'), '#a8e07a', T('grzyby', 'fungi')]
+    antifungal: [T('Rani grzyba, kurczy grzybnię i wstrzymuje strzępki; magazyny zarodników słabiej.', 'Damages the fungus, shrinks the mycelium and stops hyphae; spore stores less.'), '#a8e07a', T('grzyby', 'fungi')],
+    chemo: [T('Działa w całym organizmie: rani komórkę nowotworową i kurczy wszystkie guzy, także w mięśniu (słabiej). Najmocniej obciąża pacjenta. Bez skrótu klawiszowego (menu Leczenie).', 'Works throughout the body: damages the cancer cell and shrinks all tumours, also in the muscle (less). Strains the patient most. No keyboard shortcut (Treatment menu).'), '#ff7aa8', T('nowotwór', 'cancer')]
   };
   function sectionDrugs() {
     let h = '<div class="wk-list">';
@@ -116,6 +121,8 @@
       <li>${T(`Nabyta: każda kolejna dawka tego samego leczenia działa słabiej: ${steps.join(', ')}…`, `Acquired: every further dose of the same treatment works weaker: ${steps.join(', ')}…`)}</li>
       <li>${T(`Naturalna: gronkowiec MRSA — β-laktam, E. coli — makrolid (${pct(D.naturalResistance)} skuteczności).`, `Natural: MRSA staph — β-lactam, E. coli — macrolide (${pct(D.naturalResistance)} efficacy).`)}</li>
       <li>${T('Leki słabiej docierają do kolonii w mięśniu serca.', 'Drugs reach colonies in the heart muscle less well.')}</li></ul>
+      <h3>${T('Radioterapia', 'Radiotherapy')}</h3><p>${T(`Naświetla jeden narząd (serce, wątroba albo nerka) przez ${D.radio.duration} s: mocno kurczy guzy w nim i rani komórkę nowotworową, jeśli w nim jest. Stan pacjenta −${C.patient.sideEffect.radio}, kolejna po ${D.radio.cooldown} s. Menu Zabiegi. Na drobnoustroje nie działa.`,
+        `Irradiates one organ (heart, liver or kidney) for ${D.radio.duration} s: strongly shrinks tumours there and damages the cancer cell if it is inside. Patient condition −${C.patient.sideEffect.radio}, next after ${D.radio.cooldown} s. Procedures menu. No effect on microbes.`)}</p>
       <h3>${T('Operacja zastawki', 'Valve surgery')}</h3><p>${T(`Trwa ${SU.duration} s, stan pacjenta −${SU.patientCost}. Usuwa ogniska w promieniu ${String(SU.radius).replace('.', ',')} j. od zastawki (także w ścianie), patogen w pobliżu traci ${SU.pathogenDamage} życia. Kolejna po ${SU.cooldown} s. Klawisze H, J, K, L.`,
         `Takes ${SU.duration} s, patient condition −${SU.patientCost}. Removes foci within ${SU.radius} u. of the valve (also in the wall); a pathogen nearby loses ${SU.pathogenDamage} vitality. Next after ${SU.cooldown} s. Keys H, J, K, L.`)}</p>`;
     return h;
@@ -130,7 +137,9 @@
       [T('Żółtaczka', 'Jaundice'), T('kolonie w wątrobie (żółte białka oczu, skóra)', 'colonies in the liver (yellow eyes, skin)')],
       [T('Krew w moczu', 'Blood in urine'), T('kolonie w nerce (czerwony mocz w worku)', 'colonies in the kidney (red urine in the bag)')],
       [T('Gorączka, poty', 'Fever, sweating'), T('temperatura od 37,8 °C', 'temperature from 37.8 °C')],
-      [T('Bladość, sinica', 'Pallor, cyanosis'), T('stan pacjenta poniżej 55% / 25%', 'patient condition below 55% / 25%')]
+      [T('Bladość, sinica', 'Pallor, cyanosis'), T('stan pacjenta poniżej 55% / 25%', 'patient condition below 55% / 25%')],
+      [T('Chudnięcie, osłabienie', 'Weight loss, weakness'), T('nowotwór w zaawansowanym stadium', 'advanced cancer')],
+      [T('Niewydolność serca / wątroby / nerek', 'Heart / liver / kidney failure'), T(`guzy o masie od ${String(C.cancer.organFail).replace('.', ',')} w narządzie; dodatkowo pogarszają stan pacjenta`, `tumours with mass from ${C.cancer.organFail} in the organ; they also worsen the patient`)]
     ];
     return `<img class="wk-wide" src="img/wiki/room.png" alt="" loading="lazy">
       <table class="wk-table"><thead><tr><th>${T('Objaw', 'Symptom')}</th><th>${T('Przyczyna', 'Cause')}</th></tr></thead><tbody>

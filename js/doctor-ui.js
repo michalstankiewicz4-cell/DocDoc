@@ -10,9 +10,10 @@
     { cmd: 'doc.abxA',       key: '3', cd: 'abxA',       name: 'Antybiotyk β-laktamowy', desc: 'Bakteriobójczy: niszczy bakterie i kurczy kolonie. Nie działa na wirusy.' },
     { cmd: 'doc.abxB',       key: '4', cd: 'abxB',       name: 'Antybiotyk makrolidowy', desc: 'Bakteriostatyczny: spowalnia bakterie i wstrzymuje wzrost kolonii. Nie działa na wirusy.' },
     { cmd: 'doc.antiviral',  key: '5', cd: 'antiviral',  name: 'Lek przeciwwirusowy',    desc: 'Hamuje namnażanie wirusa i go osłabia. Nie działa na bakterie.' },
-    { cmd: 'doc.antifungal', key: 'Y', cd: 'antifungal', name: 'Lek przeciwgrzybiczy',   desc: 'Niszczy grzyby i kurczy grzybnię, wstrzymuje strzępki. Nie działa na bakterie ani wirusy.' }
+    { cmd: 'doc.antifungal', key: 'Y', cd: 'antifungal', name: 'Lek przeciwgrzybiczy',   desc: 'Niszczy grzyby i kurczy grzybnię, wstrzymuje strzępki. Nie działa na bakterie ani wirusy.' },
+    { cmd: 'doc.chemo',      key: '',  cd: 'chemo',      name: 'Chemioterapia',          desc: 'Cały organizm: niszczy komórki nowotworowe i kurczy guzy. Mocno obciąża pacjenta. Na drobnoustroje nie działa.' }
   ];
-  const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, abxA: D.abxA.cooldown, abxB: D.abxB.cooldown, antiviral: D.antiviral.cooldown, antifungal: D.antifungal.cooldown };
+  const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, abxA: D.abxA.cooldown, abxB: D.abxB.cooldown, antiviral: D.antiviral.cooldown, antifungal: D.antifungal.cooldown, chemo: D.chemo.cooldown };
   const TESTS = [
     { kind: 'crp', key: 'Z', short: 'CRP', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
     { kind: 'culture', key: 'X', short: 'Posiew', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
@@ -34,6 +35,8 @@
     abxB: '<circle cx="12" cy="12" r="7"/><path d="M5 12h14"/>',
     antiviral: '<path d="m14 4 6 6M17 7l-9 9-4 1 1-4 9-9M4 20l3-3"/><path d="m11 10 3 3"/>',
     antifungal: '<path d="M4 12a8 5 0 0 1 16 0Z"/><path d="M10 12v7a2 2 0 0 0 4 0v-7"/>',
+    chemo: '<path d="M8 3h8M9 3v4l-4 7a5 5 0 0 0 4.3 7.5h5.4A5 5 0 0 0 19 14l-4-7V3"/><path d="M8 14h8M10 17.5h4"/>',
+    radio: '<circle cx="12" cy="12" r="2"/><path d="M12 10 9 4.8A8 8 0 0 0 4 12h6M14 12h6a8 8 0 0 0-5-7.2L12 10M11 13.7l-3 5.2a8 8 0 0 0 8 0l-3-5.2"/>',
     crp: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 14h9"/>',
     culture: '<ellipse cx="12" cy="13" rx="9" ry="5"/><path d="M3 13v2c0 2.8 4 5 9 5s9-2.2 9-5v-2"/><circle cx="9" cy="12" r="1"/><circle cx="14" cy="14" r="1"/>',
     echo: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
@@ -73,7 +76,7 @@
     for (const a of ACTIONS) {
       const b = document.createElement('button');
       b.className = 'action'; b.id = 'act-' + a.cd; b.type = 'button'; b.setAttribute('role', 'menuitem');
-      b.innerHTML = `<span class="action-cd"></span>${svg(a.cd)}<span class="action-head"><span class="action-name">${a.name}</span><kbd>${a.key}</kbd></span><span class="action-desc">${a.desc}</span><span class="action-foot"><span class="action-state"></span><span class="action-eff"></span></span>`;
+      b.innerHTML = `<span class="action-cd"></span>${svg(a.cd)}<span class="action-head"><span class="action-name">${a.name}</span>${a.key ? `<kbd>${a.key}</kbd>` : ''}</span><span class="action-desc">${a.desc}</span><span class="action-foot"><span class="action-state"></span><span class="action-eff"></span></span>`;
       b.addEventListener('click', () => { DD.send({ type: a.cmd }); pick(); });
       actionsEl.appendChild(b);
       btns[a.cd] = b;
@@ -109,6 +112,17 @@
       b.innerHTML = `${svg('surgery')}<span>Zastawka ${v.name.toLowerCase()}</span><kbd>${v.key}</kbd>`;
       b.addEventListener('click', () => { DD.send({ type: 'doc.surgery', valve: v.valve }); pick(); });
       $('surgery').appendChild(b); surgBtns[v.valve] = b;
+    }
+
+    // radioterapia: przycisk na każdy obszar (w menu zabiegów)
+    const RADIO = [{ region: 'heart', name: 'Serce' }, { region: 'liver', name: 'Wątroba' }, { region: 'kidney', name: 'Nerka' }];
+    const radioBtns = {};
+    for (const r of RADIO) {
+      const b = document.createElement('button');
+      b.className = 'surg-btn'; b.type = 'button'; b.setAttribute('role', 'menuitem');
+      b.innerHTML = `${svg('radio')}<span>Radioterapia: ${r.name.toLowerCase()}</span>`;
+      b.addEventListener('click', () => { DD.send({ type: 'doc.radio', region: r.region }); pick(); });
+      $('radio').appendChild(b); radioBtns[r.region] = b;
     }
 
     const testBtns = {}, lampEls = {};
@@ -255,6 +269,17 @@
         }
         let a = R() * 6.283, x = x0 + 6, y = y0 + 6;
         for (let k = 0; k < 5; k++) { g.fillStyle = '#5a2a8a'; g.beginPath(); g.ellipse(x, y, 5.5, 2.2, a, 0, 6.283); g.fill(); a += (R() - 0.5) * 0.5; x += Math.cos(a) * 10; y += Math.sin(a) * 10; }
+      } else if (look === 'cancer') {
+        // komórki atypowe: duże, nieregularne, z ciemnym jądrem i figurą podziału
+        const m = 2 + Math.floor(R() * 3);
+        for (let k = 0; k < m; k++) {
+          const x = x0 + (R() - 0.5) * 30, y = y0 + (R() - 0.5) * 30, r = 10 + R() * 5;
+          g.fillStyle = 'rgba(214, 160, 200, 0.85)'; g.beginPath();
+          for (let q = 0; q < 9; q++) { const a = q / 9 * 6.283, rr = r * (0.8 + R() * 0.35); g[q ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+          g.closePath(); g.fill();
+          g.fillStyle = '#3a1460'; g.beginPath(); g.ellipse(x + (R() - 0.5) * 3, y + (R() - 0.5) * 3, r * 0.55, r * 0.45, R() * 3, 0, 6.283); g.fill();
+          g.fillStyle = '#7a3aa8'; g.beginPath(); g.arc(x + r * 0.15, y - r * 0.1, r * 0.14, 0, 6.283); g.fill();   // jąderko
+        }
       } else if (look === 'coxsackie') {
         // drobne wiriony w luźnym skupisku
         for (let q = 0; q < 7; q++) {
@@ -496,6 +521,7 @@
           ['Mutacje', String(S.mutations || 0)],
           ['Uwolnienia toksyn', String(S.toxins || 0)],
           ['Sygnały chemiczne', String(S.signals || 0)],
+          ...(s.kind === 'cancer' ? [['Przerzuty', String(S.metastases || 0)]] : []),
           ...(s.kind === 'fungus' ? [['Kolonie ze strzępek', String(S.hyphaColonies || 0)], ['Magazyny zarodników', String(S.sporeStores || 0)], ['Kolonie z zarodników', String(S.sporeColonies || 0)]] : []),
           ['Czas w ukryciu', num(S.hiddenTime) + ' s'],
           ['Zjedzone pożywienie', String(S.eaten || 0)],
@@ -515,6 +541,8 @@
           ['Antybiotyk makrolidowy', String(used.abxB || 0)],
           ['Lek przeciwwirusowy', String(used.antiviral || 0)],
           ['Lek przeciwgrzybiczy', String(used.antifungal || 0)],
+          ['Chemioterapia', String(used.chemo || 0)],
+          ['Radioterapia', String(used.radio || 0)],
           ['Obrażenia od leków', num(S.dmgDrugs) + ' pkt'],
           ['Operacje zastawek', String(S.surgeries || 0)],
           ['Ogniska usunięte operacją', String(S.surgeryRemoved || 0)],
@@ -639,7 +667,7 @@
         reset() { if (st === 'playing') { vid.pause(); box.hidden = true; } st = 'none'; forStats = null; }
       };
     })();
-    const KIND_NAME = { bacteria: 'bakteria', virus: 'wirus', fungus: 'grzyb' };
+    const KIND_NAME = { bacteria: 'bakteria', virus: 'wirus', fungus: 'grzyb', cancer: 'nowotwór' };
     const spLabel = (s) => { const sp = C.species[s.species]; return sp ? `${sp.name.charAt(0).toLowerCase() + sp.name.slice(1)} (${sp.latin})` : (KIND_NAME[s.kind] || 'bakteria'); };
     function update(s) {
       const d = s.doctor, b = s.bact;
@@ -708,6 +736,13 @@
           el.disabled = !d.unlocked || busy || !s.running || !!s.over;
           el.dataset.active = SU.state === 'running' && SU.valve === v.valve ? '1' : '0';
         }
+        const rcd = d.cd.radio || 0;
+        for (const r of RADIO) {
+          const el = radioBtns[r.region];
+          el.disabled = !d.unlocked || rcd > 0 || !s.running || !!s.over;
+          el.dataset.active = s.radio && s.radio.region === r.region ? '1' : '0';
+        }
+        $('radio-state').textContent = s.radio ? `Naświetlanie jeszcze ${Math.ceil(s.radio.t)} s` : rcd > 0 ? `Kolejna za ${Math.ceil(rcd)} s` : '';
         $('surg-state').textContent = !d.unlocked ? 'Wymaga wyniku badania'
           : SU.state === 'running' ? `Operacja w toku: jeszcze ${Math.ceil(SU.t)} s`
           : SU.cd > 0 ? `Kolejna za ${Math.ceil(SU.cd)} s` : 'Gotowa';
@@ -779,6 +814,14 @@
         }
       }
       $('s-colonies-n').textContent = s.colonies.length;
+      // rak: etap każdego guza wynika z jego wielkości
+      if (s.kind === 'cancer') {
+        const ST = C.cancer.stages; let sm = 0, md = 0, lg = 0;
+        for (const c of s.colonies) { if (c.size < ST[0]) sm++; else if (c.size < ST[1]) md++; else lg++; }
+        const t = `małe ${sm} · średnie ${md} · duże ${lg}`;
+        if ($('s-tumors').textContent !== t) $('s-tumors').textContent = t;
+      }
+      $('s-tumors').hidden = s.kind !== 'cancer';
       // pożywienie i kopie
       const food = b.food || 0, ncop = (s.copies || []).length;
       $('h-food').style.transform = `scaleX(${food / 100})`;
@@ -789,18 +832,21 @@
       $('mut-pts').textContent = (b.points || 0).toFixed(1).replace('.', ',');
       for (const m of MUTS) {
         // grzyb: klawisze 7, 8, 9, 0 mają inne mutacje (C.fungus.mutNames)
-        const key = DD.Game.mutKey(s, m.what), nm = (s.kind === 'fungus' && C.fungus.mutNames[m.what]) || m.name;
+        const key = DD.Game.mutKey(s, m.what), nm = (s.kind === 'fungus' && C.fungus.mutNames[m.what]) || (s.kind === 'cancer' && C.cancer.mutNames[m.what]) || m.name;
         const lvl = (b.mut && b.mut[key]) || 0, max = MC[key].max, cost = MC.cost[lvl];
         const el = mutBtns[m.what];
         const nmEl = el.querySelector('span'); if (nmEl.dataset.nm !== nm) { nmEl.dataset.nm = nm; nmEl.textContent = nm; }
-        el.querySelector('.mut-lvl').textContent = '●'.repeat(lvl) + '○'.repeat(max - lvl) + (lvl < max ? `  ${cost} pkt` : '');
+        // kropki poziomów i koszt w osobnych węzłach (koszt tłumaczy się jako „N pkt”)
+        const lv = el.querySelector('.mut-lvl'), key2 = lvl + '/' + max + '/' + cost;
+        if (lv.dataset.k !== key2) { lv.dataset.k = key2; lv.innerHTML = '●'.repeat(lvl) + '○'.repeat(max - lvl) + (lvl < max ? `<span class="mut-cost">${cost} pkt</span>` : ''); }
         el.disabled = lvl >= max || (b.points || 0) < cost;
         el.dataset.afford = !el.disabled ? '1' : '0';
       }
       const ab = [];
       if (b.hidden) ab.push(`<b>Ukryty w kolonii</b>: przeciwciała cię nie widzą. F wychodzi.`);
       else if (s.colonies.some((c) => !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < C.hide.radius)) ab.push('F: ukryj się w kolonii.');
-      if (food >= C.copies.cost && ncop < C.copies.max) ab.push(s.kind === 'fungus' ? '<b>R: wypuść zarodnik</b> (odciąga przeciwciała).' : '<b>R: rozmnóż się</b> (kopia odciąga przeciwciała).');
+      if (food >= C.copies.cost && ncop < C.copies.max) ab.push(s.kind === 'fungus' ? '<b>R: wypuść zarodnik</b> (odciąga przeciwciała).' : s.kind === 'cancer' ? '<b>R: podziel się</b> (kopia odciąga przeciwciała).' : '<b>R: rozmnóż się</b> (kopia odciąga przeciwciała).');
+      if (s.radio && DD.Heart.organAt(b.x, b.y) === s.radio.region) ab.push('<b>Naświetlanie!</b> Uciekaj z tego narządu.');
       if (s.kind === 'fungus' && !b.dead && s.colonies.some((c) => !c.store && !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < C.fungus.storeRadius))
         ab.push(`E: magazyn zarodników z tej kolonii (−${C.fungus.storeCost} życia).`);
       { const X = C.signals, REG = { right: 'prawe serce', left: 'lewe serce', legs: 'nogi', liver: 'wątroba', kidney: 'nerka' };
@@ -814,14 +860,14 @@
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;
       $('s-fever').hidden = !(d.temp > 37.4);
       // leki we krwi widziane przez patogen (z rzeczywistym działaniem)
-      const DN = { abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'lek przeciwwirusowy', antifungal: 'lek przeciwgrzybiczy' };
+      const DN = { abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'lek przeciwwirusowy', antifungal: 'lek przeciwgrzybiczy', chemo: 'chemioterapia' };
       const active = Object.keys(DN).filter((k) => s.drugs[k] && s.drugs[k].t > 0);
       $('s-slow').hidden = active.length === 0;
       $('s-slow').textContent = active.map((k) => `${DN[k]}: ${s.drugs[k].eff > 0.05 ? 'działa ' + Math.round(s.drugs[k].eff * 100) + '%' : 'nie działa'}`).join(', ');
       $('s-ab').hidden = stuck === 0;
       $('s-ab-n').textContent = stuck;
       $('s-ab-near').hidden = !(s.antibodies.length > stuck && stuck === 0 && s.antibodies.some(a => Math.hypot(a.x - b.x, a.y - b.y) < 12));
-      const RN = { antibodies: 'przeciwciała', fever: 'gorączka', abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'przeciwwirusowy', antifungal: 'przeciwgrzybiczy' };
+      const RN = { antibodies: 'przeciwciała', fever: 'gorączka', abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'przeciwwirusowy', antifungal: 'przeciwgrzybiczy', chemo: 'chemioterapia', radio: 'radioterapia' };
       const res = Object.keys(RN).filter(k => b.resist[k] > 0).map(k => `${RN[k]} ${Math.round(b.resist[k] * 100)}%`);
       $('s-res').hidden = res.length === 0;
       $('s-res').textContent = 'Oporność: ' + res.join(', ');
@@ -842,7 +888,7 @@
         $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`;
         $('end-text').textContent = s.over === 'doctor'
           ? `Zakażenie wyleczone po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`
-          : `Pacjent w sepsie po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`;
+          : s.kind === 'cancer' ? `Wyniszczenie nowotworowe po ${mmss(s.time)}. Patogen: ${spLabel(s)}.` : `Pacjent w sepsie po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`;
         renderStats(s);
         if (DD.Match) DD.Match.renderEnd();
         $('end-again').focus();

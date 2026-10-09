@@ -32,6 +32,12 @@
     if (m.legs > 0.25) list.push(['Obrzęk nóg', 'warm', 'legs']);
     if (m.liver > 0.3) list.push(['Żółtaczka', m.liver > 0.9 ? 'high' : 'warm', 'liver']);
     if (m.kidney > 0.3) list.push(['Krew w moczu', m.kidney > 0.9 ? 'high' : 'warm', 'kidney']);
+    // nowotwór: wyniszczenie i niewydolność narządów zajętych przez duże guzy
+    if (s.kind === 'cancer' && s.bact.infection > 30) list.push(['Chudnięcie, osłabienie', s.bact.infection > 60 ? 'high' : 'warm', 'body']);
+    if (DD.Game.organFailure) {
+      const FAIL = { heart: ['Niewydolność serca', 'heart'], liver: ['Niewydolność wątroby', 'liver'], kidney: ['Niewydolność nerek', 'kidney'] };
+      for (const o of DD.Game.organFailure(s)) list.push([FAIL[o][0], 'high', FAIL[o][1]]);
+    }
     if (cond < 55) list.push(['Bladość', cond < 30 ? 'high' : 'warm', 'skin']);
     if (cond < 25) list.push(['Sinica', 'high', 'skin']);
     return list;

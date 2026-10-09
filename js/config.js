@@ -51,6 +51,8 @@ DD.CONFIG = {
     abxB:       { cooldown: 22, duration: 10, speedMul: 0.45 },               // makrolid: bakteriostatyczny
     antiviral:  { cooldown: 22, duration: 10, dps: 1.8, speedMul: 0.6 },      // lek przeciwwirusowy: tylko na wirusa
     antifungal: { cooldown: 22, duration: 10, dps: 2.0, colonyShrink: 0.022 }, // lek przeciwgrzybiczy (flukonazol): tylko na grzyba, kurczy grzybnię
+    chemo:      { cooldown: 40, duration: 12, dps: 1.6, colonyShrink: 0.035 }, // chemioterapia: cały organizm, tylko na nowotwór, mocno obciąża pacjenta
+    radio:      { cooldown: 35, duration: 8, colonyShrink: 0.11, dps: 4 },     // radioterapia: jeden obszar (serce / wątroba / nerka), tylko na nowotwór
     naturalResistance: 0.2,  // skuteczność antybiotyku z klasy, na którą bakteria jest naturalnie oporna
     // operacja zastawki: po `duration` s usuwa kolonie w promieniu `radius` od zastawki
     surgery: { duration: 10, cooldown: 60, radius: 5, patientCost: 15, pathogenDamage: 40 }
@@ -68,7 +70,7 @@ DD.CONFIG = {
   // stan pacjenta (0..100). Na sekundę: -infectionDrain * kolonizacja, -feverDrain * gorączka,
   // +regen dopóki kolonizacja < regenStopsAt (%). sideEffect = jednorazowy koszt dawki leku.
   patient: { infectionDrain: 1.4, feverDrain: 0.35, regen: 0.25, regenStopsAt: 40,
-    sideEffect: { antibodies: 2, fever: 1, abxA: 4, abxB: 4, antiviral: 4, antifungal: 4 } },
+    sideEffect: { antibodies: 2, fever: 1, abxA: 4, abxB: 4, antiviral: 4, antifungal: 4, chemo: 9, radio: 5 } },
 
   // rodzaje patogenów do wyboru na starcie. natural = klasa antybiotyku, na którą bakteria jest naturalnie oporna;
   // antiviral = skuteczność leku przeciwwirusowego na danego wirusa. Lekarz rozpoznaje rodzaj pod mikroskopem.
@@ -88,9 +90,22 @@ DD.CONFIG = {
     adeno:     { kind: 'virus', name: 'Adenowirus', latin: 'Adenoviridae', antiviral: 0.6, speed: 1.0, growth: 0.9, biofilm: 0.75,
                  micro: 'Wiriony w kształcie dwudziestościanu z długimi włóknami.', treat: 'Lek przeciwwirusowy działa częściowo (60%).' },
     candida:   { kind: 'fungus', name: 'Drożdżak Candida', latin: 'Candida albicans', speed: 0.8, growth: 1.0, biofilm: 0.8,
-                 micro: 'Owalne, pączkujące komórki drożdżaków i strzępki rzekome (Gram-dodatnie).', treat: 'Wrażliwy na lek przeciwgrzybiczy. Antybiotyki i lek przeciwwirusowy nie działają.' }
+                 micro: 'Owalne, pączkujące komórki drożdżaków i strzępki rzekome (Gram-dodatnie).', treat: 'Wrażliwy na lek przeciwgrzybiczy. Antybiotyki i lek przeciwwirusowy nie działają.' },
+    cancer:    { kind: 'cancer', name: 'Komórka nowotworowa', latin: 'Carcinoma (rak)', speed: 0.7, growth: 0.9, biofilm: 0.5,
+                 micro: 'Duże komórki atypowe: powiększone, ciemne jądra, liczne podziały.', treat: 'Chemioterapia i radioterapia. Antybiotyki, leki przeciwwirusowe i przeciwgrzybicze nie działają.' }
   },
-  defaultSpecies: { bacteria: 'ecoli', virus: 'adeno', fungus: 'candida' },
+  defaultSpecies: { bacteria: 'ecoli', virus: 'adeno', fungus: 'candida', cancer: 'cancer' },
+
+  // rak: kolonie to guzy. Bez własnych naczyń guz nie przekracza smallCap; angiogeneza (mutacja 9) pozwala rosnąć do maxSize.
+  // Wielkość guza (nie skrypt) decyduje o etapie: mały < stages[0] ≤ średni < stages[1] ≤ duży.
+  cancer: {
+    smallCap: 0.6, maxSize: 2, stages: [0.5, 1.2], infectionMul: 0.5,   // zaawansowanie choroby liczone z połowy masy guzów
+    divStep: 0.35,          // szybsze podziały (7): +35% wzrostu guzów na poziom
+    apoStep: 0.3,           // wyłączenie apoptozy (8): −30% skutków chemio-, radioterapii i przeciwciał na poziom
+    metaPeriod: 25, metaMinSize: 1,   // przerzuty (0): guz od rozmiaru 1 wypuszcza co 25 s komórkę do krwi, która osiada i zakłada nowy guz
+    organFail: 1.5, failDrain: 0.25,  // masa guzów w narządzie, od której narząd przestaje pracować (dodatkowy spadek stanu / s)
+    mutNames: { speed: 'Szybsze podziały', fever: 'Wyłączenie apoptozy', capsule: 'Własne naczynia (angiogeneza)', toxins: 'Przerzuty' }
+  },
 
   // grzyb: kolonie puszczają strzępki wzdłuż ścian (jak korzenie); na końcu strzępki wyrasta nowa kolonia.
   // E przy własnej kolonii zamienia ją w magazyn zarodników (wypuszcza zarodniki do krwi, odrodzenie w magazynie).
@@ -129,7 +144,11 @@ DD.CONFIG = {
     toxins:  { max: 1 },                       // odblokowuje toksyny (T)
     pierce:  { max: 1 },                       // grzyb (7): nowe kolonie na końcach strzępek wrastają w mięsień serca
     drugres: { max: 2, step: 0.3 },            // grzyb (8): −30% działania leku przeciwgrzybiczego na poziom
-    spores:  { max: 1 },                       // grzyb (0): zarodniki we krwi osiadają na ścianach i zakładają kolonie
+    spores:  { max: 1 },
+    divide:  { max: 2 },                       // rak (7): szybsze podziały
+    apoptosis: { max: 2 },                     // rak (8): wyłączenie apoptozy
+    angio:   { max: 1 },                       // rak (9): własne naczynia krwionośne — guzy mogą rosnąć powyżej smallCap
+    meta:    { max: 1 },                       // rak (0): przerzuty                       // grzyb (0): zarodniki we krwi osiadają na ścianach i zakładają kolonie
     mask:    { max: 2, symptom: 0.3, sens: 0.15, crp: 0.2 },  // maskowanie (6): na poziom −30% objawów, −15 pkt proc. czułości badań, −20% CRP
     cost: [1, 2, 3]                            // koszt kolejnych poziomów
   },

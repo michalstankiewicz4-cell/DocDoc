@@ -68,7 +68,7 @@ Rośnie jak korzenie: strzępki rozrastają się po ścianach i tkankach (realis
 - mutacje: strzępki przebijające tkanki, odporność na leki (przeciwgrzybicze), ukrywanie przed układem odpornościowym, zarodniki transportowane krwią,
 - lekarz: posiew i mikroskop (strzępki), leki przeciwgrzybicze.
 
-## Etap 8. Nowy patogen: rak
+## Etap 8. Nowy patogen: rak ✅ v0.41.0 (bez przeszczepu, amputacji i nowych badań: RTG, rezonans, biopsja, markery — kolejne aktualizacje)
 
 Nowotwór rośnie z komórek pacjenta:
 1. mały guz → 2. średni guz → 3. własne naczynia krwionośne (angiogeneza) → 4. przerzuty.

@@ -64,3 +64,17 @@ Pozostałe wartości (kolonie, leki, badania, pożywienie, rodzaje patogenów) o
 | magazyn | 10 życia, zarodnik co 20 s, leki ×0,3, odrodzenie kosztuje magazyn połowę | „bezpieczna baza” — lekarz musi go wykryć (tomografia, echo, USG) |
 | ruch | ×0,8 | grzyb nie ma wici |
 | lek przeciwgrzybiczy | 22 s odnowienia, 10 s działania, 2,0 obrażeń/s, kurczy kolonie 0,022/s | jak β-laktam dla bakterii |
+
+## Nowotwór (od v0.41.0, `config.cancer`, `species.cancer`)
+
+| Wartość | Liczba | Uzasadnienie |
+| --- | --- | --- |
+| guz bez naczyń | do 0,6 | guz bez angiogenezy nie rośnie powyżej ~1–2 mm — gracz musi „kupić” własne naczynia |
+| guz z naczyniami | do 2,0 | duże guzy są groźne, ale widoczne w obrazowaniu |
+| etapy (mały / średni / duży) | < 0,5 / 0,5–1,2 / ≥ 1,2 | wynikają z wielkości, nie z czasu (zasada: bez skryptowanych faz) |
+| zaawansowanie (wskaźnik kolonizacji) | masa guzów × połowa mnożnika kolonii | guzy są większe od kolonii, inaczej rak kończyłby grę za szybko |
+| niewydolność narządu | masa ≥ 1,5 w narządzie, −0,25 stanu/s na narząd | „wyłączanie narządów” z opisu Michała |
+| przerzuty | guz ≥ 1, co 25 s, osiada po 3 s | jak zarodniki grzyba |
+| ruch / przeciwciała | ×0,7 / ×0,5 | komórka nowotworowa nie ma wici; organizm słabo rozpoznaje własne komórki |
+| chemioterapia | 12 s, odnowienie 40 s, −9 stanu, 1,6 obrażeń/s, kurczy 0,035/s | najmocniejsze leczenie, najdroższe dla pacjenta |
+| radioterapia | 8 s na narząd, odnowienie 35 s, −5 stanu, kurczy 0,11/s, 4 obrażeń/s w obszarze | celowana: lekarz musi wiedzieć, gdzie są guzy (TK, USG, echo) |

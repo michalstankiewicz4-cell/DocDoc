@@ -78,7 +78,7 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `M` | dźwięk włącz/wyłącz |
 
 ### Wybór patogenu
-Przed startem gracz patogenu wybiera jedną z trzech bakterii, jeden z trzech wirusów albo grzyba (Candida) (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.
+Przed startem gracz patogenu wybiera jedną z trzech bakterii, jeden z trzech wirusów, grzyba (Candida) albo nowotwór (rak) (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.
 
 **Miejsce startu:** serce (żyła główna górna), nerka (tętnica łukowata w nerce) albo wątroba (żyła centralna zrazika). Pozostałe narządy na ekranie wyboru są jeszcze niedostępne.
 
@@ -98,6 +98,13 @@ Przed startem gracz patogenu wybiera jedną z trzech bakterii, jeden z trzech wi
 | Wirus Coxsackie B | mały, gładki dwudziestościan | lek przeciwwirusowy tylko 20% | wolniejszy (−10%), kolonie rosną o 25% szybciej |
 | Adenowirus | dwudziestościan z włóknami | lek przeciwwirusowy 60% | kolonie rosną o 10% wolniej, ale przeciwciała niszczą je o 25% słabiej |
 | Drożdżak Candida | owalna, pączkująca komórka ze strzępką | lek przeciwgrzybiczy 100% | grzybnia, magazyny zarodników, własne mutacje (niżej) |
+
+**Nowotwór (rak):**
+- Grasz krążącą komórką nowotworową. Kolonie to **guzy** (zakładane `E` jak kolonie). Etap guza wynika z jego wielkości: mały (< 0,5), średni (0,5–1,2), duży (≥ 1,2) — liczbę guzów w każdym etapie pokazuje HUD.
+- Bez własnych naczyń guz zatrzymuje się na wielkości 0,6. Duże guzy (masa ≥ 1,5 w narządzie) **wyłączają narząd**: niewydolność serca, wątroby albo nerek dodatkowo pogarsza stan pacjenta. Przy dużym zaawansowaniu pacjent chudnie i słabnie.
+- **Mutacje nowotworu:** `7` szybsze podziały (+35% wzrostu guzów na poziom), `8` wyłączenie apoptozy (−30% skutków chemio-, radioterapii i przeciwciał na poziom), `9` własne naczynia — angiogeneza (guzy rosną do 2,0, widać ich naczynia), `0` przerzuty (guz od wielkości 1 co 25 s wypuszcza komórkę do krwi, która osiada i zakłada nowy guz), `6` maskowanie objawów.
+- `R` — podział: kopia komórki (wabik dla przeciwciał). Przeciwciała działają na nowotwór o połowę słabiej.
+- Lekarz: posiew i PCR są ujemne, rozmaz prawidłowy, w mikroskopie komórki atypowe; guzy widać w echu, USG i tomografii. Działają tylko chemio- i radioterapia.
 
 **Grzyb (Candida):**
 - **Grzybnia:** każda kolonia na ścianie puszcza strzępkę, która rośnie wzdłuż ściany jak korzeń (szybciej, im większa kolonia). Gdy strzępka osiągnie 7 j., na jej końcu wyrasta nowa kolonia (najwyżej 16 kolonii), która puszcza własną strzępkę. Lek przeciwgrzybiczy wstrzymuje strzępki i kurczy grzybnię.
@@ -208,6 +215,8 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
    - **β-laktam** (bakteriobójczy) niszczy bakterię i kurczy kolonie.
    - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.
    - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
+   - **Chemioterapia** (menu Leczenie, bez skrótu): 12 s w całym organizmie — rani komórkę nowotworową i kurczy wszystkie guzy; stan pacjenta −9, odnowienie 40 s. Na drobnoustroje nie działa.
+   - **Radioterapia** (menu Zabiegi): naświetla jeden narząd (serce, wątroba, nerka) przez 8 s — mocno kurczy guzy w nim i rani komórkę nowotworową, jeśli w nim jest; stan pacjenta −5, odnowienie 35 s.
    - **Lek przeciwgrzybiczy** niszczy grzyba, kurczy grzybnię i wstrzymuje strzępki (magazyny zarodników słabiej). Na bakterie i wirusy nie działa.
    - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Skuteczność zależy od rodzaju patogenu (tabela w „Wybór patogenu”); rodzaj pokazuje mikroskop, a antybiogram wrażliwość z uwzględnieniem oporności nabytej.
    - **Czułość badań:** posiew, mikroskop, echo i USG wykrywają to, co jest, z czułością 85% (echo i USG osobno dla każdego ogniska). Wynik bywa więc fałszywie ujemny — warto badanie powtórzyć. Maskowanie patogenu obniża czułość.

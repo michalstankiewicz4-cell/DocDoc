@@ -24,11 +24,11 @@
         ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
         inTissue: false, burrowT: 0, z: 0,
         hidden: 0,                                     // id kolonii, w której ukrył się patogen (0 = nie)
-        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0, mask: 0, pierce: 0, drugres: 0, spores: 0 }, toxinCd: 0, signalCd: 0,
+        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0, mask: 0, pierce: 0, drugres: 0, spores: 0, divide: 0, apoptosis: 0, angio: 0, meta: 0 }, toxinCd: 0, signalCd: 0,
         food: 0,                                       // pasek pożywienia (0..100), pełny pozwala się rozmnożyć
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
-        resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0 },
+        resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0, chemo: 0, radio: 0 },
         natural: null    // klasa antybiotyku, na którą bakteria jest naturalnie oporna (ukryte)
       },
       doctor: {
@@ -47,7 +47,7 @@
         resultSeq: 0,
         surgery: { state: 'idle', t: 0, cd: 0, valve: null },
         unlocked: false, knownInfection: null, knownHp: null,
-        cd: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0 },
+        cd: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0, chemo: 0, radio: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
       },
       // stan pacjenta 0..100: zakażenie i leczenie go obniżają, organizm powoli się regeneruje; 0 = sepsa
@@ -55,7 +55,8 @@
       kind: 'bacteria',  // rodzaj patogenu: 'bacteria' | 'virus' | 'fungus' (wybiera gracz patogenu, lekarz go nie zna)
       species: 'ecoli',  // gatunek z C.species
       toxinT: 0,         // pozostały czas zakłócania badań przez toksyny
-      drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 }, antifungal: { t: 0, eff: 0 } },
+      drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 }, antifungal: { t: 0, eff: 0 }, chemo: { t: 0, eff: 0 } },
+      radio: null,     // radioterapia: { region, t, eff } — naświetlany obszar
       antibodies: [],
       colonies: [],    // kolonie patogenu: { x, y, nx, ny, born, seed, size 0..1 }
       food: [],        // pożywienie we krwi: { id, x, y, z, kind }
@@ -72,12 +73,12 @@
         valveCrossings: 0, lungsTrips: 0, bodyTrips: 0, places: [],
         abHits: 0, dmgAntibodies: 0, dmgFever: 0,
         tests: 0, firstTestAt: -1, firstTreatAt: -1,
-        used: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0 },
+        used: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0, chemo: 0, radio: 0 },
         minCond: 100, condByInfection: 0, condByTreatment: 0,
         coloniesFounded: 0, coloniesLost: 0, deaths: 0,
         mutations: 0, toxins: 0, hiddenTime: 0,
         eaten: 0, copiesMade: 0, copiesLost: 0, copiesExpired: 0, decoyHits: 0,
-        hyphaColonies: 0, sporeStores: 0, sporeColonies: 0
+        hyphaColonies: 0, sporeStores: 0, sporeColonies: 0, metastases: 0
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0,         // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
@@ -150,6 +151,32 @@
     }
     s.stats.hyphaColonies++;
   }
+
+  // obszar radioterapii, do którego należy punkt: serce (powyżej przepony), wątroba, nerka
+  const regionOrgan = (c) => { const o = H.organAt(c.x, c.y); return o === 'abdomen' ? null : o; };
+  // rak: duży guz z mutacją „przerzuty” co metaPeriod s wypuszcza komórkę nowotworową do krwi (osiada jak zarodnik grzyba)
+  function cancerColony(s, c, dt) {
+    const CA = C.cancer;
+    if (!s.bact.mut.meta || c.size < CA.metaMinSize) return;
+    c.metaT = (c.metaT ?? CA.metaPeriod) - dt;
+    if (c.metaT > 0) return;
+    c.metaT = CA.metaPeriod;
+    if (s.copies.length < C.copies.max) {
+      s.copies.push({ id: s.nextId++, x: c.x - (c.inTissue ? 0 : c.nx * 0.9), y: c.y - (c.inTissue ? 0 : c.ny * 0.9), vx: 0, vy: 0, dir: 0, wob: rnd(s) * 6, born: s.time, meta: 1 });
+      s.stats.copiesMade++;
+    }
+  }
+
+  // radioterapia rani patogen, który jest w naświetlanym obszarze
+  const radioDps = (s, b) => (s.radio && s.radio.t > 0 && regionOrgan(b) === s.radio.region ? D.radio.dps * s.radio.eff : 0);
+
+  // narządy wyłączone przez guzy (masa guzów w narządzie ≥ organFail): lista 'heart' | 'liver' | 'kidney'
+  G.organFailure = function (s) {
+    if (s.kind !== 'cancer') return [];
+    const m = { heart: 0, liver: 0, kidney: 0 };
+    for (const c of s.colonies) { const o = H.organAt(c.x, c.y); if (o in m) m[o] += c.size; }
+    return Object.keys(m).filter((k) => m[k] >= C.cancer.organFail);
+  };
 
   // ---------- KOMENDY ----------
   G.apply = function (s, cmd) {
@@ -232,7 +259,16 @@
         d.feverEff = useDrug(s, 'fever') * PT(s).drug;
         log(s, 'doc', `Wywołano gorączkę leczniczą (skuteczność ${pct(d.feverEff)}).`);
         return;
-      case 'doc.abxA': case 'doc.abxB': case 'doc.antiviral': case 'doc.antifungal': {
+      case 'doc.radio': {
+        // radioterapia: naświetlanie jednego obszaru (serce, wątroba, nerka)
+        if (!d.unlocked || d.cd.radio > 0 || !RADIO_REGION[cmd.region]) return;
+        const eff = useDrug(s, 'radio');
+        d.cd.radio = D.radio.cooldown;
+        s.radio = { region: cmd.region, t: D.radio.duration, eff: eff * susceptibility(s, 'radio') * PT(s).drug };
+        log(s, 'doc', `Radioterapia: ${RADIO_REGION[cmd.region]} (skuteczność wg dawkowania ${pct(eff)}).`);
+        return;
+      }
+      case 'doc.abxA': case 'doc.abxB': case 'doc.antiviral': case 'doc.antifungal': case 'doc.chemo': {
         const key = cmd.type.slice(4);
         if (!d.unlocked || d.cd[key] > 0) return;
         const eff = useDrug(s, key);
@@ -280,7 +316,8 @@
     s.stats.coloniesFounded++;
   }
 
-  const DRUG_NAME = { abxA: 'antybiotyk β-laktamowy', abxB: 'antybiotyk makrolidowy', antiviral: 'lek przeciwwirusowy', antifungal: 'lek przeciwgrzybiczy' };
+  const DRUG_NAME = { abxA: 'antybiotyk β-laktamowy', abxB: 'antybiotyk makrolidowy', antiviral: 'lek przeciwwirusowy', antifungal: 'lek przeciwgrzybiczy', chemo: 'chemioterapię' };
+  const RADIO_REGION = { heart: 'serce', liver: 'wątroba', kidney: 'nerka' };
   // gatunek patogenu z identyfikatora (dawne 'bacteria' / 'virus' -> gatunek domyślny)
   G.speciesOf = function (id) {
     if (C.species[id]) return id;
@@ -292,6 +329,8 @@
     if (key === 'antiviral') return s.kind === 'virus' ? ((C.species[s.species] || {}).antiviral ?? 1) : 0;
     // lek przeciwgrzybiczy: tylko grzyb; mutacja „odporność na leki” go osłabia
     if (key === 'antifungal') return s.kind === 'fungus' ? 1 - C.mutations.drugres.step * s.bact.mut.drugres : 0;
+    // chemio- i radioterapia: tylko nowotwór; wyłączenie apoptozy je osłabia
+    if (key === 'chemo' || key === 'radio') return s.kind === 'cancer' ? apoMul(s) : 0;
     return 1;
   }
   G.susceptibility = susceptibility;
@@ -319,7 +358,7 @@
     // posiew liczy też komórki patogenu we krwi: oryginał (jeśli płynie we krwi) i jego kopie
     if (kind === 'culture') {
       const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden ? 1 : 0;
-      const positive = s.kind !== 'virus' && rnd(s) < sens(s, 'culture');   // bakterie i drożdżaki rosną na podłożu   // fałszywie ujemny z szansą 1 − czułość
+      const positive = (s.kind === 'bacteria' || s.kind === 'fungus') && rnd(s) < sens(s, 'culture');   // bakterie i drożdżaki rosną na podłożu   // fałszywie ujemny z szansą 1 − czułość
       return { positive, infection: positive ? Math.round(b.infection) : 0, cells: positive ? inBlood + s.copies.length : 0 };
     }
     if (kind === 'echo') {
@@ -349,12 +388,12 @@
     if (kind === 'cbc') {
       const inf = b.infection * (1 - C.mutations.mask.crp * maskLvl(s));
       const w = 6 + inf * 0.14 + (rnd(s) * 2 - 1) * D.tests.cbc.noise * (tox ? 3 : 1);
-      return { wbc: Math.max(2, Math.round(w * 10) / 10), diff: inf < 8 ? 'norm' : s.kind === 'virus' ? 'lympho' : 'neutro' };
+      return { wbc: Math.max(2, Math.round(w * 10) / 10), diff: inf < 8 || s.kind === 'cancer' ? 'norm' : s.kind === 'virus' ? 'lympho' : 'neutro' };
     }
     // PCR: materiał genetyczny we krwi (patogen, kopie, kolonie poza mięśniem) — rodzaj z czułością badania
     if (kind === 'pcr') {
       const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden;
-      const found = (inBlood || s.copies.length > 0 || s.colonies.some((c) => !c.inTissue)) && rnd(s) < sens(s, 'pcr');
+      const found = s.kind !== 'cancer' && (inBlood || s.copies.length > 0 || s.colonies.some((c) => !c.inTissue)) && rnd(s) < sens(s, 'pcr');   // nowotwór to komórki pacjenta — brak obcego DNA
       return { found, species: found ? s.species : null };
     }
     // badanie moczu: przy koloniach w nerce krwinki czerwone (oba patogeny) i bakterie (tylko bakteria)
@@ -463,7 +502,11 @@
   // mutacje za punkty z przyrostu kolonii
   // grzyb ma własne mutacje pod tymi samymi klawiszami (7, 8, 0); 9 (otoczka) i 6 (maskowanie) są wspólne
   const FUNGUS_MUT = { speed: 'pierce', fever: 'drugres', toxins: 'spores' };
-  G.mutKey = (s, what) => (s.kind === 'fungus' && FUNGUS_MUT[what]) || what;
+  // rak: 7 szybsze podziały, 8 wyłączenie apoptozy, 9 angiogeneza, 0 przerzuty; 6 wspólne
+  const CANCER_MUT = { speed: 'divide', fever: 'apoptosis', capsule: 'angio', toxins: 'meta' };
+  G.mutKey = (s, what) => (s.kind === 'fungus' && FUNGUS_MUT[what]) || (s.kind === 'cancer' && CANCER_MUT[what]) || what;
+  // wyłączenie apoptozy: mnożnik skutków leczenia i przeciwciał dla nowotworu
+  const apoMul = (s) => 1 - C.cancer.apoStep * (s.bact.mut.apoptosis || 0);
   function mutate(s, what) {
     what = G.mutKey(s, what);
     const b = s.bact, M = C.mutations;
@@ -659,7 +702,9 @@
     // --- stan pacjenta ---
     {
       const P = C.patient, ST = s.stats;
-      const byInf = P.infectionDrain * PT(s).drain * (b.infection / 100) * dt;
+      let byInf = P.infectionDrain * PT(s).drain * (b.infection / 100) * dt;
+      // rak: duże guzy wyłączają narząd (dodatkowy spadek stanu)
+      if (s.kind === 'cancer') { const of = G.organFailure(s); byInf += C.cancer.failDrain * of.length * dt; }
       const byFever = P.feverDrain * feverK * dt;
       const regen = P.regen * PT(s).regen * Math.max(0, 1 - b.infection / P.regenStopsAt) * dt;
       s.patient.cond = Math.min(100, s.patient.cond - byInf - byFever + regen);
@@ -671,7 +716,7 @@
     const dr = s.drugs;
     for (const k in dr) if (dr[k].t > 0) dr[k].t = Math.max(0, dr[k].t - dt);
     const on = (k) => (dr[k].t > 0 ? dr[k].eff : 0);
-    const effA = on('abxA'), effB = on('abxB'), effV = on('antiviral'), effF = on('antifungal');
+    const effA = on('abxA'), effB = on('abxB'), effV = on('antiviral'), effF = on('antifungal'), effC = on('chemo');
     // spowolnienie ruchu i wstrzymanie wzrostu kolonii: makrolid (bakteria), lek przeciwwirusowy (wirus)
     b.slowMul = (1 - (1 - D.abxB.speedMul) * effB) * (1 - (1 - D.antiviral.speedMul) * effV);
     b.slowT = Math.max(effB > 0 ? dr.abxB.t : 0, effV > 0 ? dr.antiviral.t : 0);
@@ -691,13 +736,25 @@
       const pk = c.inTissue ? pen : 1;   // leki słabiej docierają do kolonii w mięśniu
       const before = c.size;
       const pf = c.store ? C.fungus.storeShrink : 1;   // magazyn zarodników: leki słabiej
-      c.size = Math.min(1, c.size + (grow0 * (1 - halt * pk) - (D.abxA.colonyShrink * effA + D.antifungal.colonyShrink * effF) * pk * pf) * dt);
+      let gr = grow0 * (1 - halt * pk), sh = (D.abxA.colonyShrink * effA + D.antifungal.colonyShrink * effF) * pk * pf, cap = 1;
+      if (s.kind === 'cancer') {
+        // guz: szybsze podziały, bez własnych naczyń zatrzymuje się na smallCap; chemio- i radioterapia go kurczą
+        const CA = C.cancer;
+        gr *= 1 + CA.divStep * b.mut.divide;
+        cap = b.mut.angio ? CA.maxSize : CA.smallCap;
+        if (c.size > cap) gr = 0;
+        sh += D.chemo.colonyShrink * effC * pk;
+        if (s.radio && s.radio.t > 0 && regionOrgan(c) === s.radio.region) sh += D.radio.colonyShrink * s.radio.eff;
+      }
+      c.size = Math.min(Math.max(cap, c.size), c.size + (gr - sh) * dt);
       if (c.size > before) b.points += (c.size - before) * C.mutations.perGrowth;   // punkty mutacji z przyrostu
       if (c.size <= 0.02) { s.colonies.splice(i, 1); s.stats.coloniesLost++; continue; }
       mass += c.size;
       if (s.kind === 'fungus') fungusColony(s, c, dt, 1 - effF * pk);
+      if (s.kind === 'cancer') cancerColony(s, c, dt);
     }
-    b.infection = Math.min(100, mass * K.infectionPerSize);
+    if (s.radio) { s.radio.t -= dt; if (s.radio.t <= 0) s.radio = null; }
+    b.infection = Math.min(100, mass * K.infectionPerSize * (s.kind === 'cancer' ? C.cancer.infectionMul : 1));   // guzy są większe od kolonii
     s.stats.maxInfection = Math.max(s.stats.maxInfection, b.infection);
 
     // --- bakteria ---
@@ -728,7 +785,7 @@
         const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
         b.feeding = b.hp < maxHp; if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
         if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; s.stats.dmgFever += fd; }
-        { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF) * dt; b.hp -= dd; s.stats.dmgDrugs = (s.stats.dmgDrugs || 0) + dd; }
+        { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF + D.chemo.dps * effC + radioDps(s, b)) * dt; b.hp -= dd; s.stats.dmgDrugs = (s.stats.dmgDrugs || 0) + dd; }
         s.stats.hiddenTime += dt;
       }
     } else if (b.transit) {
@@ -816,7 +873,7 @@
       if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
       if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; ST.dmgFever += fd; }
       // leki bójcze: β-laktam (bakteria), przeciwwirusowy (wirus)
-      { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
+      { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF + D.chemo.dps * effC + radioDps(s, b)) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
 
       if (!b.inTissue) for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
@@ -866,11 +923,12 @@
       collideLeaflets(s, c, B.radius); const hit = collideWalls(c, B.radius);
       for (const ex of H.EXITS) if (ex.test(c.x, c.y)) { const L = H.INLETS[ex.to], p = L[Math.floor(rnd(s) * L.length)]; c.x = p.x; c.y = p.y; }
       // grzyb z mutacją „zarodniki z krwią”: zarodnik przy ścianie osiada i zakłada kolonię
-      if (s.kind === 'fungus' && b.mut.spores && s.time - c.born > C.fungus.sporeSettle && s.colonies.length < C.fungus.maxColonies
+      const settles = (s.kind === 'fungus' && b.mut.spores) || (s.kind === 'cancer' && b.mut.meta);   // zarodnik grzyba / przerzut raka
+      if (settles && s.time - c.born > C.fungus.sporeSettle && s.colonies.length < C.fungus.maxColonies
           && (hit || H.sample(c.x, c.y) > -(B.radius + 0.3))) {
         H.grad(c.x, c.y, g2); const d = H.sample(c.x, c.y);
         s.colonies.push(newColony(s, c.x - g2[0] * d, c.y - g2[1] * d, g2[0], g2[1], C.colony.startSize * 0.6));
-        s.copies.splice(i, 1); s.stats.sporeColonies++;
+        s.copies.splice(i, 1); if (s.kind === 'cancer') s.stats.metastases++; else s.stats.sporeColonies++;
         continue;
       }
     }
@@ -924,7 +982,7 @@
         continue;
       }
       if (col && td < 0.6 + col.size * 0.5) {
-        col.size -= K.abDamage * (a.eff ?? 1) * ((C.species[s.species] || {}).biofilm ?? 1);   // biofilm gronkowca chroni kolonie
+        col.size -= K.abDamage * (a.eff ?? 1) * ((C.species[s.species] || {}).biofilm ?? 1) * (s.kind === 'cancer' ? apoMul(s) : 1);   // biofilm gronkowca chroni kolonie; guz bez apoptozy też
         s.stats.abHits++;
         if (col.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(col), 1); s.stats.coloniesLost++; }
         s.antibodies.splice(i, 1);
@@ -951,7 +1009,7 @@
       if (s.colonies.length) b.dead = K.respawnDelay;
     }
     if (b.hp <= 0 && !s.colonies.length) { s.ending = { win: 'doctor', t: C.ending.duration }; log(s, 'sys', 'Zakażenie wyleczone: nie ma ani patogenu, ani kolonii. Wygrywa lekarz.'); }
-    else if (s.patient.cond <= 0) { s.patient.cond = 0; s.ending = { win: 'bacteria', t: C.ending.duration }; log(s, 'sys', 'Sepsa: stan pacjenta krytyczny. Wygrywa patogen.'); }
+    else if (s.patient.cond <= 0) { s.patient.cond = 0; s.ending = { win: 'bacteria', t: C.ending.duration }; log(s, 'sys', s.kind === 'cancer' ? 'Wyniszczenie nowotworowe: stan pacjenta krytyczny. Wygrywa nowotwór.' : 'Sepsa: stan pacjenta krytyczny. Wygrywa patogen.'); }
   };
 
   G.updateValveGeometry = updateValveGeometry;

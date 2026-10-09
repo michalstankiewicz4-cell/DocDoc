@@ -191,6 +191,22 @@
       cand.add(new THREE.Mesh(mergeGeos(parts), candMat)); }
     scene.add(cand);
 
+    // komórka nowotworowa: duża, nieregularna (pęcherzyki na błonie), z ciemnym jądrem prześwitującym przez cytoplazmę
+    const canc = new THREE.Group();
+    const cancMat = surfMat({ albedo: 0x9a4a6e, sssCol: 0xe07aa0, sss: 0.7, rough: 0.4, wet: 0.6, rim: 0.9, rimCol: 0xf0a0c0, emit: 0x1a0610, grain: 1.0, alpha: 0.7, depthWrite: false });
+    const cancNucMat = surfMat({ albedo: 0x3a1050, sssCol: 0x8040b0, sss: 0.6, rough: 0.3, wet: 0.5, rim: 0.6, rimCol: 0x9060c0, emit: 0x10031a, grain: 0.8 });
+    { const g = new THREE.IcosahedronGeometry(0.34, 3).toNonIndexed(), p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) {   // nieregularny kształt: deterministyczne wybrzuszenia
+        const x = p.getX(i), y = p.getY(i), z = p.getZ(i), k = 1 + 0.16 * Math.sin(x * 11 + y * 7) + 0.1 * Math.sin(y * 13 - z * 9);
+        p.setXYZ(i, x * k, y * k * 1.1, z * k);
+      }
+      g.computeVertexNormals();
+      const parts = [g];
+      for (let k = 0; k < 7; k++) { const a = k * 2.4, b = new THREE.SphereGeometry(0.07 + (k % 3) * 0.02, 8, 6); b.translate(Math.cos(a) * 0.36, Math.sin(a * 1.3) * 0.33, Math.sin(a) * 0.3); parts.push(b.toNonIndexed()); }
+      canc.add(new THREE.Mesh(mergeGeos(parts), cancMat));
+      const nuc = new THREE.Mesh(new THREE.SphereGeometry(0.17, 16, 12), cancNucMat); nuc.scale.set(1, 0.85, 1); canc.add(nuc); }
+    scene.add(canc);
+
     // wygląd -> grupa, materiały do efektów (błysk trafienia, spowolnienie), czy to wirus
     const LOOKS = {
       ecoli: { g: bact, mats: [body.material, flagMat] },
@@ -199,7 +215,8 @@
       adeno: { g: virus, mats: [capsidMat, spikeMat], virus: true },
       flu: { g: flu, mats: [fluMat, fluSpikeMat], virus: true },
       coxsackie: { g: cox, mats: [coxMat], virus: true },
-      candida: { g: cand, mats: [candMat] }
+      candida: { g: cand, mats: [candMat] },
+      cancer: { g: canc, mats: [cancMat, cancNucMat] }
     };
     const lookOf = (s) => LOOKS[s.species] || (s.kind === 'virus' ? LOOKS.adeno : LOOKS.ecoli);
 
@@ -219,8 +236,14 @@
     const COL_LOOK = {
       bacteria: { albedo: 0x7fbf3a, sssCol: 0xc8ff60, rimCol: 0xd8ff80, emit: 0x0c1a02 },
       virus: { albedo: 0x9a5fd0, sssCol: 0xe0a0ff, rimCol: 0xeccbff, emit: 0x1a0830 },
-      fungus: { albedo: 0xe6dcc0, sssCol: 0xfff2cc, rimCol: 0xfff8e4, emit: 0x1e1a10 }
+      fungus: { albedo: 0xe6dcc0, sssCol: 0xfff2cc, rimCol: 0xfff8e4, emit: 0x1e1a10 },
+      cancer: { albedo: 0x7a2a48, sssCol: 0xd06088, rimCol: 0xe090b0, emit: 0x180410 }
     };
+    // naczynia guza (angiogeneza): ciemnoczerwone, kręte odgałęzienia wokół dużych guzów
+    const vesMax = 900;
+    const vesMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.08, 1, 6, 1).translate(0, 0.5, 0), surfMat({ albedo: 0x8a1420, sssCol: 0xff3040, sss: 1.0, rough: 0.3, wet: 0.9, rim: 0.8, rimCol: 0xff8090, emit: 0x200206 }), vesMax);
+    vesMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); vesMesh.frustumCulled = false; vesMesh.count = 0;
+    scene.add(vesMesh);
     // grzybnia: strzępki wzdłuż ścian (odcinki walców) i zarodniki w magazynach (złotobrązowe kulki)
     const hyMax = 1600, spMax = 400;
     const hyGeo = new THREE.CylinderGeometry(0.045, 0.055, 1, 6, 1); hyGeo.translate(0, 0.5, 0);
@@ -396,12 +419,15 @@
 
       // kolonie: każda kolonia = skupisko kulek na ścianie
       n = 0;
+      const isCancer = s.kind === 'cancer';
       for (const c of s.colonies) {
-        const grow = Math.min(1, (s.time - c.born) * 0.5) * (0.45 + 0.9 * (c.size ?? 1));
-        for (let k = 0; k < 9 && n < colMax; k++) {
+        const grow = Math.min(1, (s.time - c.born) * 0.5) * (0.45 + 0.9 * Math.min(1, c.size ?? 1)) * (isCancer ? 1.15 : 1);
+        const nk = isCancer ? 9 + Math.round(Math.max(0, c.size - 0.5) * 10) : 9;   // guz: tym więcej guzków, im większy
+        const spread = isCancer ? 1 + Math.max(0, c.size - 0.6) * 0.9 : 1;
+        for (let k = 0; k < nk && n < colMax; k++) {
           const h1 = Math.sin(c.seed * 91.7 + k * 12.9898) * 43758.5453, r1 = h1 - Math.floor(h1);
           const h2 = Math.sin(c.seed * 37.1 + k * 78.233) * 12345.678, r2 = h2 - Math.floor(h2);
-          const ang = r1 * 6.283, rad = r2 * 0.55;
+          const ang = r1 * 6.283, rad = r2 * 0.55 * spread;
           const tx = -c.ny, ty = c.nx;
           if (c.inTissue) v.set(c.x + Math.cos(ang) * rad * 1.3, c.y + Math.sin(ang) * rad * 1.3, C.tissue.z + 0.05 + r2 * 0.12);
           else v.set(c.x + tx * Math.cos(ang) * rad - c.nx * 0.05, c.y + ty * Math.cos(ang) * rad - c.ny * 0.05, Math.sin(ang) * rad * 1.6);
@@ -444,6 +470,27 @@
         }
       }
       hyMesh.count = nh; hyMesh.instanceMatrix.needsUpdate = true;
+      // naczynia guzów (rak z mutacją angiogenezy): promieniste, rozgałęzione rurki od guza
+      let nv = 0;
+      if (s.kind === 'cancer' && s.bact.mut && s.bact.mut.angio) {
+        for (const c of s.colonies) {
+          if (c.size < C.cancer.smallCap * 0.8) continue;
+          const nb = 4 + Math.round(c.size * 3), zc = c.inTissue ? C.tissue.z + 0.1 : 0;
+          for (let k = 0; k < nb && nv < vesMax - 3; k++) {
+            const h = Math.sin(c.seed * 63.1 + k * 17.3) * 43758.5453, r = h - Math.floor(h);
+            const a = k / nb * 6.283 + r * 0.6, L = 0.8 + c.size * 0.9 + r * 0.6;
+            let x0 = c.x, y0 = c.y, z0 = zc;
+            for (let j = 0; j < 3 && nv < vesMax; j++) {   // trzy kręte odcinki z małym rozwidleniem
+              const aj = a + Math.sin(k * 3.1 + j * 1.7 + c.seed * 9) * 0.5, l = L / 3;
+              const x1 = x0 + Math.cos(aj) * l, y1 = y0 + Math.sin(aj) * l, z1 = zc + Math.sin(k + j * 2.3) * 0.4;
+              if (seg(vesMesh, nv, x0, y0, z0, x1, y1, z1, 1 - j * 0.25)) nv++;
+              if (j === 1 && nv < vesMax && seg(vesMesh, nv, x1, y1, z1, x1 + Math.cos(aj + 0.9) * l * 0.6, y1 + Math.sin(aj + 0.9) * l * 0.6, z1, 0.5)) nv++;
+              x0 = x1; y0 = y1; z0 = z1;
+            }
+          }
+        }
+      }
+      vesMesh.count = nv; vesMesh.instanceMatrix.needsUpdate = true;
       spMesh.count = ns; spMesh.instanceMatrix.needsUpdate = true;
 
       // zastawki

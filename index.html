@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.40.1">
+<link rel="stylesheet" href="css/style.css?v=0.41.0">
 </head>
 <body>
 <!-- ekran ładowania: widoczny od razu, znika po zbudowaniu serca i sceny (main.js) -->
@@ -96,6 +96,7 @@
       <p id="h-contact" class="hud-note" hidden></p>
       <ul class="chips">
         <li id="s-colonies" class="chip chip-res">Kolonie: <b id="s-colonies-n">0</b></li>
+        <li id="s-tumors" class="chip chip-res" hidden></li>
         <li id="s-copies" class="chip chip-res">Kopie: <b id="s-copies-n">0</b>/<span id="s-copies-max">6</span></li>
         <li id="s-fever" class="chip chip-fever" hidden>Gorączka osłabia</li>
         <li id="s-slow" class="chip chip-slow" hidden>Antybiotyk spowalnia</li>
@@ -237,11 +238,13 @@
           <div class="menu" data-menu="surgery">
             <button type="button" class="menu-btn" aria-expanded="false" aria-controls="surgery-list">
               <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 14 10M14 10l3-7 4 4-7 3"/></svg>
-              <span class="menu-label">Operacja</span><span class="menu-sum" id="surg-state"></span><span class="caret" aria-hidden="true"></span>
+              <span class="menu-label">Zabiegi</span><span class="menu-sum" id="surg-state"></span><span class="caret" aria-hidden="true"></span>
             </button>
             <div id="surgery-list" class="menu-list" role="menu" hidden>
               <p class="menu-note">Operacja zastawki trwa 10 s i obciąża pacjenta (stan −15). Usuwa ogniska kilka milimetrów wokół zastawki, także w ścianie. Kolejna po 60 s.</p>
               <div id="surgery" class="surgery"></div>
+              <p class="menu-note">Radioterapia (8 s): naświetla jeden narząd — niszczy komórki nowotworowe w nim, stan pacjenta −5. Kolejna po 35 s. <span id="radio-state"></span></p>
+              <div id="radio" class="surgery"></div>
             </div>
           </div>
         </div>
@@ -387,6 +390,8 @@
           <button type="button" data-kind="adeno" aria-pressed="false">Adenowirus</button></span>
           <span class="kind-group"><span class="kind-sub">Grzyby</span>
           <button type="button" data-kind="candida" aria-pressed="false">Candida</button></span>
+          <span class="kind-group"><span class="kind-sub">Nowotwory</span>
+          <button type="button" data-kind="cancer" aria-pressed="false">Rak</button></span>
         <span class="hint">Lekarz nie wie, którego wybrałeś.</span>
       </div>
       <div class="organs">
@@ -468,6 +473,8 @@
         <button type="button" data-kind="adeno" aria-pressed="false">Adenowirus</button></span>
           <span class="kind-group"><span class="kind-sub">Grzyby</span>
           <button type="button" data-kind="candida" aria-pressed="false">Candida</button></span>
+          <span class="kind-group"><span class="kind-sub">Nowotwory</span>
+          <button type="button" data-kind="cancer" aria-pressed="false">Rak</button></span>
       <span class="hint">Lekarz nie wie, którego wybrałeś.</span>
     </div>
   </div>
@@ -549,33 +556,33 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.40.1"></script>
-<script src="js/lang/en.js?v=0.40.1"></script>
-<script src="js/i18n.js?v=0.40.1"></script>
-<script src="js/config.js?v=0.40.1"></script>
-<script src="js/heart-shape.js?v=0.40.1"></script>
-<script src="js/flow.js?v=0.40.1"></script>
-<script src="js/tissue-cells.js?v=0.40.1"></script>
-<script src="js/state.js?v=0.40.1"></script>
-<script src="js/input.js?v=0.40.1"></script>
-<script src="js/render/glsl.js?v=0.40.1"></script>
-<script src="js/render/tissue.js?v=0.40.1"></script>
-<script src="js/render/cells.js?v=0.40.1"></script>
-<script src="js/render/actors.js?v=0.40.1"></script>
-<script src="js/render/post.js?v=0.40.1"></script>
-<script src="js/render/biome.js?v=0.40.1"></script>
-<script src="js/render/view.js?v=0.40.1"></script>
-<script src="js/minimap.js?v=0.40.1"></script>
-<script src="js/audio.js?v=0.40.1"></script>
-<script src="js/doctor-ui.js?v=0.40.1"></script>
-<script src="js/patient-room.js?v=0.40.1"></script>
-<script src="js/doctor-devices.js?v=0.40.1"></script>
-<script src="js/doctor-cam.js?v=0.40.1"></script>
-<script src="js/wiki.js?v=0.40.1"></script>
-<script src="js/net.js?v=0.40.1"></script>
-<script src="js/lobby.js?v=0.40.1"></script>
-<script src="js/match.js?v=0.40.1"></script>
-<script src="js/net-status.js?v=0.40.1"></script>
-<script src="js/main.js?v=0.40.1"></script>
+<script src="js/version.js?v=0.41.0"></script>
+<script src="js/lang/en.js?v=0.41.0"></script>
+<script src="js/i18n.js?v=0.41.0"></script>
+<script src="js/config.js?v=0.41.0"></script>
+<script src="js/heart-shape.js?v=0.41.0"></script>
+<script src="js/flow.js?v=0.41.0"></script>
+<script src="js/tissue-cells.js?v=0.41.0"></script>
+<script src="js/state.js?v=0.41.0"></script>
+<script src="js/input.js?v=0.41.0"></script>
+<script src="js/render/glsl.js?v=0.41.0"></script>
+<script src="js/render/tissue.js?v=0.41.0"></script>
+<script src="js/render/cells.js?v=0.41.0"></script>
+<script src="js/render/actors.js?v=0.41.0"></script>
+<script src="js/render/post.js?v=0.41.0"></script>
+<script src="js/render/biome.js?v=0.41.0"></script>
+<script src="js/render/view.js?v=0.41.0"></script>
+<script src="js/minimap.js?v=0.41.0"></script>
+<script src="js/audio.js?v=0.41.0"></script>
+<script src="js/doctor-ui.js?v=0.41.0"></script>
+<script src="js/patient-room.js?v=0.41.0"></script>
+<script src="js/doctor-devices.js?v=0.41.0"></script>
+<script src="js/doctor-cam.js?v=0.41.0"></script>
+<script src="js/wiki.js?v=0.41.0"></script>
+<script src="js/net.js?v=0.41.0"></script>
+<script src="js/lobby.js?v=0.41.0"></script>
+<script src="js/match.js?v=0.41.0"></script>
+<script src="js/net-status.js?v=0.41.0"></script>
+<script src="js/main.js?v=0.41.0"></script>
 </body>
 </html>
