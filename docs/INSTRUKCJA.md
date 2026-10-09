@@ -151,6 +151,7 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
 ## Lekarz
 
 ### Ekran lekarza
+- **Wiki** (przycisk w nagłówku karty pacjenta): baza wiedzy w grze — patogeny (zdjęcia, obraz w mikroskopie, leczenie, typowe wyniki), badania (czas, odnowienie, czułość, co pokazują i co je zakłóca), leki i zabiegi, objawy z przyczynami, pacjenci i inne fakty. Gra w tym czasie trwa; `Esc` zamyka.
 Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 - **Monitor:** EKG i odczyty w kolorach kanałów (tętno zielone, temperatura żółta, stan pacjenta błękitny, zakażenie różowe). Przy alarmie dioda i ramka ekranu świecą na czerwono.
 - **Pompa infuzyjna z kroplówką:** pokazuje leki, które są teraz we krwi (przeciwciała, antybiotyki, lek przeciwwirusowy, gorączka), z pozostałym czasem; krople kapią szybciej w czasie wlewu.

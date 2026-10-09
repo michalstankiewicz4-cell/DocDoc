@@ -94,6 +94,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Ukrywanie informacji: czułość badań, maskowanie (6), sygnały chemiczne (B) (v0.36.0)
 - [x] Nowe badania: morfologia, PCR, badanie moczu, tomografia (v0.37.0)
 - [x] Grzyb Candida: grzybnia, magazyny zarodników, mutacje, lek przeciwgrzybiczy (v0.38.0)
+- [x] Wiki lekarza (v0.39.0)
 - [ ] Dalej wg `docs/PLAN.md`: nowe badania i leczenie, grzyb, rak, obszary poza krwiobiegiem
 - [x] Poprawki: powrót z mięśnia, zamiana ról; pasek przewijania; ekran startowy, loader, nazwa; SEO (v0.30.3–v0.31.1)
 - [x] Zakończenie rundy, filmy, zwijane statystyki (v0.32.0)
@@ -151,4 +152,5 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Ukrywanie (v0.36.0): sygnały chemiczne dostępne od startu (bez mutacji), fałszywy objaw w losowym obszarze bez kolonii; maskowanie jako mutacja `6` łączy „maskowanie objawów” i „opóźnianie wykrycia”; ruchy patogenu w dzienniku mają `who: 'bact'` i są ukryte przed lekarzem. Liczby w `docs/BALANS.md`.
 - Nowe badania (v0.37.0): klawisze U / I / O / P; PCR wykrywa to samo co mikroskop (patogen we krwi, kopie, kolonie poza mięśniem); tomografia bez kosztu dla pacjenta; liczby w `docs/BALANS.md`. RTG, rezonans, biopsja, markery czekają na raka i płuca.
 - Grzyb (v0.38.0): jeden gatunek (Candida); strzępka liczona deterministycznie `Heart.wallWalk` (host i gość rysują to samo z `hy`, `hs`, `seed`); mutacje grzyba pod klawiszami 7/8/9/0 (`Game.mutKey`), 9 i 6 wspólne; brak toksyn; zarodniki to kopie (`copies`); lek przeciwgrzybiczy pod `Y`; magazyn przez `E` przy kolonii. Liczby w `docs/BALANS.md`.
+- Wiki (v0.39.0): okno nad panelem lekarza, gra w tle trwa; teksty dwujęzyczne w `js/wiki.js` (nie w `en.js`); zdjęcia z gry robione skryptem Playwright (patogeny 3D z bliska, kolonie, obrazy echa/USG/TK, sala). Nowa mechanika = dopisać do wiki.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk; wątroba > 0,3 żółtaczka; nerka > 0,3 krew w moczu; > 0,9 objaw nasilony).

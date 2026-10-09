@@ -432,6 +432,8 @@ DD.I18N_EN = {
   'Wiriony w kształcie dwudziestościanu z długimi włóknami.': 'Icosahedral virions with long fibres.',
   'Lek przeciwwirusowy działa częściowo (60%).': 'The antiviral works partially (60%).',
 
+  'Wiki lekarza': 'Doctor wiki',
+  'Zamknij': 'Close',
   // ---------- grzyb (v0.38.0) ----------
   'Grzyby': 'Fungi',
   'Candida': 'Candida',

@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.38.0">
+<link rel="stylesheet" href="css/style.css?v=0.39.0">
 </head>
 <body>
 <!-- ekran ładowania: widoczny od razu, znika po zbudowaniu serca i sceny (main.js) -->
@@ -142,8 +142,23 @@
         <p class="doc-who">Gracz 2, lekarz</p>
         <h1 class="doc-title">Karta pacjenta <span id="doc-ptype" class="doc-ptype"></span></h1>
       </div>
-      <p class="doc-clock"><span>Od przyjęcia</span> <time id="clock">0:00</time></p>
+      <div class="doc-head-right">
+        <button id="wiki-btn" class="wiki-btn" type="button" aria-expanded="false" aria-controls="wiki">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7M8 11h5"/></svg>Wiki
+        </button>
+        <p class="doc-clock"><span>Od przyjęcia</span> <time id="clock">0:00</time></p>
+      </div>
     </header>
+
+    <!-- wiki lekarza: baza wiedzy (js/wiki.js) -->
+    <section id="wiki" class="wiki" hidden aria-label="Wiki lekarza">
+      <div class="wiki-head">
+        <h2 class="wiki-h">Wiki lekarza</h2>
+        <button id="wiki-close" class="wiki-close" type="button" aria-label="Zamknij">×</button>
+      </div>
+      <nav id="wiki-nav" class="wiki-nav"></nav>
+      <div id="wiki-body" class="wiki-body"></div>
+    </section>
 
     <div class="ward">
       <!-- monitor funkcji życiowych -->
@@ -524,32 +539,33 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.38.0"></script>
-<script src="js/lang/en.js?v=0.38.0"></script>
-<script src="js/i18n.js?v=0.38.0"></script>
-<script src="js/config.js?v=0.38.0"></script>
-<script src="js/heart-shape.js?v=0.38.0"></script>
-<script src="js/flow.js?v=0.38.0"></script>
-<script src="js/tissue-cells.js?v=0.38.0"></script>
-<script src="js/state.js?v=0.38.0"></script>
-<script src="js/input.js?v=0.38.0"></script>
-<script src="js/render/glsl.js?v=0.38.0"></script>
-<script src="js/render/tissue.js?v=0.38.0"></script>
-<script src="js/render/cells.js?v=0.38.0"></script>
-<script src="js/render/actors.js?v=0.38.0"></script>
-<script src="js/render/post.js?v=0.38.0"></script>
-<script src="js/render/biome.js?v=0.38.0"></script>
-<script src="js/render/view.js?v=0.38.0"></script>
-<script src="js/minimap.js?v=0.38.0"></script>
-<script src="js/audio.js?v=0.38.0"></script>
-<script src="js/doctor-ui.js?v=0.38.0"></script>
-<script src="js/patient-room.js?v=0.38.0"></script>
-<script src="js/doctor-devices.js?v=0.38.0"></script>
-<script src="js/doctor-cam.js?v=0.38.0"></script>
-<script src="js/net.js?v=0.38.0"></script>
-<script src="js/lobby.js?v=0.38.0"></script>
-<script src="js/match.js?v=0.38.0"></script>
-<script src="js/net-status.js?v=0.38.0"></script>
-<script src="js/main.js?v=0.38.0"></script>
+<script src="js/version.js?v=0.39.0"></script>
+<script src="js/lang/en.js?v=0.39.0"></script>
+<script src="js/i18n.js?v=0.39.0"></script>
+<script src="js/config.js?v=0.39.0"></script>
+<script src="js/heart-shape.js?v=0.39.0"></script>
+<script src="js/flow.js?v=0.39.0"></script>
+<script src="js/tissue-cells.js?v=0.39.0"></script>
+<script src="js/state.js?v=0.39.0"></script>
+<script src="js/input.js?v=0.39.0"></script>
+<script src="js/render/glsl.js?v=0.39.0"></script>
+<script src="js/render/tissue.js?v=0.39.0"></script>
+<script src="js/render/cells.js?v=0.39.0"></script>
+<script src="js/render/actors.js?v=0.39.0"></script>
+<script src="js/render/post.js?v=0.39.0"></script>
+<script src="js/render/biome.js?v=0.39.0"></script>
+<script src="js/render/view.js?v=0.39.0"></script>
+<script src="js/minimap.js?v=0.39.0"></script>
+<script src="js/audio.js?v=0.39.0"></script>
+<script src="js/doctor-ui.js?v=0.39.0"></script>
+<script src="js/patient-room.js?v=0.39.0"></script>
+<script src="js/doctor-devices.js?v=0.39.0"></script>
+<script src="js/doctor-cam.js?v=0.39.0"></script>
+<script src="js/wiki.js?v=0.39.0"></script>
+<script src="js/net.js?v=0.39.0"></script>
+<script src="js/lobby.js?v=0.39.0"></script>
+<script src="js/match.js?v=0.39.0"></script>
+<script src="js/net-status.js?v=0.39.0"></script>
+<script src="js/main.js?v=0.39.0"></script>
 </body>
 </html>

@@ -19,6 +19,7 @@ img/                    og.jpg (podgląd linku), icon.svg (ikona strony)
 robots.txt, sitemap.xml dla wyszukiwarek
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
 js/version.js           DD.VERSION
+js/wiki.js              wiki lekarza (baza wiedzy): treść dwujęzyczna T(pl, en), liczby z DD.CONFIG, zdjęcia z img/wiki/
 js/lang/en.js           słownik angielski: tekst polski → angielski ({0} wstawka, {#0} wstawka liczbowa)
 js/i18n.js              język interfejsu: DD.t, tłumaczenie dokumentu (MutationObserver) i napisów na canvasie przy języku EN
 js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species), pacjenci (C.patients, opis w docs/BALANS.md), leki, badania, pożywienie, kopie, kamera, UI

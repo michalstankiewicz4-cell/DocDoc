@@ -47,6 +47,8 @@
     ct: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M3 20h18"/>'
   };
   const svg = (k) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
+  // dla wiki lekarza (js/wiki.js)
+  DD.DOC_ACTIONS = ACTIONS; DD.DOC_TESTS = TESTS; DD.docIcon = svg;
 
   DD.createUI = function () {
     // rozwijane menu konsoli: jedno otwarte naraz, Esc i kliknięcie obok zamykają
@@ -273,6 +275,7 @@
         g.strokeStyle = '#5c5c57'; g.lineWidth = 0.6; g.beginPath(); g.arc(x, y, r * 0.55, 0, 6.283); g.stroke();
       }
     }
+    DD.drawOrganism = drawOrganism;   // miniatury w wiki lekarza
     // preparat: tło, krwinki, granulocyty i skupiska drobnoustrojów poza polem startowym
     function buildSlide(res, seed) {
       const pr = Math.min(2, window.devicePixelRatio || 1);
