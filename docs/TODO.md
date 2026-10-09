@@ -13,6 +13,7 @@ Są już: tryb deweloperski (jedna osoba steruje obiema stronami) i gra na 2 oso
   - bot-patogen: płynie do ścian, zakłada kolonie, kupuje mutacje, ucieka przed przeciwciałami, ukrywa się w koloniach,
   - poziomy trudności (np. opóźnienie reakcji bota, czy „widzi” więcej niż gracz).
 - [ ] **[M]** **Tryb PvAI** — gra przeciw sztucznej inteligencji (model językowy), która dostaje to samo, co widzi gracz (objawy, wyniki, dziennik — albo HUD patogenu) i co kilka sekund decyduje o ruchu; może komentować swoje decyzje.
+- [ ] **[M]** **Multiplayer przez Supabase** — zamiast ręcznej wymiany kodów WebRTC: lobby z listą gier i dołączaniem jednym kliknięciem (Supabase Realtime do sygnalizacji / synchronizacji), konta graczy, ranking i historia meczów, mecze z losowym przeciwnikiem. Obecne połączenie WebRTC może zostać jako tryb bez serwera.
 - [ ] **[T]** Przy obu trybach: wybór strony (gram patogenem / lekarzem) na ekranie startowym, bot korzysta z tych samych komend co gracz (`DD.send`), więc nie dostaje przewagi poza zasadami.
 
 ## Operacje i zabiegi
