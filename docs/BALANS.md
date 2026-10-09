@@ -53,3 +53,14 @@ Pozostałe wartości (kolonie, leki, badania, pożywienie, rodzaje patogenów) o
 | PCR | 25 / 45 s | 0,95 | pewniejszy od mikroskopu i bez szukania, ale wolny — mikroskop zostaje szybszą drogą |
 | Badanie moczu | 4 / 15 s | 0,85, od masy kolonii w nerce 0,1 | tanie potwierdzenie objawu „krew w moczu” (także fałszywego od sygnałów) |
 | Tomografia | 15 / 60 s | 0,95 na ognisko | jedyne badanie z dokładnym położeniem kolonii w mięśniu; długie odnowienie, żeby nie zastąpiło echa i USG |
+
+## Grzyb (od v0.38.0, `config.fungus`, `species.candida`)
+
+| Wartość | Liczba | Uzasadnienie |
+| --- | --- | --- |
+| przyrost strzępki | 0,16 j./s przy kolonii pełnej wielkości | pierwsza kolonia ze strzępki po ~1 min od założenia — grzyb rośnie wolno, ale sam |
+| długość do nowej kolonii | 7 j. | kolonie rozchodzą się wzdłuż ścian, a nie skupiają w jednym miejscu |
+| limit kolonii | 16 | żeby grzybnia nie zarosła całego krwiobiegu |
+| magazyn | 10 życia, zarodnik co 20 s, leki ×0,3, odrodzenie kosztuje magazyn połowę | „bezpieczna baza” — lekarz musi go wykryć (tomografia, echo, USG) |
+| ruch | ×0,8 | grzyb nie ma wici |
+| lek przeciwgrzybiczy | 22 s odnowienia, 10 s działania, 2,0 obrażeń/s, kurczy kolonie 0,022/s | jak β-laktam dla bakterii |

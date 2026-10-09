@@ -235,7 +235,7 @@
     const a = [];
     for (const x of s.antibodies) a.push(r2(x.x), r2(x.y), r2(x.z), x.stuck ? 1 : 0, r2(x.ox), r2(x.oy), r2(x.rot), r2(x.life), r2(x.eff ?? 1));
     const c = [];
-    for (const x of s.colonies) c.push(r2(x.x), r2(x.y), r2(x.nx), r2(x.ny), r2(x.born), x.seed, r2(x.size), x.id, x.inTissue ? 1 : 0);
+    for (const x of s.colonies) c.push(r2(x.x), r2(x.y), r2(x.nx), r2(x.ny), r2(x.born), x.seed, r2(x.size), x.id, x.inTissue ? 1 : 0, r2(x.hy || 0), x.hs || 0, x.hd ? 1 : 0, x.store ? 1 : 0);
     // pożywienie: [x, y, rodzaj, id] z dokładnością 0,1; kopie: [x, y, kierunek, id, narodziny]
     const r1 = (v) => Math.round(v * 10) / 10;
     const fo = [];
@@ -343,11 +343,12 @@
         smooth(s.copies, snap.cp, 5, (P, o) => ({ x: P[o], y: P[o + 1], dir: P[o + 2], id: P[o + 3], born: P[o + 4] }));
         for (let i = 0; i < s.copies.length; i++) s.copies[i].dir = snap.cp[i * 5 + 2];
       }
-      const Cc = snap.c, m = Cc.length / 9;
+      const CN = 13, Cc = snap.c, m = Cc.length / CN;   // kolonia: 9 pól + strzępka grzyba (hy, hs, hd) i magazyn zarodników
       s.colonies.length = m;
       for (let i = 0; i < m; i++) {
-        const o = i * 9;
-        s.colonies[i] = { x: Cc[o], y: Cc[o + 1], nx: Cc[o + 2], ny: Cc[o + 3], born: Cc[o + 4], seed: Cc[o + 5], size: Cc[o + 6], id: Cc[o + 7], inTissue: !!Cc[o + 8] };
+        const o = i * CN;
+        s.colonies[i] = { x: Cc[o], y: Cc[o + 1], nx: Cc[o + 2], ny: Cc[o + 3], born: Cc[o + 4], seed: Cc[o + 5], size: Cc[o + 6], id: Cc[o + 7], inTissue: !!Cc[o + 8],
+          hy: Cc[o + 9], hs: Cc[o + 10], hd: Cc[o + 11], store: Cc[o + 12] };
       }
     } else {
       s.time += dt;

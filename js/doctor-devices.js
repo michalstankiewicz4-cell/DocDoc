@@ -13,6 +13,7 @@
     { k: 'abxA', name: 'β-laktam', col: '#7fd0ff' },
     { k: 'abxB', name: 'Makrolid', col: '#b9a2ff' },
     { k: 'antiviral', name: 'Przeciwwirusowy', col: '#ff9ad0' },
+    { k: 'antifungal', name: 'Przeciwgrzybiczy', col: '#a8e07a' },
     { k: 'fever', name: 'Gorączka', col: '#ffb347' }
   ];
   const AB_SHOW = 8;

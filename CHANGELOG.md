@@ -11,6 +11,12 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.38.0] - 2026-10-09
+### Dodane
+- **Nowy patogen: grzyb (drożdżak Candida).** Kolonie puszczają strzępki, które rosną wzdłuż ścian jak korzenie i na końcu zakładają nowe kolonie (grzybnia). `E` przy własnej kolonii robi z niej magazyn zarodników: wypuszcza zarodniki do krwi, chroni przed lekami, jest miejscem odrodzenia. Własne mutacje: strzępki przebijające tkanki, odporność na leki, ukrywanie przed odpornością, zarodniki z krwią.
+- **Lek przeciwgrzybiczy** (`Y`) dla lekarza; antybiogram pokazuje wrażliwość na niego, badanie moczu wykrywa grzyby, posiew i morfologia reagują na grzyba jak na bakterię, mikroskop i PCR rozpoznają Candidę.
+- Grafika: komórka drożdżaka z pączkiem i strzępką rzekomą, kremowa grzybnia ze strzępkami i odgałęzieniami, złotobrązowe zarodniki w magazynach, drożdżaki na preparacie mikroskopowym.
+
 ## [0.37.0] - 2026-10-09
 ### Dodane
 - **Nowe badania lekarza:** morfologia krwi (`U`), PCR (`I`), badanie moczu (`O`) i tomografia komputerowa (`P`) — w menu „Badania”, na lampkach konsoli i jako wydruki w drukarce (tomografia z obrazem przekroju całego ciała).
@@ -346,7 +352,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.37.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.38.0...HEAD
+[0.38.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.1...v0.37.0
 [0.36.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.0...v0.36.1
 [0.36.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.35.0...v0.36.0

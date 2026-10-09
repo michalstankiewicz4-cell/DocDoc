@@ -78,16 +78,16 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `M` | dźwięk włącz/wyłącz |
 
 ### Wybór patogenu
-Przed startem gracz patogenu wybiera jedną z trzech bakterii albo jeden z trzech wirusów (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.
+Przed startem gracz patogenu wybiera jedną z trzech bakterii, jeden z trzech wirusów albo grzyba (Candida) (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.
 
 **Miejsce startu:** serce (żyła główna górna), nerka (tętnica łukowata w nerce) albo wątroba (żyła centralna zrazika). Pozostałe narządy na ekranie wyboru są jeszcze niedostępne.
 
-| | Bakterie | Wirusy |
-| --- | --- | --- |
-| Życie | 100 | 70 |
-| Ruch | szybszy | wolniejszy |
-| Kolonie | biofilm, wzrost normalny | zakażone komórki, wzrost o 30% szybszy |
-| Działają na nie | przeciwciała, gorączka, antybiotyki | przeciwciała, gorączka, lek przeciwwirusowy |
+| | Bakterie | Wirusy | Grzyb (Candida) |
+| --- | --- | --- | --- |
+| Życie | 100 | 70 | 100 |
+| Ruch | szybszy | wolniejszy | wolny (−20%) |
+| Kolonie | biofilm, wzrost normalny | zakażone komórki, wzrost o 30% szybszy | grzybnia: strzępki rosną wzdłuż ścian i zakładają nowe kolonie |
+| Działają na nie | przeciwciała, gorączka, antybiotyki | przeciwciała, gorączka, lek przeciwwirusowy | przeciwciała, gorączka, lek przeciwgrzybiczy |
 
 | Rodzaj | Wygląd | Leczenie | Rozgrywka |
 | --- | --- | --- | --- |
@@ -97,6 +97,13 @@ Przed startem gracz patogenu wybiera jedną z trzech bakterii albo jeden z trzec
 | Wirus grypy | kulisty, gęste kolce | lek przeciwwirusowy 100% | szybszy (+10%) |
 | Wirus Coxsackie B | mały, gładki dwudziestościan | lek przeciwwirusowy tylko 20% | wolniejszy (−10%), kolonie rosną o 25% szybciej |
 | Adenowirus | dwudziestościan z włóknami | lek przeciwwirusowy 60% | kolonie rosną o 10% wolniej, ale przeciwciała niszczą je o 25% słabiej |
+| Drożdżak Candida | owalna, pączkująca komórka ze strzępką | lek przeciwgrzybiczy 100% | grzybnia, magazyny zarodników, własne mutacje (niżej) |
+
+**Grzyb (Candida):**
+- **Grzybnia:** każda kolonia na ścianie puszcza strzępkę, która rośnie wzdłuż ściany jak korzeń (szybciej, im większa kolonia). Gdy strzępka osiągnie 7 j., na jej końcu wyrasta nowa kolonia (najwyżej 16 kolonii), która puszcza własną strzępkę. Lek przeciwgrzybiczy wstrzymuje strzępki i kurczy grzybnię.
+- **Magazyn zarodników:** `E` przy własnej kolonii zamienia ją w magazyn (10 życia). Magazyn co 20 s wypuszcza do krwi zarodnik (działa jak kopia — wabik dla przeciwciał), leki działają na niego trzy razy słabiej, a po zniszczeniu patogen odradza się w magazynie.
+- **`R`** wypuszcza zarodnik za pełny pasek pożywienia (jak rozmnożenie u bakterii).
+- **Mutacje grzyba** pod tymi samymi klawiszami: `7` strzępki przebijające tkanki (w sercu nowe kolonie ze strzępek wrastają w mięsień), `8` odporność na leki (−30% działania leku przeciwgrzybiczego na poziom), `9` ukrywanie przed odpornością (jak otoczka), `0` zarodniki z krwią (zarodnik po 3 s we krwi osiada przy ścianie i zakłada kolonię), `6` maskowanie objawów. Grzyb nie ma toksyn.
 
 Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej.
 
@@ -172,6 +179,7 @@ Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 | `3` | antybiotyk β-laktamowy |
 | `4` | antybiotyk makrolidowy |
 | `5` | lek przeciwwirusowy |
+| `Y` | lek przeciwgrzybiczy |
 | `H` `J` `K` `L` | operacja zastawki: trójdzielnej, mitralnej, pnia płucnego, aorty |
 
 Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
@@ -198,6 +206,7 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
    - **β-laktam** (bakteriobójczy) niszczy bakterię i kurczy kolonie.
    - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.
    - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
+   - **Lek przeciwgrzybiczy** niszczy grzyba, kurczy grzybnię i wstrzymuje strzępki (magazyny zarodników słabiej). Na bakterie i wirusy nie działa.
    - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Skuteczność zależy od rodzaju patogenu (tabela w „Wybór patogenu”); rodzaj pokazuje mikroskop, a antybiogram wrażliwość z uwzględnieniem oporności nabytej.
    - **Czułość badań:** posiew, mikroskop, echo i USG wykrywają to, co jest, z czułością 85% (echo i USG osobno dla każdego ogniska). Wynik bywa więc fałszywie ujemny — warto badanie powtórzyć. Maskowanie patogenu obniża czułość.
    - **Fałszywe objawy:** patogen może wywołać objaw bez choroby w danym miejscu (sygnały chemiczne). Objaw bez potwierdzenia w echu lub USG może być fałszywy.

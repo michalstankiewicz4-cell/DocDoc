@@ -50,6 +50,7 @@ DD.CONFIG = {
     abxA:       { cooldown: 22, duration: 8, dps: 2.6, colonyShrink: 0.025 },  // β-laktam: bakteriobójczy
     abxB:       { cooldown: 22, duration: 10, speedMul: 0.45 },               // makrolid: bakteriostatyczny
     antiviral:  { cooldown: 22, duration: 10, dps: 1.8, speedMul: 0.6 },      // lek przeciwwirusowy: tylko na wirusa
+    antifungal: { cooldown: 22, duration: 10, dps: 2.0, colonyShrink: 0.022 }, // lek przeciwgrzybiczy (flukonazol): tylko na grzyba, kurczy grzybnię
     naturalResistance: 0.2,  // skuteczność antybiotyku z klasy, na którą bakteria jest naturalnie oporna
     // operacja zastawki: po `duration` s usuwa kolonie w promieniu `radius` od zastawki
     surgery: { duration: 10, cooldown: 60, radius: 5, patientCost: 15, pathogenDamage: 40 }
@@ -67,7 +68,7 @@ DD.CONFIG = {
   // stan pacjenta (0..100). Na sekundę: -infectionDrain * kolonizacja, -feverDrain * gorączka,
   // +regen dopóki kolonizacja < regenStopsAt (%). sideEffect = jednorazowy koszt dawki leku.
   patient: { infectionDrain: 1.4, feverDrain: 0.35, regen: 0.25, regenStopsAt: 40,
-    sideEffect: { antibodies: 2, fever: 1, abxA: 4, abxB: 4, antiviral: 4 } },
+    sideEffect: { antibodies: 2, fever: 1, abxA: 4, abxB: 4, antiviral: 4, antifungal: 4 } },
 
   // rodzaje patogenów do wyboru na starcie. natural = klasa antybiotyku, na którą bakteria jest naturalnie oporna;
   // antiviral = skuteczność leku przeciwwirusowego na danego wirusa. Lekarz rozpoznaje rodzaj pod mikroskopem.
@@ -85,9 +86,22 @@ DD.CONFIG = {
     coxsackie: { kind: 'virus', name: 'Wirus Coxsackie B', latin: 'Enterovirus B', antiviral: 0.2, speed: 0.9, growth: 1.25, biofilm: 1.0,
                  micro: 'Bardzo małe, gładkie wiriony bez otoczki.', treat: 'Brak swoistego leku: lek przeciwwirusowy działa słabo (20%).' },
     adeno:     { kind: 'virus', name: 'Adenowirus', latin: 'Adenoviridae', antiviral: 0.6, speed: 1.0, growth: 0.9, biofilm: 0.75,
-                 micro: 'Wiriony w kształcie dwudziestościanu z długimi włóknami.', treat: 'Lek przeciwwirusowy działa częściowo (60%).' }
+                 micro: 'Wiriony w kształcie dwudziestościanu z długimi włóknami.', treat: 'Lek przeciwwirusowy działa częściowo (60%).' },
+    candida:   { kind: 'fungus', name: 'Drożdżak Candida', latin: 'Candida albicans', speed: 0.8, growth: 1.0, biofilm: 0.8,
+                 micro: 'Owalne, pączkujące komórki drożdżaków i strzępki rzekome (Gram-dodatnie).', treat: 'Wrażliwy na lek przeciwgrzybiczy. Antybiotyki i lek przeciwwirusowy nie działają.' }
   },
-  defaultSpecies: { bacteria: 'ecoli', virus: 'adeno' },
+  defaultSpecies: { bacteria: 'ecoli', virus: 'adeno', fungus: 'candida' },
+
+  // grzyb: kolonie puszczają strzępki wzdłuż ścian (jak korzenie); na końcu strzępki wyrasta nowa kolonia.
+  // E przy własnej kolonii zamienia ją w magazyn zarodników (wypuszcza zarodniki do krwi, odrodzenie w magazynie).
+  fungus: {
+    hyphaRate: 0.16,      // przyrost strzępki (j./s) przy kolonii pełnej wielkości
+    branchLen: 7,         // długość strzępki, po której na jej końcu wyrasta nowa kolonia
+    maxColonies: 16,      // powyżej tej liczby kolonii strzępki rosną, ale nie zakładają nowych
+    storeCost: 10, storeRadius: 1.6, storePeriod: 20, storeShrink: 0.3,   // magazyn: koszt życia, zasięg E, zarodnik co 20 s, leki słabiej (×0,3)
+    sporeSettle: 3,       // zarodnik (mutacja 0) osiada na ścianie po tylu sekundach w krwi
+    mutNames: { speed: 'Strzępki przebijające tkanki', fever: 'Odporność na leki', capsule: 'Ukrywanie przed odpornością', toxins: 'Zarodniki z krwią' }
+  },
 
   // wirus: mniej życia, wolniejszy (bez wici), szybciej namnażające się kolonie, mniejszy
   virus: { hp: 70, speedMul: 0.8, growthMul: 1.3, radius: 0.26 },
@@ -113,6 +127,9 @@ DD.CONFIG = {
     fever:   { max: 2, step: 0.3 },            // −30% obrażeń od gorączki na poziom
     capsule: { max: 2, step: 0.3 },            // otoczka: −30% obrażeń od przeciwciał na poziom
     toxins:  { max: 1 },                       // odblokowuje toksyny (T)
+    pierce:  { max: 1 },                       // grzyb (7): nowe kolonie na końcach strzępek wrastają w mięsień serca
+    drugres: { max: 2, step: 0.3 },            // grzyb (8): −30% działania leku przeciwgrzybiczego na poziom
+    spores:  { max: 1 },                       // grzyb (0): zarodniki we krwi osiadają na ścianach i zakładają kolonie
     mask:    { max: 2, symptom: 0.3, sens: 0.15, crp: 0.2 },  // maskowanie (6): na poziom −30% objawów, −15 pkt proc. czułości badań, −20% CRP
     cost: [1, 2, 3]                            // koszt kolejnych poziomów
   },

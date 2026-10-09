@@ -315,6 +315,29 @@
     out = out || [0, 0]; out[0] = gx / L; out[1] = gy / L; return out;
   };
 
+  // strzępka grzyba: droga wzdłuż ściany od punktu (x, y) — kierunek sign (±1), lekkie meandry zależne od seed.
+  // Zwraca punkty [x, y, ...] co `step` j. (deterministyczne: host i gość liczą to samo z tych samych danych).
+  const wg = [0, 0];
+  H.wallWalk = function (x, y, sign, len, seed, out) {
+    out = out || []; out.length = 0;
+    const step = 0.35, d0 = -0.12, n = Math.floor(len / step);
+    let px = x, py = y;
+    out.push(px, py);
+    for (let i = 0; i < n; i++) {
+      H.grad(px, py, wg);
+      const a = 0.45 * Math.sin(i * 0.5 + seed * 40) + 0.25 * Math.sin(i * 1.7 + seed * 13);
+      let tx = -wg[1] * sign, ty = wg[0] * sign;
+      const ca = Math.cos(a), sa = Math.sin(a);
+      const rx = tx * ca - ty * sa, ry = tx * sa + ty * ca;
+      px += rx * step; py += ry * step;
+      const d = H.sample(px, py); H.grad(px, py, wg);
+      px -= wg[0] * (d - d0); py -= wg[1] * (d - d0);
+      if (Math.abs(H.sample(px, py) - d0) > 1.5) break;   // ściana się skończyła
+      out.push(px, py);
+    }
+    return out;
+  };
+
   // nazwa miejsca (do HUD bakterii)
   H.placeName = function (x, y) {
     for (const v of VALVES) if (Math.hypot(x - v.c[0], y - v.c[1]) < 3.5) return v.name;

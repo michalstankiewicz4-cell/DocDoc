@@ -180,6 +180,17 @@
     { const g = new THREE.IcosahedronGeometry(0.17, 0).toNonIndexed(); g.computeVertexNormals(); cox.add(new THREE.Mesh(g, coxMat)); }
     cox.scale.setScalar(1.6); scene.add(cox);
 
+    // drożdżak Candida: owalna komórka z pączkiem i krótką strzępką rzekomą
+    const cand = new THREE.Group();
+    const candMat = surfMat({ albedo: 0xe9dfc2, sssCol: 0xfff3cf, sss: 1.1, rough: 0.35, wet: 0.7, rim: 2.2, rimCol: 0xfff6dc, emit: 0x2a2416, grain: 0.8 });
+    { const parts = [];
+      const cell = new THREE.SphereGeometry(0.24, 18, 12); cell.scale(1, 1.35, 1); parts.push(cell.toNonIndexed());
+      const bud = new THREE.SphereGeometry(0.13, 14, 10); bud.scale(1, 1.2, 1); bud.translate(0.12, 0.36, 0.04); parts.push(bud.toNonIndexed());
+      // strzępka rzekoma: wydłużone ogniwa z przewężeniami
+      for (let k = 0; k < 3; k++) { const g = new THREE.SphereGeometry(0.1, 10, 8); g.scale(1, 2.0, 1); g.translate(-0.05 - k * 0.03, -0.42 - k * 0.36, -0.02 * k); parts.push(g.toNonIndexed()); }
+      cand.add(new THREE.Mesh(mergeGeos(parts), candMat)); }
+    scene.add(cand);
+
     // wygląd -> grupa, materiały do efektów (błysk trafienia, spowolnienie), czy to wirus
     const LOOKS = {
       ecoli: { g: bact, mats: [body.material, flagMat] },
@@ -187,7 +198,8 @@
       strep: { g: strep, mats: [strepMat] },
       adeno: { g: virus, mats: [capsidMat, spikeMat], virus: true },
       flu: { g: flu, mats: [fluMat, fluSpikeMat], virus: true },
-      coxsackie: { g: cox, mats: [coxMat], virus: true }
+      coxsackie: { g: cox, mats: [coxMat], virus: true },
+      candida: { g: cand, mats: [candMat] }
     };
     const lookOf = (s) => LOOKS[s.species] || (s.kind === 'virus' ? LOOKS.adeno : LOOKS.ecoli);
 
@@ -199,12 +211,33 @@
     abMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); abMesh.frustumCulled = false; abMesh.count = 0;
     scene.add(abMesh);
 
-    // --- kolonie: biofilm bakterii (zielony) albo zakażone komórki wirusa (fioletowe) ---
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s3 = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), dir = new THREE.Vector3(), e = new THREE.Euler();
+    const g2 = [0, 0];
+
+    // --- kolonie: biofilm bakterii (zielony), zakażone komórki wirusa (fioletowe), grzybnia (kremowa) ---
     const colMax = 600;
     const COL_LOOK = {
       bacteria: { albedo: 0x7fbf3a, sssCol: 0xc8ff60, rimCol: 0xd8ff80, emit: 0x0c1a02 },
-      virus: { albedo: 0x9a5fd0, sssCol: 0xe0a0ff, rimCol: 0xeccbff, emit: 0x1a0830 }
+      virus: { albedo: 0x9a5fd0, sssCol: 0xe0a0ff, rimCol: 0xeccbff, emit: 0x1a0830 },
+      fungus: { albedo: 0xe6dcc0, sssCol: 0xfff2cc, rimCol: 0xfff8e4, emit: 0x1e1a10 }
     };
+    // grzybnia: strzępki wzdłuż ścian (odcinki walców) i zarodniki w magazynach (złotobrązowe kulki)
+    const hyMax = 1600, spMax = 400;
+    const hyGeo = new THREE.CylinderGeometry(0.045, 0.055, 1, 6, 1); hyGeo.translate(0, 0.5, 0);
+    const hyMesh = new THREE.InstancedMesh(hyGeo, surfMat({ albedo: 0xeee6cc, sssCol: 0xfff4d6, sss: 1.0, rough: 0.4, wet: 0.6, rim: 1.6, rimCol: 0xfffaea, emit: 0x1c1810 }), hyMax);
+    hyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); hyMesh.frustumCulled = false; hyMesh.count = 0;
+    scene.add(hyMesh);
+    const spMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.09, 1), surfMat({ albedo: 0xb88a3a, sssCol: 0xffc860, sss: 0.9, rough: 0.3, wet: 0.6, rim: 1.4, rimCol: 0xffe0a0, emit: 0x2a1a04, grain: 0.6 }), spMax);
+    spMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); spMesh.frustumCulled = false; spMesh.count = 0;
+    scene.add(spMesh);
+    const walk = [], a3 = new THREE.Vector3(), b3 = new THREE.Vector3();
+    // odcinek walca od a3 do b3
+    function seg(mesh, idx, ax, ay, az, bx, by, bz, th) {
+      a3.set(ax, ay, az); b3.set(bx, by, bz); dir.subVectors(b3, a3);
+      const len = dir.length(); if (len < 1e-4) return false; dir.divideScalar(len);
+      q.setFromUnitVectors(up, dir); s3.set(th, len, th); m4.compose(a3, q, s3); mesh.setMatrixAt(idx, m4);
+      return true;
+    }
     let colKind = 'bacteria';
     const colMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.16, 2), surfMat({
       albedo: 0x7fbf3a, sssCol: 0xc8ff60, sss: 1.0, rough: 0.2, wet: 1.0, rim: 1.0, rimCol: 0xd8ff80, emit: 0x0c1a02, grain: 0.5
@@ -278,7 +311,6 @@
       const m = new THREE.Mesh(papGeo, papMat); m.position.set(ch.pap[0], ch.pap[1], -5.2); scene.add(m);
     }
 
-    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s3 = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), dir = new THREE.Vector3(), e = new THREE.Euler();
     let animT = 0;
 
     A.update = function (s, dt) {
@@ -378,6 +410,41 @@
         }
       }
       colMesh.count = n; colMesh.instanceMatrix.needsUpdate = true;
+
+      // grzybnia: strzępka każdej kolonii wzdłuż ściany (z bocznymi odgałęzieniami) i zarodniki magazynów
+      let nh = 0, ns = 0;
+      if (s.kind === 'fungus') {
+        const FU = C.fungus;
+        for (const c of s.colonies) {
+          if (c.store) {
+            for (let k = 0; k < 14 && ns < spMax; k++) {
+              const h1 = Math.sin(c.seed * 51.3 + k * 9.17) * 43758.5453, r1 = h1 - Math.floor(h1);
+              const h2 = Math.sin(c.seed * 17.9 + k * 41.7) * 24634.634, r2 = h2 - Math.floor(h2);
+              const ang = r1 * 6.283, rad = 0.25 + r2 * 0.55;
+              v.set(c.x + Math.cos(ang) * rad - (c.inTissue ? 0 : c.nx * 0.25), c.y + Math.sin(ang) * rad - (c.inTissue ? 0 : c.ny * 0.25),
+                (c.inTissue ? C.tissue.z + 0.2 : 0) + Math.sin(ang * 2) * rad * 1.2 + 0.05 * Math.sin(animT * 2 + k));
+              s3.setScalar((0.7 + r2 * 0.6) * Math.min(1, 0.5 + c.size)); m4.compose(v, q.identity(), s3); spMesh.setMatrixAt(ns++, m4);
+            }
+          }
+          if (c.inTissue || !c.hy) continue;
+          const len = Math.min(c.hy, FU.branchLen);
+          const P = H.wallWalk(c.x, c.y, c.hs || 1, len, c.seed, walk);
+          const zOf = (i) => 0.35 * Math.sin(i * 0.45 + c.seed * 20) + 0.15 * Math.sin(i * 1.3);
+          for (let i = 0; i + 3 < P.length && nh < hyMax; i += 2) {
+            const k = i / 2;
+            if (seg(hyMesh, nh, P[i], P[i + 1], zOf(k), P[i + 2], P[i + 3], zOf(k + 1), 1)) nh++;
+            // boczne odgałęzienie co trzeci odcinek: krótka strzępka odchodząca od ściany w głąb naczynia i w bok
+            if (k % 3 === 1 && nh < hyMax) {
+              const h = Math.sin(c.seed * 77 + k * 3.1) * 9999, r = h - Math.floor(h);
+              const L = 0.5 + r * 0.7, side = r < 0.5 ? -1 : 1;
+              H.grad(P[i], P[i + 1], g2);
+              if (seg(hyMesh, nh, P[i], P[i + 1], zOf(k), P[i] - g2[0] * L * 0.6 + g2[1] * L * 0.5 * side, P[i + 1] - g2[1] * L * 0.6 - g2[0] * L * 0.5 * side, zOf(k) + (r - 0.5) * L, 0.7)) nh++;
+            }
+          }
+        }
+      }
+      hyMesh.count = nh; hyMesh.instanceMatrix.needsUpdate = true;
+      spMesh.count = ns; spMesh.instanceMatrix.needsUpdate = true;
 
       // zastawki
       s.leaflets.forEach((L, i) => {

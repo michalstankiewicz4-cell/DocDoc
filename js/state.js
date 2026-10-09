@@ -24,11 +24,11 @@
         ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
         inTissue: false, burrowT: 0, z: 0,
         hidden: 0,                                     // id kolonii, w której ukrył się patogen (0 = nie)
-        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0, mask: 0 }, toxinCd: 0, signalCd: 0,
+        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0, mask: 0, pierce: 0, drugres: 0, spores: 0 }, toxinCd: 0, signalCd: 0,
         food: 0,                                       // pasek pożywienia (0..100), pełny pozwala się rozmnożyć
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
-        resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
+        resist: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0 },
         natural: null    // klasa antybiotyku, na którą bakteria jest naturalnie oporna (ukryte)
       },
       doctor: {
@@ -47,15 +47,15 @@
         resultSeq: 0,
         surgery: { state: 'idle', t: 0, cd: 0, valve: null },
         unlocked: false, knownInfection: null, knownHp: null,
-        cd: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
+        cd: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
       },
       // stan pacjenta 0..100: zakażenie i leczenie go obniżają, organizm powoli się regeneruje; 0 = sepsa
       patient: { cond: 100 },
-      kind: 'bacteria',  // rodzaj patogenu: 'bacteria' | 'virus' (wybiera gracz patogenu, lekarz go nie zna)
+      kind: 'bacteria',  // rodzaj patogenu: 'bacteria' | 'virus' | 'fungus' (wybiera gracz patogenu, lekarz go nie zna)
       species: 'ecoli',  // gatunek z C.species
       toxinT: 0,         // pozostały czas zakłócania badań przez toksyny
-      drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 } },
+      drugs: { abxA: { t: 0, eff: 0 }, abxB: { t: 0, eff: 0 }, antiviral: { t: 0, eff: 0 }, antifungal: { t: 0, eff: 0 } },
       antibodies: [],
       colonies: [],    // kolonie patogenu: { x, y, nx, ny, born, seed, size 0..1 }
       food: [],        // pożywienie we krwi: { id, x, y, z, kind }
@@ -72,11 +72,12 @@
         valveCrossings: 0, lungsTrips: 0, bodyTrips: 0, places: [],
         abHits: 0, dmgAntibodies: 0, dmgFever: 0,
         tests: 0, firstTestAt: -1, firstTreatAt: -1,
-        used: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0 },
+        used: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0 },
         minCond: 100, condByInfection: 0, condByTreatment: 0,
         coloniesFounded: 0, coloniesLost: 0, deaths: 0,
         mutations: 0, toxins: 0, hiddenTime: 0,
-        eaten: 0, copiesMade: 0, copiesLost: 0, copiesExpired: 0, decoyHits: 0
+        eaten: 0, copiesMade: 0, copiesLost: 0, copiesExpired: 0, decoyHits: 0,
+        hyphaColonies: 0, sporeStores: 0, sporeColonies: 0
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0,         // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
@@ -114,6 +115,42 @@
   }
   const pct = (v) => Math.round(v * 100) + '%';
 
+  // grzyb: strzępka kolonii rośnie wzdłuż ściany; po osiągnięciu branchLen na jej końcu wyrasta nowa kolonia.
+  // Magazyn zarodników co storePeriod s wypuszcza zarodnik (kopię) do krwi.
+  function fungusColony(s, c, dt, slow) {
+    const FU = C.fungus;
+    if (c.store) {
+      c.storeT = (c.storeT ?? FU.storePeriod) - dt;
+      if (c.storeT <= 0) {
+        c.storeT = FU.storePeriod;
+        if (s.copies.length < C.copies.max) {
+          s.copies.push({ id: s.nextId++, x: c.x - (c.inTissue ? 0 : c.nx * 0.8), y: c.y - (c.inTissue ? 0 : c.ny * 0.8), vx: 0, vy: 0, dir: 0, wob: rnd(s) * 6, born: s.time, spore: 1 });
+          s.stats.copiesMade++;
+        }
+      }
+      return;
+    }
+    if (c.inTissue || c.hd || c.hy == null) return;
+    c.hy += FU.hyphaRate * c.size * slow * dt;
+    if (c.hy < FU.branchLen) return;
+    c.hy = FU.branchLen; c.hd = 1;
+    if (s.colonies.length >= FU.maxColonies) return;
+    const P = H.wallWalk(c.x, c.y, c.hs, FU.branchLen, c.seed, walkPts);
+    if (P.length < 8) return;   // strzępka nie zdołała się wydłużyć (koniec ściany)
+    const tx = P[P.length - 2], ty = P[P.length - 1];
+    H.grad(tx, ty, g2);
+    // mutacja „strzępki przebijające tkanki”: w sercu nowa kolonia wrasta w mięsień
+    if (s.bact.mut.pierce && H.organAt(tx, ty) === 'heart') {
+      const d = H.sample(tx, ty), ex = tx + g2[0] * (C.tissue.enterD - d), ey = ty + g2[1] * (C.tissue.enterD - d);
+      const n = newColony(s, ex, ey, g2[0], g2[1], C.colony.startSize, c.hs); n.inTissue = true;
+      s.colonies.push(n);
+    } else {
+      const d = H.sample(tx, ty);
+      s.colonies.push(newColony(s, tx - g2[0] * d, ty - g2[1] * d, g2[0], g2[1], C.colony.startSize, c.hs));
+    }
+    s.stats.hyphaColonies++;
+  }
+
   // ---------- KOMENDY ----------
   G.apply = function (s, cmd) {
     const d = s.doctor;
@@ -136,7 +173,7 @@
         return;
       }
       case 'bact.kind':
-        if (C.species[cmd.kind] || cmd.kind === 'bacteria' || cmd.kind === 'virus') s.nextKind = cmd.kind;
+        if (C.species[cmd.kind] || C.defaultSpecies[cmd.kind]) s.nextKind = cmd.kind;
         return;
       case 'bact.input':
         s.bact.ix = Math.max(-1, Math.min(1, cmd.x));
@@ -195,7 +232,7 @@
         d.feverEff = useDrug(s, 'fever') * PT(s).drug;
         log(s, 'doc', `Wywołano gorączkę leczniczą (skuteczność ${pct(d.feverEff)}).`);
         return;
-      case 'doc.abxA': case 'doc.abxB': case 'doc.antiviral': {
+      case 'doc.abxA': case 'doc.abxB': case 'doc.antiviral': case 'doc.antifungal': {
         const key = cmd.type.slice(4);
         if (!d.unlocked || d.cd[key] > 0) return;
         const eff = useDrug(s, key);
@@ -207,10 +244,30 @@
     }
   };
 
+  // kolonia na ścianie; grzyb dostaje strzępkę (hy: długość, hs: kierunek wzdłuż ściany, hd: strzępka zakończona)
+  function newColony(s, x, y, nx, ny, size, hs) {
+    const c = { id: s.nextColonyId++, x, y, nx, ny, born: s.time, seed: rnd(s), size };
+    if (s.kind === 'fungus') { c.hy = 0; c.hs = hs || (rnd(s) < 0.5 ? -1 : 1); c.hd = 0; }
+    return c;
+  }
+  const walkPts = [];
+
   // założenie kolonii przy ścianie kosztem życia patogenu
   function foundColony(s) {
     const b = s.bact, K = C.colony;
-    if (b.dead || b.transit || !(b.contact || b.inTissue) || b.colonyCd > 0 || b.hp <= K.cost * PT(s).colonyCost + 1) return;
+    if (b.dead || b.transit || !(b.contact || b.inTissue) || b.colonyCd > 0) return;
+    // grzyb: E przy własnej kolonii zamienia ją w magazyn zarodników
+    if (s.kind === 'fungus') {
+      const FU = C.fungus;
+      const near = s.colonies.find((c) => !c.store && !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < FU.storeRadius);
+      if (near) {
+        if (b.hp <= FU.storeCost + 1) return;
+        b.hp -= FU.storeCost; b.colonyCd = K.cooldown; near.store = 1; near.storeT = FU.storePeriod * 0.5;
+        s.stats.sporeStores++;
+        return;
+      }
+    }
+    if (b.hp <= K.cost * PT(s).colonyCost + 1) return;
     b.hp -= K.cost * PT(s).colonyCost; b.colonyCd = K.cooldown;
     H.grad(b.x, b.y, g2);
     if (b.inTissue) {
@@ -218,12 +275,12 @@
       s.colonies.push({ id: s.nextColonyId++, x: b.x, y: b.y, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize, inTissue: true });
     } else {
       const sd = H.sample(b.x, b.y);
-      s.colonies.push({ id: s.nextColonyId++, x: b.x - g2[0] * sd, y: b.y - g2[1] * sd, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize });
+      s.colonies.push(newColony(s, b.x - g2[0] * sd, b.y - g2[1] * sd, g2[0], g2[1], K.startSize));
     }
     s.stats.coloniesFounded++;
   }
 
-  const DRUG_NAME = { abxA: 'antybiotyk β-laktamowy', abxB: 'antybiotyk makrolidowy', antiviral: 'lek przeciwwirusowy' };
+  const DRUG_NAME = { abxA: 'antybiotyk β-laktamowy', abxB: 'antybiotyk makrolidowy', antiviral: 'lek przeciwwirusowy', antifungal: 'lek przeciwgrzybiczy' };
   // gatunek patogenu z identyfikatora (dawne 'bacteria' / 'virus' -> gatunek domyślny)
   G.speciesOf = function (id) {
     if (C.species[id]) return id;
@@ -231,8 +288,10 @@
   };
   // naturalna wrażliwość patogenu na lek (0..1): antybiotyki nie działają na wirusa, lek przeciwwirusowy na bakterię
   function susceptibility(s, key) {
-    if (key === 'abxA' || key === 'abxB') return s.kind === 'virus' ? 0 : (s.bact.natural === key ? D.naturalResistance : 1);
+    if (key === 'abxA' || key === 'abxB') return s.kind !== 'bacteria' ? 0 : (s.bact.natural === key ? D.naturalResistance : 1);
     if (key === 'antiviral') return s.kind === 'virus' ? ((C.species[s.species] || {}).antiviral ?? 1) : 0;
+    // lek przeciwgrzybiczy: tylko grzyb; mutacja „odporność na leki” go osłabia
+    if (key === 'antifungal') return s.kind === 'fungus' ? 1 - C.mutations.drugres.step * s.bact.mut.drugres : 0;
     return 1;
   }
   G.susceptibility = susceptibility;
@@ -260,7 +319,7 @@
     // posiew liczy też komórki patogenu we krwi: oryginał (jeśli płynie we krwi) i jego kopie
     if (kind === 'culture') {
       const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden ? 1 : 0;
-      const positive = s.kind === 'bacteria' && rnd(s) < sens(s, 'culture');   // fałszywie ujemny z szansą 1 − czułość
+      const positive = s.kind !== 'virus' && rnd(s) < sens(s, 'culture');   // bakterie i drożdżaki rosną na podłożu   // fałszywie ujemny z szansą 1 − czułość
       return { positive, infection: positive ? Math.round(b.infection) : 0, cells: positive ? inBlood + s.copies.length : 0 };
     }
     if (kind === 'echo') {
@@ -290,7 +349,7 @@
     if (kind === 'cbc') {
       const inf = b.infection * (1 - C.mutations.mask.crp * maskLvl(s));
       const w = 6 + inf * 0.14 + (rnd(s) * 2 - 1) * D.tests.cbc.noise * (tox ? 3 : 1);
-      return { wbc: Math.max(2, Math.round(w * 10) / 10), diff: inf < 8 ? 'norm' : s.kind === 'bacteria' ? 'neutro' : 'lympho' };
+      return { wbc: Math.max(2, Math.round(w * 10) / 10), diff: inf < 8 ? 'norm' : s.kind === 'virus' ? 'lympho' : 'neutro' };
     }
     // PCR: materiał genetyczny we krwi (patogen, kopie, kolonie poza mięśniem) — rodzaj z czułością badania
     if (kind === 'pcr') {
@@ -302,7 +361,7 @@
     if (kind === 'urine') {
       const km = s.colonies.reduce((a, c) => a + (H.organAt(c.x, c.y) === 'kidney' ? c.size : 0), 0);
       const sick = km > D.tests.urine.minMass, se = sens(s, 'urine');
-      return { rbc: sick && rnd(s) < se, bact: sick && s.kind === 'bacteria' && rnd(s) < se };
+      return { rbc: sick && rnd(s) < se, bact: sick && s.kind === 'bacteria' && rnd(s) < se, fungi: sick && s.kind === 'fungus' && rnd(s) < se };
     }
     // tomografia: wszystkie kolonie, dokładnie, także w mięśniu (każda wykryta z czułością badania)
     if (kind === 'ct') {
@@ -312,7 +371,7 @@
     }
     if (kind === 'abg') {
       const out = {};
-      for (const k of ['antibodies', 'fever', 'abxA', 'abxB']) out[k] = (1 - b.resist[k]) * susceptibility(s, k);
+      for (const k of ['antibodies', 'fever', 'abxA', 'abxB', 'antifungal']) out[k] = (1 - b.resist[k]) * susceptibility(s, k);
       out.antibodies *= 1 - C.mutations.capsule.step * b.mut.capsule;   // otoczka
       out.fever *= 1 - C.mutations.fever.step * b.mut.fever;            // odporność na gorączkę
       return out;   // skuteczność kolejnej dawki 0..1
@@ -330,7 +389,7 @@
       text = `CRP ${r.value} mg/l.`;
       d.estInfection = Math.max(0, Math.min(100, Math.round((r.value - 4) / 2.4))); d.estT = T.sampleT; d.estExact = false;
     } else if (kind === 'culture') {
-      text = r.positive ? `Posiew dodatni, kolonizacja ${r.infection}%, komórki bakterii we krwi: ${r.cells ?? 0}.` : 'Posiew ujemny: brak wzrostu bakterii.';
+      text = r.positive ? `Posiew dodatni, kolonizacja ${r.infection}%, komórki patogenu we krwi: ${r.cells ?? 0}.` : 'Posiew ujemny: brak wzrostu.';
       if (r.positive) {
         d.knownInfection = r.infection; d.resultTime = T.sampleT;
         d.estInfection = r.infection; d.estT = T.sampleT; d.estExact = true;
@@ -352,7 +411,7 @@
     } else if (kind === 'pcr') {
       text = r.found ? `PCR: wykryto materiał genetyczny: ${C.species[r.species].name.toLowerCase()}.` : 'PCR: nie wykryto materiału genetycznego patogenu.';
     } else if (kind === 'urine') {
-      text = `Badanie moczu: krwinki czerwone ${r.rbc ? 'obecne' : 'nieobecne'}, bakterie ${r.bact ? 'obecne' : 'nieobecne'}.`;
+      text = `Badanie moczu: krwinki czerwone ${r.rbc ? 'obecne' : 'nieobecne'}, bakterie ${r.bact ? 'obecne' : 'nieobecne'}, grzyby ${r.fungi ? 'obecne' : 'nieobecne'}.`;
     } else if (kind === 'ct') {
       const n = (o) => r.colonies.filter((c) => c[4] === o).length;
       const nH = n('heart'), nL = n('liver'), nK = n('kidney'), nO = r.colonies.length - nH - nL - nK;
@@ -402,7 +461,11 @@
     for (let i = s.antibodies.length - 1; i >= 0; i--) if (s.antibodies[i].stuck) s.antibodies.splice(i, 1);
   }
   // mutacje za punkty z przyrostu kolonii
+  // grzyb ma własne mutacje pod tymi samymi klawiszami (7, 8, 0); 9 (otoczka) i 6 (maskowanie) są wspólne
+  const FUNGUS_MUT = { speed: 'pierce', fever: 'drugres', toxins: 'spores' };
+  G.mutKey = (s, what) => (s.kind === 'fungus' && FUNGUS_MUT[what]) || what;
   function mutate(s, what) {
+    what = G.mutKey(s, what);
     const b = s.bact, M = C.mutations;
     if (!M[what] || b.dead) return;
     const lvl = b.mut[what];
@@ -608,11 +671,11 @@
     const dr = s.drugs;
     for (const k in dr) if (dr[k].t > 0) dr[k].t = Math.max(0, dr[k].t - dt);
     const on = (k) => (dr[k].t > 0 ? dr[k].eff : 0);
-    const effA = on('abxA'), effB = on('abxB'), effV = on('antiviral');
+    const effA = on('abxA'), effB = on('abxB'), effV = on('antiviral'), effF = on('antifungal');
     // spowolnienie ruchu i wstrzymanie wzrostu kolonii: makrolid (bakteria), lek przeciwwirusowy (wirus)
     b.slowMul = (1 - (1 - D.abxB.speedMul) * effB) * (1 - (1 - D.antiviral.speedMul) * effV);
     b.slowT = Math.max(effB > 0 ? dr.abxB.t : 0, effV > 0 ? dr.antiviral.t : 0);
-    const halt = Math.max(effB, effV);
+    const halt = Math.max(effB, effV, effF * 0.5);
 
     // --- kolonie: rosną same; leki wstrzymują wzrost, gorączka go spowalnia, β-laktam je kurczy ---
     const K = C.colony;
@@ -627,10 +690,12 @@
       const c = s.colonies[i];
       const pk = c.inTissue ? pen : 1;   // leki słabiej docierają do kolonii w mięśniu
       const before = c.size;
-      c.size = Math.min(1, c.size + (grow0 * (1 - halt * pk) - D.abxA.colonyShrink * effA * pk) * dt);
+      const pf = c.store ? C.fungus.storeShrink : 1;   // magazyn zarodników: leki słabiej
+      c.size = Math.min(1, c.size + (grow0 * (1 - halt * pk) - (D.abxA.colonyShrink * effA + D.antifungal.colonyShrink * effF) * pk * pf) * dt);
       if (c.size > before) b.points += (c.size - before) * C.mutations.perGrowth;   // punkty mutacji z przyrostu
       if (c.size <= 0.02) { s.colonies.splice(i, 1); s.stats.coloniesLost++; continue; }
       mass += c.size;
+      if (s.kind === 'fungus') fungusColony(s, c, dt, 1 - effF * pk);
     }
     b.infection = Math.min(100, mass * K.infectionPerSize);
     s.stats.maxInfection = Math.max(s.stats.maxInfection, b.infection);
@@ -644,11 +709,13 @@
       if (b.dead === 0 && s.colonies.length) {
         let best = s.colonies[0];
         for (const c of s.colonies) if (c.size > best.size) best = c;
+        // grzyb odradza się w największym magazynie zarodników, jeśli ma któryś
+        for (const c of s.colonies) if (c.store && (!best.store || c.size > best.size)) best = c;
         if (best.inTissue) { b.x = best.x; b.y = best.y; b.inTissue = true; b.z = C.tissue.z; }
         else { b.x = best.x - best.nx * 0.6; b.y = best.y - best.ny * 0.6; b.inTissue = false; b.z = 0; }
         b.vx = b.vy = 0; b.burrowT = 0;
         b.hp = K.respawnHp * (s.kind === 'virus' ? C.virus.hp / B.hp : 1); b.transit = null;
-        best.size -= K.respawnCost;
+        best.size -= K.respawnCost * (best.store ? 0.5 : 1);
         if (best.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(best), 1); s.stats.coloniesLost++; }
       }
     } else if (b.hidden) {
@@ -661,7 +728,7 @@
         const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
         b.feeding = b.hp < maxHp; if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
         if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; s.stats.dmgFever += fd; }
-        { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV) * dt; b.hp -= dd; s.stats.dmgDrugs = (s.stats.dmgDrugs || 0) + dd; }
+        { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF) * dt; b.hp -= dd; s.stats.dmgDrugs = (s.stats.dmgDrugs || 0) + dd; }
         s.stats.hiddenTime += dt;
       }
     } else if (b.transit) {
@@ -749,7 +816,7 @@
       if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
       if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; ST.dmgFever += fd; }
       // leki bójcze: β-laktam (bakteria), przeciwwirusowy (wirus)
-      { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
+      { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
 
       if (!b.inTissue) for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
@@ -796,8 +863,16 @@
       const dk = Math.exp(-3 * dt); c.vx *= dk; c.vy *= dk;
       c.x += (c.vx + fv[0] * B.flowCoupling) * dt; c.y += (c.vy + fv[1] * B.flowCoupling) * dt;
       if (Math.hypot(c.vx, c.vy) > 0.3) c.dir = Math.atan2(c.vy, c.vx);
-      collideLeaflets(s, c, B.radius); collideWalls(c, B.radius);
+      collideLeaflets(s, c, B.radius); const hit = collideWalls(c, B.radius);
       for (const ex of H.EXITS) if (ex.test(c.x, c.y)) { const L = H.INLETS[ex.to], p = L[Math.floor(rnd(s) * L.length)]; c.x = p.x; c.y = p.y; }
+      // grzyb z mutacją „zarodniki z krwią”: zarodnik przy ścianie osiada i zakłada kolonię
+      if (s.kind === 'fungus' && b.mut.spores && s.time - c.born > C.fungus.sporeSettle && s.colonies.length < C.fungus.maxColonies
+          && (hit || H.sample(c.x, c.y) > -(B.radius + 0.3))) {
+        H.grad(c.x, c.y, g2); const d = H.sample(c.x, c.y);
+        s.colonies.push(newColony(s, c.x - g2[0] * d, c.y - g2[1] * d, g2[0], g2[1], C.colony.startSize * 0.6));
+        s.copies.splice(i, 1); s.stats.sporeColonies++;
+        continue;
+      }
     }
 
     const A = D.antibodies;

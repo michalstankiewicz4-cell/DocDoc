@@ -79,6 +79,10 @@ Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, w
 - `state.kind` to `bacteria` / `virus`, `state.species` to rodzaj. `Game.speciesOf()` mapuje dawne wartości `bacteria` / `virus` na rodzaj domyślny (`C.defaultSpecies`).
 - **Wygląd 3D:** `actors.js` ma osobną grupę dla każdego rodzaju (`LOOKS`); kopie patogenu to klony tej grupy. Każdy stan, który rysuje patogen (także duch w `doctor-cam.js`), musi mieć `species`.
 
+## Grzyb
+
+Kolonia grzyba ma pola `hy` (długość strzępki), `hs` (kierunek wzdłuż ściany ±1), `hd` (strzępka skończona) i `store` (magazyn zarodników). `Heart.wallWalk(x, y, sign, len, seed)` wyznacza drogę strzępki po ścianie (kroki 0,35 j. po stycznej do SDF, z meandrami zależnymi od `seed`), z niej `state.js` bierze koniec strzępki (nowa kolonia), a `render/actors.js` rysuje odcinki strzępki (instanced cylinders) i zarodniki magazynów. Mutacje grzyba mapuje `Game.mutKey`.
+
 ## Panel lekarza
 
 - **Układ** (`index.html`, `.ward`): siatka 6 kolumn z urządzeniami `.dev` (ciemne `.dev-dark`, jasne `.dev-light`); poniżej 640 px szerokości panelu wszystko w jednej kolumnie (container query).

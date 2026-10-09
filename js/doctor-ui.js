@@ -9,9 +9,10 @@
     { cmd: 'doc.fever',      key: '2', cd: 'fever',      name: 'Gorączka',     desc: 'Temperatura do 39,6 °C. Osłabia patogen i spowalnia wzrost kolonii.' },
     { cmd: 'doc.abxA',       key: '3', cd: 'abxA',       name: 'Antybiotyk β-laktamowy', desc: 'Bakteriobójczy: niszczy bakterie i kurczy kolonie. Nie działa na wirusy.' },
     { cmd: 'doc.abxB',       key: '4', cd: 'abxB',       name: 'Antybiotyk makrolidowy', desc: 'Bakteriostatyczny: spowalnia bakterie i wstrzymuje wzrost kolonii. Nie działa na wirusy.' },
-    { cmd: 'doc.antiviral',  key: '5', cd: 'antiviral',  name: 'Lek przeciwwirusowy',    desc: 'Hamuje namnażanie wirusa i go osłabia. Nie działa na bakterie.' }
+    { cmd: 'doc.antiviral',  key: '5', cd: 'antiviral',  name: 'Lek przeciwwirusowy',    desc: 'Hamuje namnażanie wirusa i go osłabia. Nie działa na bakterie.' },
+    { cmd: 'doc.antifungal', key: 'Y', cd: 'antifungal', name: 'Lek przeciwgrzybiczy',   desc: 'Niszczy grzyby i kurczy grzybnię, wstrzymuje strzępki. Nie działa na bakterie ani wirusy.' }
   ];
-  const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, abxA: D.abxA.cooldown, abxB: D.abxB.cooldown, antiviral: D.antiviral.cooldown };
+  const COOLDOWN = { antibodies: D.antibodies.cooldown, fever: D.fever.cooldown, abxA: D.abxA.cooldown, abxB: D.abxB.cooldown, antiviral: D.antiviral.cooldown, antifungal: D.antifungal.cooldown };
   const TESTS = [
     { kind: 'crp', key: 'Z', short: 'CRP', name: 'CRP', desc: 'Szybkie, przybliżone: poziom stanu zapalnego.' },
     { kind: 'culture', key: 'X', short: 'Posiew', name: 'Posiew krwi', desc: 'Dokładna kolonizacja i zdjęcie miejsca pobrania.' },
@@ -32,6 +33,7 @@
     abxA: '<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-35 12 12)"/><path d="m9.5 8.4 5 7.2"/>',
     abxB: '<circle cx="12" cy="12" r="7"/><path d="M5 12h14"/>',
     antiviral: '<path d="m14 4 6 6M17 7l-9 9-4 1 1-4 9-9M4 20l3-3"/><path d="m11 10 3 3"/>',
+    antifungal: '<path d="M4 12a8 5 0 0 1 16 0Z"/><path d="M10 12v7a2 2 0 0 0 4 0v-7"/>',
     crp: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 14h9"/>',
     culture: '<ellipse cx="12" cy="13" rx="9" ry="5"/><path d="M3 13v2c0 2.8 4 5 9 5s9-2.2 9-5v-2"/><circle cx="9" cy="12" r="1"/><circle cx="14" cy="14" r="1"/>',
     echo: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
@@ -241,6 +243,16 @@
         for (let k = 0; k < 36; k++) { const a = k / 36 * 6.283; g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(x + Math.cos(a) * (r + 3.2), y + Math.sin(a) * (r + 3.2)); g.stroke(); }
         g.fillStyle = '#3a3a37'; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
         g.fillStyle = '#6d6d68'; g.beginPath(); g.arc(x, y, r * 0.72, 0, 6.283); g.fill();
+      } else if (look === 'candida') {
+        // drożdżaki: owalne komórki z pączkami i łańcuszek strzępki rzekomej (Gram-dodatnie, fioletowe)
+        const m = 3 + Math.floor(R() * 4);
+        for (let k = 0; k < m; k++) {
+          const x = x0 + (R() - 0.5) * 22, y = y0 + (R() - 0.5) * 22, a = R() * 6.283;
+          g.fillStyle = purple; g.beginPath(); g.ellipse(x, y, 5.2, 3.8, a, 0, 6.283); g.fill();
+          if (R() < 0.6) { g.beginPath(); g.ellipse(x + Math.cos(a) * 6, y + Math.sin(a) * 6, 2.6, 2.1, a, 0, 6.283); g.fill(); }
+        }
+        let a = R() * 6.283, x = x0 + 6, y = y0 + 6;
+        for (let k = 0; k < 5; k++) { g.fillStyle = '#5a2a8a'; g.beginPath(); g.ellipse(x, y, 5.5, 2.2, a, 0, 6.283); g.fill(); a += (R() - 0.5) * 0.5; x += Math.cos(a) * 10; y += Math.sin(a) * 10; }
       } else if (look === 'coxsackie') {
         // drobne wiriony w luźnym skupisku
         for (let q = 0; q < 7; q++) {
@@ -481,6 +493,7 @@
           ['Mutacje', String(S.mutations || 0)],
           ['Uwolnienia toksyn', String(S.toxins || 0)],
           ['Sygnały chemiczne', String(S.signals || 0)],
+          ...(s.kind === 'fungus' ? [['Kolonie ze strzępek', String(S.hyphaColonies || 0)], ['Magazyny zarodników', String(S.sporeStores || 0)], ['Kolonie z zarodników', String(S.sporeColonies || 0)]] : []),
           ['Czas w ukryciu', num(S.hiddenTime) + ' s'],
           ['Zjedzone pożywienie', String(S.eaten || 0)],
           ['Kopie: utworzone / zniszczone / obumarłe', `${S.copiesMade || 0} / ${S.copiesLost || 0} / ${S.copiesExpired || 0}`],
@@ -498,6 +511,7 @@
           ['Antybiotyk β-laktamowy', String(used.abxA || 0)],
           ['Antybiotyk makrolidowy', String(used.abxB || 0)],
           ['Lek przeciwwirusowy', String(used.antiviral || 0)],
+          ['Lek przeciwgrzybiczy', String(used.antifungal || 0)],
           ['Obrażenia od leków', num(S.dmgDrugs) + ' pkt'],
           ['Operacje zastawek', String(S.surgeries || 0)],
           ['Ogniska usunięte operacją', String(S.surgeryRemoved || 0)],
@@ -580,7 +594,8 @@
         $('res-urine').hidden = false; time($('res-urine'), T.urine);
         const r = T.urine.res;
         $('res-urine-l').innerHTML = `<div><dt>Krwinki czerwone</dt><dd data-state="${r.rbc ? 'high' : 'ok'}">${r.rbc ? 'obecne' : 'nieobecne'}</dd></div>`
-          + `<div><dt>Bakterie</dt><dd data-state="${r.bact ? 'high' : 'ok'}">${r.bact ? 'obecne' : 'nieobecne'}</dd></div>`;
+          + `<div><dt>Bakterie</dt><dd data-state="${r.bact ? 'high' : 'ok'}">${r.bact ? 'obecne' : 'nieobecne'}</dd></div>`
+          + `<div><dt>Grzyby (drożdżaki)</dt><dd data-state="${r.fungi ? 'high' : 'ok'}">${r.fungi ? 'obecne' : 'nieobecne'}</dd></div>`;
       } else $('res-urine').hidden = true;
       if (T.ct && T.ct.res) {
         $('res-ct').hidden = false; time($('res-ct'), T.ct);
@@ -593,7 +608,7 @@
         $('res-abg').hidden = false; time($('res-abg'), T.abg);
         const lbl = (r) => r < 0.2 ? ['wrażliwa', 'ok'] : r < 0.5 ? ['średnio wrażliwa', 'warm'] : ['oporna', 'high'];
         const R = T.abg.res;
-        const rows = [['Przeciwciała', R.antibodies], ['Gorączka', R.fever], ['β-laktam', R.abxA], ['Makrolid', R.abxB]];
+        const rows = [['Przeciwciała', R.antibodies], ['Gorączka', R.fever], ['β-laktam', R.abxA], ['Makrolid', R.abxB], ['Przeciwgrzybiczy', R.antifungal ?? 0]];
         $('res-abg-l').innerHTML = rows.map(([k, e]) => { const [t, c] = lbl(1 - e); return `<div><dt>${k}</dt><dd data-state="${c}">${t}, skuteczność ${Math.round(e * 100)}%</dd></div>`; }).join('');
       } else $('res-abg').hidden = true;
     }
@@ -621,7 +636,8 @@
         reset() { if (st === 'playing') { vid.pause(); box.hidden = true; } st = 'none'; forStats = null; }
       };
     })();
-    const spLabel = (s) => { const sp = C.species[s.species]; return sp ? `${sp.name.charAt(0).toLowerCase() + sp.name.slice(1)} (${sp.latin})` : (s.kind === 'virus' ? 'wirus' : 'bakteria'); };
+    const KIND_NAME = { bacteria: 'bakteria', virus: 'wirus', fungus: 'grzyb' };
+    const spLabel = (s) => { const sp = C.species[s.species]; return sp ? `${sp.name.charAt(0).toLowerCase() + sp.name.slice(1)} (${sp.latin})` : (KIND_NAME[s.kind] || 'bakteria'); };
     function update(s) {
       const d = s.doctor, b = s.bact;
       drawEcg(s);
@@ -726,7 +742,7 @@
       }
 
       // HUD patogenu
-      { const sp = C.species[s.species]; const nm = sp ? sp.name.charAt(0).toLowerCase() + sp.name.slice(1) : (s.kind === 'virus' ? 'wirus' : 'bakteria');
+      { const sp = C.species[s.species]; const nm = sp ? sp.name.charAt(0).toLowerCase() + sp.name.slice(1) : (KIND_NAME[s.kind] || 'bakteria');
         document.querySelectorAll('.js-kind-name').forEach((el) => { if (el.textContent !== nm) el.textContent = nm; }); }
       // wylosowany pacjent: oznaczenie w HUD i na karcie oraz plansza na początku rundy
       { const P = C.patients[s.ptype];
@@ -769,8 +785,11 @@
       const MC = C.mutations;
       $('mut-pts').textContent = (b.points || 0).toFixed(1).replace('.', ',');
       for (const m of MUTS) {
-        const lvl = (b.mut && b.mut[m.what]) || 0, max = MC[m.what].max, cost = MC.cost[lvl];
+        // grzyb: klawisze 7, 8, 9, 0 mają inne mutacje (C.fungus.mutNames)
+        const key = DD.Game.mutKey(s, m.what), nm = (s.kind === 'fungus' && C.fungus.mutNames[m.what]) || m.name;
+        const lvl = (b.mut && b.mut[key]) || 0, max = MC[key].max, cost = MC.cost[lvl];
         const el = mutBtns[m.what];
+        const nmEl = el.querySelector('span'); if (nmEl.dataset.nm !== nm) { nmEl.dataset.nm = nm; nmEl.textContent = nm; }
         el.querySelector('.mut-lvl').textContent = '●'.repeat(lvl) + '○'.repeat(max - lvl) + (lvl < max ? `  ${cost} pkt` : '');
         el.disabled = lvl >= max || (b.points || 0) < cost;
         el.dataset.afford = !el.disabled ? '1' : '0';
@@ -778,7 +797,9 @@
       const ab = [];
       if (b.hidden) ab.push(`<b>Ukryty w kolonii</b>: przeciwciała cię nie widzą. F wychodzi.`);
       else if (s.colonies.some((c) => !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < C.hide.radius)) ab.push('F: ukryj się w kolonii.');
-      if (food >= C.copies.cost && ncop < C.copies.max) ab.push('<b>R: rozmnóż się</b> (kopia odciąga przeciwciała).');
+      if (food >= C.copies.cost && ncop < C.copies.max) ab.push(s.kind === 'fungus' ? '<b>R: wypuść zarodnik</b> (odciąga przeciwciała).' : '<b>R: rozmnóż się</b> (kopia odciąga przeciwciała).');
+      if (s.kind === 'fungus' && !b.dead && s.colonies.some((c) => !c.store && !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < C.fungus.storeRadius))
+        ab.push(`E: magazyn zarodników z tej kolonii (−${C.fungus.storeCost} życia).`);
       { const X = C.signals, REG = { right: 'prawe serce', left: 'lewe serce', legs: 'nogi', liver: 'wątroba', kidney: 'nerka' };
         if (s.fakeSym) ab.push(`Fałszywy objaw (${REG[s.fakeSym.region]}) jeszcze ${Math.ceil(s.fakeSym.t)} s.`);
         else if (b.signalCd > 0) ab.push(`Sygnały chemiczne za ${Math.ceil(b.signalCd)} s.`);
@@ -790,14 +811,14 @@
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;
       $('s-fever').hidden = !(d.temp > 37.4);
       // leki we krwi widziane przez patogen (z rzeczywistym działaniem)
-      const DN = { abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'lek przeciwwirusowy' };
+      const DN = { abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'lek przeciwwirusowy', antifungal: 'lek przeciwgrzybiczy' };
       const active = Object.keys(DN).filter((k) => s.drugs[k] && s.drugs[k].t > 0);
       $('s-slow').hidden = active.length === 0;
       $('s-slow').textContent = active.map((k) => `${DN[k]}: ${s.drugs[k].eff > 0.05 ? 'działa ' + Math.round(s.drugs[k].eff * 100) + '%' : 'nie działa'}`).join(', ');
       $('s-ab').hidden = stuck === 0;
       $('s-ab-n').textContent = stuck;
       $('s-ab-near').hidden = !(s.antibodies.length > stuck && stuck === 0 && s.antibodies.some(a => Math.hypot(a.x - b.x, a.y - b.y) < 12));
-      const RN = { antibodies: 'przeciwciała', fever: 'gorączka', abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'przeciwwirusowy' };
+      const RN = { antibodies: 'przeciwciała', fever: 'gorączka', abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'przeciwwirusowy', antifungal: 'przeciwgrzybiczy' };
       const res = Object.keys(RN).filter(k => b.resist[k] > 0).map(k => `${RN[k]} ${Math.round(b.resist[k] * 100)}%`);
       $('s-res').hidden = res.length === 0;
       $('s-res').textContent = 'Oporność: ' + res.join(', ');
@@ -814,7 +835,7 @@
         if (endFilm.state(s) === 'none') endFilm.play(s);
       } else if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd)) {
         end.hidden = false;
-        const kn = s.kind === 'virus' ? 'wirus' : 'bakteria';
+        const kn = KIND_NAME[s.kind] || 'bakteria';
         $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`;
         $('end-text').textContent = s.over === 'doctor'
           ? `Zakażenie wyleczone po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`

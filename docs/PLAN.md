@@ -61,7 +61,7 @@ Badania: ✅ morfologia, PCR, badanie moczu, tomografia (v0.37.0); ⬜ RTG, rezo
 Leczenie: chemioterapia, radioterapia, amputacja, przeszczep narządu.
 Część z nich ma sens dopiero przy nowych patogenach (etap 7–8).
 
-## Etap 7. Nowy patogen: grzyb
+## Etap 7. Nowy patogen: grzyb ✅ v0.38.0
 
 Rośnie jak korzenie: strzępki rozrastają się po ścianach i tkankach (realistycznie, na wzór grzybni Candida / Aspergillus).
 - budujesz grzybnię, zajmujesz kolejne tkanki, tworzysz „magazyny zarodników”,
