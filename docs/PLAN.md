@@ -57,7 +57,7 @@ Nie wszystko musi dziać się w układzie krwionośnym — np. astma i palacz w 
 
 ## Etap 6. Nowe badania i leczenie
 
-Badania: morfologia, PCR, badanie moczu, RTG, tomografia, rezonans, biopsja, markery nowotworowe (posiew już jest).
+Badania: ✅ morfologia, PCR, badanie moczu, tomografia (v0.37.0); ⬜ RTG, rezonans, biopsja, markery nowotworowe — razem z rakiem / płucami (posiew już jest).
 Leczenie: chemioterapia, radioterapia, amputacja, przeszczep narządu.
 Część z nich ma sens dopiero przy nowych patogenach (etap 7–8).
 

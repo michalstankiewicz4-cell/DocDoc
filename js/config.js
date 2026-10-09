@@ -39,7 +39,11 @@ DD.CONFIG = {
       echo:    { duration: 8,  cooldown: 25, sens: 0.85 },  // echo serca: położenie i wielkość kolonii
       abg:     { duration: 18, cooldown: 30 },              // antybiogram: wrażliwość na leczenie (po dodatnim posiewie)
       micro:   { duration: 6,  cooldown: 15, sens: 0.85 },  // mikroskop: rodzaj patogenu w próbce krwi
-      usg:     { duration: 8,  cooldown: 25, sens: 0.85 }   // USG jamy brzusznej: kolonie w wątrobie, nerce i naczyniach brzucha
+      usg:     { duration: 8,  cooldown: 25, sens: 0.85 },  // USG jamy brzusznej: kolonie w wątrobie, nerce i naczyniach brzucha
+      cbc:     { duration: 5,  cooldown: 15, noise: 1.2 },  // morfologia: leukocyty (G/l) i przewaga neutrofili (bakteria) / limfocytów (wirus)
+      pcr:     { duration: 25, cooldown: 45, sens: 0.95 },  // PCR: materiał genetyczny patogenu we krwi → rodzaj (bez szukania pod mikroskopem)
+      urine:   { duration: 4,  cooldown: 15, sens: 0.85, minMass: 0.1 },  // badanie moczu: krwinki czerwone i bakterie, gdy są kolonie w nerce
+      ct:      { duration: 15, cooldown: 60, sens: 0.95 }   // tomografia: całe ciało, dokładne położenie, także kolonie w mięśniu
     },
     antibodies: { cooldown: 18, count: 56, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },

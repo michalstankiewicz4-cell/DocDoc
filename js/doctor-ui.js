@@ -18,7 +18,11 @@
     { kind: 'echo', key: 'C', short: 'Echo', name: 'Echo serca', desc: 'Położenie i wielkość kolonii na ścianach.' },
     { kind: 'usg', key: 'G', short: 'USG', name: 'USG jamy brzusznej', desc: 'Kolonie w wątrobie, nerce i naczyniach brzucha.' },
     { kind: 'abg', key: 'V', short: 'Antybiogram', name: 'Antybiogram', desc: 'Wrażliwość na leczenie. Wymaga dodatniego posiewu.' },
-    { kind: 'micro', key: 'N', short: 'Mikroskop', name: 'Mikroskop', desc: 'Próbka krwi pod mikroskopem: rodzaj bakterii albo wirusa.' }
+    { kind: 'micro', key: 'N', short: 'Mikroskop', name: 'Mikroskop', desc: 'Próbka krwi pod mikroskopem: rodzaj bakterii albo wirusa.' },
+    { kind: 'cbc', key: 'U', short: 'Morfologia', name: 'Morfologia krwi', desc: 'Leukocyty i rozmaz: przewaga neutrofili (bakteria) albo limfocytów (wirus).' },
+    { kind: 'pcr', key: 'I', short: 'PCR', name: 'PCR', desc: 'Materiał genetyczny patogenu we krwi: rodzaj bez szukania pod mikroskopem. Długo trwa.' },
+    { kind: 'urine', key: 'O', short: 'Mocz', name: 'Badanie moczu', desc: 'Krwinki czerwone i bakterie w moczu: kolonie w nerce.' },
+    { kind: 'ct', key: 'P', short: 'Tomografia', name: 'Tomografia komputerowa', desc: 'Całe ciało: dokładne położenie ognisk, także w mięśniu serca. Długie odnowienie.' }
   ];
 
   // ikony (obrys 24 × 24) dla pozycji menu
@@ -34,7 +38,11 @@
     usg: '<path d="M4 20 12 6l8 14Z"/><path d="M9 3h6v3H9z"/>',
     abg: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="2"/><circle cx="15" cy="9" r="2"/><circle cx="12" cy="16" r="2"/>',
     micro: '<path d="M6 21h12M9 21v-3h6M14 4l-4 9 3 1.5 4-9zM12 18a6 6 0 0 0 6-6"/>',
-    surgery: '<path d="M3 21 14 10M14 10l3-7 4 4-7 3"/>'
+    surgery: '<path d="M3 21 14 10M14 10l3-7 4 4-7 3"/>',
+    cbc: '<path d="M8 3v13a4 4 0 0 0 8 0V3"/><path d="M7 3h10M8 11h8"/>',
+    pcr: '<path d="M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9M9 7h6M9 17h6"/>',
+    urine: '<path d="M7 4h10l-1 16H8z"/><path d="M7.4 10h9.2"/>',
+    ct: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M3 20h18"/>'
   };
   const svg = (k) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
 
@@ -159,6 +167,45 @@
     }
     const drawEcho = makeUS($('res-echo-c'), DD.Heart.HEART_BOX, 240, 232);
     const drawUsg = makeUS($('res-usg-c'), DD.Heart.ABDOMEN_BOX, 240, 300);
+
+    // tomografia: przekrój całego ciała (świat gry) w skali szarości, ogniska jako jasne plamy z dokładnym położeniem
+    const drawCt = (function () {
+      const canvas = $('res-ct-c'), W0 = DD.CONFIG.world, w = 180, h = 380;
+      const box = { minX: W0.minX, maxX: W0.maxX, minY: W0.minY, maxY: W0.maxY };
+      let bg = null;
+      return function draw(res) {
+        const H = DD.Heart, pr = Math.min(2, window.devicePixelRatio || 1);
+        canvas.width = w * pr; canvas.height = h * pr; canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d'); ctx.setTransform(pr, 0, 0, pr, 0, 0);
+        const sc = Math.min(w / (box.maxX - box.minX), h / (box.maxY - box.minY));
+        const ox = (w - (box.maxX - box.minX) * sc) / 2, oy = (h - (box.maxY - box.minY) * sc) / 2;
+        const toX = (x) => ox + (x - box.minX) * sc, toY = (y) => oy + (box.maxY - y) * sc;
+        if (!bg) {
+          bg = document.createElement('canvas'); bg.width = w; bg.height = h;
+          const b = bg.getContext('2d'), img = b.createImageData(w, h);
+          for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+            const x = box.minX + (i + 0.5 - ox) / sc, y = box.maxY - (j + 0.5 - oy) / sc, k = (j * w + i) * 4;
+            let v = 6;
+            if (x >= box.minX && x <= box.maxX && y >= box.minY && y <= box.maxY) {
+              const d = H.sample(x, y), o = H.organAt(x, y), n = Math.random() * 6;
+              // krew z kontrastem jasna, ściany szare, miąższ wątroby i nerki średni, tło tkanek ciemne
+              v = d < 0 ? 205 + n : d < 1.2 ? 150 + n : (o === 'liver' || o === 'kidney') ? 112 + n : d < 7 ? 92 + n - d * 3 : 46 + n;
+            }
+            img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
+          }
+          b.putImageData(img, 0, 0);
+        }
+        ctx.drawImage(bg, 0, 0);
+        for (const [x, y, size, inT] of res.colonies) {
+          const px = toX(x), py = toY(y), r = 2 + size * 3;
+          ctx.fillStyle = inT ? 'rgba(255, 255, 255, 0.85)' : '#fff';
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.arc(px, py, r, 0, 6.283); ctx.fill(); ctx.stroke();
+        }
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.font = '10px system-ui, sans-serif';
+        ctx.fillText('P', 4, 12); ctx.fillText('L', w - 10, 12);
+      };
+    })();
 
     // Mikroskop: preparat (3 × 3 pola widzenia) rysowany raz na wynik; lekarz przesuwa go myszą albo strzałkami
     // i szuka patogenu. Rodzaj ujawnia się, gdy drobnoustrój trafi w środek pola widzenia.
@@ -475,10 +522,11 @@
       shownSeq = d.resultSeq;
       const T = d.tests;
       // drukarka: nowy wydruk wysuwa się na górę stosu
-      const anyPrint = !!(T.crp.res || T.culture.res || T.echo.res || T.abg.res || (T.usg && T.usg.res));
+      const PRINTED = ['crp', 'culture', 'echo', 'usg', 'abg', 'cbc', 'pcr', 'urine', 'ct'];
+      const anyPrint = PRINTED.some((k) => T[k] && T[k].res);
       $('print-empty').hidden = anyPrint;
       const slips = document.querySelector('.slips');
-      for (const k of ['crp', 'culture', 'echo', 'usg', 'abg']) {
+      for (const k of PRINTED) {
         const R = T[k]; if (!R || !R.res) continue;
         const el = $('res-' + k);
         if (el.dataset.t !== String(R.resultT)) {
@@ -516,6 +564,31 @@
         const nT = T.echo.res.colonies.filter((c) => c[3]).length, nW = T.echo.res.colonies.length - nT;
         $('res-echo-l').textContent = (nW || nT) ? `Ogniska na ścianach: ${nW}` + (nT ? `. Niewyraźne zgrubienia ściany: ${nT}` : '') : 'Bez widocznych zmian';
       } else $('res-echo').hidden = true;
+      if (T.cbc && T.cbc.res) {
+        $('res-cbc').hidden = false; time($('res-cbc'), T.cbc);
+        const r = T.cbc.res;
+        $('res-cbc-v').textContent = String(r.wbc).replace('.', ',');
+        $('res-cbc-l').textContent = (r.wbc > 10 ? 'Leukocytoza, ' : 'Leukocyty w normie, ') + ({ norm: 'rozmaz prawidłowy', neutro: 'przewaga neutrofili', lympho: 'przewaga limfocytów' })[r.diff];
+      } else $('res-cbc').hidden = true;
+      if (T.pcr && T.pcr.res) {
+        $('res-pcr').hidden = false; time($('res-pcr'), T.pcr);
+        const sp = T.pcr.res.found && C.species[T.pcr.res.species];
+        $('res-pcr-v').textContent = sp ? sp.name : 'Ujemny';
+        $('res-pcr-l').innerHTML = sp ? `<i>${sp.latin}</i>. <b>${sp.treat}</b>` : 'Nie wykryto materiału genetycznego patogenu we krwi.';
+      } else $('res-pcr').hidden = true;
+      if (T.urine && T.urine.res) {
+        $('res-urine').hidden = false; time($('res-urine'), T.urine);
+        const r = T.urine.res;
+        $('res-urine-l').innerHTML = `<div><dt>Krwinki czerwone</dt><dd data-state="${r.rbc ? 'high' : 'ok'}">${r.rbc ? 'obecne' : 'nieobecne'}</dd></div>`
+          + `<div><dt>Bakterie</dt><dd data-state="${r.bact ? 'high' : 'ok'}">${r.bact ? 'obecne' : 'nieobecne'}</dd></div>`;
+      } else $('res-urine').hidden = true;
+      if (T.ct && T.ct.res) {
+        $('res-ct').hidden = false; time($('res-ct'), T.ct);
+        drawCt(T.ct.res);
+        const C0 = T.ct.res.colonies, n = (o) => C0.filter((c) => c[4] === o).length, nM = C0.filter((c) => c[3]).length;
+        const nH = n('heart'), nL = n('liver'), nK = n('kidney'), nO = C0.length - nH - nL - nK;
+        $('res-ct-l').textContent = C0.length ? `Ogniska w sercu: ${nH} (w mięśniu: ${nM}), w wątrobie: ${nL}, w nerce: ${nK}, w naczyniach: ${nO}` : 'Bez widocznych zmian';
+      } else $('res-ct').hidden = true;
       if (T.abg.res) {
         $('res-abg').hidden = false; time($('res-abg'), T.abg);
         const lbl = (r) => r < 0.2 ? ['wrażliwa', 'ok'] : r < 0.5 ? ['średnio wrażliwa', 'warm'] : ['oporna', 'high'];

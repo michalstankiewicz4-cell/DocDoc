@@ -11,6 +11,16 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.37.0] - 2026-10-09
+### Dodane
+- **Nowe badania lekarza:** morfologia krwi (`U`), PCR (`I`), badanie moczu (`O`) i tomografia komputerowa (`P`) — w menu „Badania”, na lampkach konsoli i jako wydruki w drukarce (tomografia z obrazem przekroju całego ciała).
+- Animacje nowych badań w sali: analizator morfologii, termocykler PCR, pojemnik z moczem i pasek testowy, pierścień tomografu nad pacjentem.
+### Zmienione
+- Film na koniec rundy nie zajmuje już całego ekranu: jest na środku (~30% szerokości), gra widoczna w tle.
+### Poprawione
+- Klawisz `B` w trybie deweloperskim zlecał też posiew (stary skrót) — teraz tylko sygnały chemiczne patogenu.
+- Pasek klawiszy patogenu nie nachodzi na wskaźniki.
+
 ## [0.36.1] - 2026-10-09
 ### Zmienione
 - Domyślny język gry: angielski (wybór polskiego jest zapamiętywany).
@@ -336,7 +346,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.1...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.37.0...HEAD
+[0.37.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.1...v0.37.0
 [0.36.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.0...v0.36.1
 [0.36.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.34.0...v0.35.0

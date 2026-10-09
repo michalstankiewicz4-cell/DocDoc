@@ -92,6 +92,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Losowanie pacjenta (v0.34.0), balans w `docs/BALANS.md`
 - [x] Wybór języka PL / EN (v0.35.0)
 - [x] Ukrywanie informacji: czułość badań, maskowanie (6), sygnały chemiczne (B) (v0.36.0)
+- [x] Nowe badania: morfologia, PCR, badanie moczu, tomografia (v0.37.0)
 - [ ] Dalej wg `docs/PLAN.md`: nowe badania i leczenie, grzyb, rak, obszary poza krwiobiegiem
 - [x] Poprawki: powrót z mięśnia, zamiana ról; pasek przewijania; ekran startowy, loader, nazwa; SEO (v0.30.3–v0.31.1)
 - [x] Zakończenie rundy, filmy, zwijane statystyki (v0.32.0)
@@ -141,9 +142,11 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Start w nerce (`Heart.START.kidney`): punkt na tętnicy łukowatej (kąt 2,1 rad). Start w wątrobie (`START.liver`): żyła centralna środkowego zrazika. Strzałka w mikroskopie po 15 s (`HINT_AFTER`); zdjęcie patogenu widoczne dopiero po znalezieniu.
 - Minimapa patogenu ukryta na prośbę Michała (nie usuwać kodu): `config.ui.minimap = false`.
 - Ekran lekarza (v0.30.0, styl wybrany przez Michała: „ciemny monitor medyczny” + sylwetka): kolory kanałów w `.half-doc` (CSS), wybór z menu od razu zleca, przeciwciała widać na pompie 8 s po podaniu, sylwetka podświetla obszary z `DD.symptomList` (prawa nerka pacjenta).
+- Film na koniec (v0.37.0): na środku, szerokość clamp(280 px, 30vw, 720 px), przyciemnione tło.
 - Zakończenie (v0.32.0): 5 s (`config.ending`); przy wygranej lekarza serce nie staje (tylko pauza), pisk monitora tylko przy sepsie. Film: WebM, gdy przeglądarka go obsługuje, inaczej MP4; bez wcześniejszego gestu gra bez dźwięku; przycisk „Pomiń”.
 - Zoom (`config.camera`): 17, kółkiem 14–21 (Michał: „tylko delikatna regulacja”). W mięśniu kamera nadal zbliża się automatycznie (×0,6).
 - Pacjenci (`config.patients`, v0.34.0): losowanie równomierne przez hosta (`cmd.patient` wymusza), mnożniki i uzasadnienie w `docs/BALANS.md`; brak pożywienia „mało” dałem seniorowi (×0,6), diabetykowi więcej pożywienia (×1,4) i 70% glukozy. Plansza 4,5 s (`config.ui.revealTime`).
 - Język (v0.35.0): od v0.36.1 domyślnie angielski (prośba Michała), flagi przy przełączniku (SVG w `index.html`), wybór w `localStorage` (`pz-lang`), zmiana przeładowuje stronę. Kod pisze po polsku, `js/i18n.js` tłumaczy przy wyświetlaniu (MutationObserver + canvas) wg `js/lang/en.js`. **Każdy nowy tekst w grze wymaga wpisu w `js/lang/en.js`**; brakujące widać w `DD.i18nMiss` (z `DD.i18nDebug = true` także teksty bez polskich znaków). Liczby nadal z przecinkiem dziesiętnym (np. 36,9 °C).
 - Ukrywanie (v0.36.0): sygnały chemiczne dostępne od startu (bez mutacji), fałszywy objaw w losowym obszarze bez kolonii; maskowanie jako mutacja `6` łączy „maskowanie objawów” i „opóźnianie wykrycia”; ruchy patogenu w dzienniku mają `who: 'bact'` i są ukryte przed lekarzem. Liczby w `docs/BALANS.md`.
+- Nowe badania (v0.37.0): klawisze U / I / O / P; PCR wykrywa to samo co mikroskop (patogen we krwi, kopie, kolonie poza mięśniem); tomografia bez kosztu dla pacjenta; liczby w `docs/BALANS.md`. RTG, rezonans, biopsja, markery czekają na raka i płuca.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk; wątroba > 0,3 żółtaczka; nerka > 0,3 krew w moczu; > 0,9 objaw nasilony).

@@ -38,7 +38,11 @@
           echo: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           abg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           micro: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
-          usg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
+          usg: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          cbc: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          pcr: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          urine: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          ct: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
         },
         resultSeq: 0,
         surgery: { state: 'idle', t: 0, cd: 0, valve: null },
@@ -234,7 +238,8 @@
   G.susceptibility = susceptibility;
 
   // ---------- BADANIA ----------
-  const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram', micro: 'mikroskop', usg: 'USG jamy brzusznej' };
+  const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram', micro: 'mikroskop', usg: 'USG jamy brzusznej',
+    cbc: 'morfologia', pcr: 'PCR', urine: 'badanie moczu', ct: 'tomografia komputerowa' };
   function orderTest(s, kind) {
     const d = s.doctor, T = d.tests[kind], cfg = D.tests[kind];
     if (!T || T.state === 'running' || T.cd > 0) return;
@@ -281,6 +286,30 @@
       const found = (inBlood || s.copies.length > 0 || s.colonies.some((c) => !c.inTissue)) && rnd(s) < sens(s, 'micro');
       return { found, species: found ? s.species : null, n: found ? Math.min(12, 4 + s.copies.length + Math.round(b.infection / 12)) : 0 };
     }
+    // morfologia: leukocyty rosną z zakażeniem; przy bakterii przeważają neutrofile, przy wirusie limfocyty
+    if (kind === 'cbc') {
+      const inf = b.infection * (1 - C.mutations.mask.crp * maskLvl(s));
+      const w = 6 + inf * 0.14 + (rnd(s) * 2 - 1) * D.tests.cbc.noise * (tox ? 3 : 1);
+      return { wbc: Math.max(2, Math.round(w * 10) / 10), diff: inf < 8 ? 'norm' : s.kind === 'bacteria' ? 'neutro' : 'lympho' };
+    }
+    // PCR: materiał genetyczny we krwi (patogen, kopie, kolonie poza mięśniem) — rodzaj z czułością badania
+    if (kind === 'pcr') {
+      const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden;
+      const found = (inBlood || s.copies.length > 0 || s.colonies.some((c) => !c.inTissue)) && rnd(s) < sens(s, 'pcr');
+      return { found, species: found ? s.species : null };
+    }
+    // badanie moczu: przy koloniach w nerce krwinki czerwone (oba patogeny) i bakterie (tylko bakteria)
+    if (kind === 'urine') {
+      const km = s.colonies.reduce((a, c) => a + (H.organAt(c.x, c.y) === 'kidney' ? c.size : 0), 0);
+      const sick = km > D.tests.urine.minMass, se = sens(s, 'urine');
+      return { rbc: sick && rnd(s) < se, bact: sick && s.kind === 'bacteria' && rnd(s) < se };
+    }
+    // tomografia: wszystkie kolonie, dokładnie, także w mięśniu (każda wykryta z czułością badania)
+    if (kind === 'ct') {
+      const se = sens(s, 'ct');
+      return { colonies: s.colonies.filter(() => rnd(s) < se).map((c) => [
+        Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0, H.organAt(c.x, c.y)]) };
+    }
     if (kind === 'abg') {
       const out = {};
       for (const k of ['antibodies', 'fever', 'abxA', 'abxB']) out[k] = (1 - b.resist[k]) * susceptibility(s, k);
@@ -317,6 +346,17 @@
       text = 'Antybiogram gotowy.';
     } else if (kind === 'micro') {
       text = 'Mikroskop: preparat gotowy, szukaj patogenu.';   // rodzaj odkrywa lekarz, przesuwając preparat
+    } else if (kind === 'cbc') {
+      const DIFF = { norm: 'rozmaz prawidłowy', neutro: 'przewaga neutrofili', lympho: 'przewaga limfocytów' };
+      text = `Morfologia: leukocyty ${String(r.wbc).replace('.', ',')} G/l, ${DIFF[r.diff]}.`;
+    } else if (kind === 'pcr') {
+      text = r.found ? `PCR: wykryto materiał genetyczny: ${C.species[r.species].name.toLowerCase()}.` : 'PCR: nie wykryto materiału genetycznego patogenu.';
+    } else if (kind === 'urine') {
+      text = `Badanie moczu: krwinki czerwone ${r.rbc ? 'obecne' : 'nieobecne'}, bakterie ${r.bact ? 'obecne' : 'nieobecne'}.`;
+    } else if (kind === 'ct') {
+      const n = (o) => r.colonies.filter((c) => c[4] === o).length;
+      const nH = n('heart'), nL = n('liver'), nK = n('kidney'), nO = r.colonies.length - nH - nL - nK;
+      text = r.colonies.length ? `Tomografia: ogniska w sercu ${nH}, w wątrobie ${nL}, w nerce ${nK}, w naczyniach ${nO}.` : 'Tomografia bez zmian.';
     }
     log(s, 'doc', 'Wynik: ' + text + (first ? ' Odblokowano leczenie.' : ''));
   }

@@ -7,7 +7,7 @@
   const MUT_KEYS = { Digit7: 'speed', Digit8: 'fever', Digit9: 'capsule', Digit0: 'toxins', Digit6: 'mask' };
   const DOC_KEYS = { Digit1: 'doc.antibodies', Digit2: 'doc.fever', Digit3: 'doc.abxA', Digit4: 'doc.abxB', Digit5: 'doc.antiviral' };
   // badania: Z CRP, X (albo B) posiew, C echo, V antybiogram
-  const TEST_KEYS = { KeyZ: 'crp', KeyX: 'culture', KeyB: 'culture', KeyC: 'echo', KeyV: 'abg', KeyN: 'micro', KeyG: 'usg' };
+  const TEST_KEYS = { KeyZ: 'crp', KeyX: 'culture', KeyC: 'echo', KeyV: 'abg', KeyN: 'micro', KeyG: 'usg', KeyU: 'cbc', KeyI: 'pcr', KeyO: 'urine', KeyP: 'ct' };
   // operacja zastawki: H trójdzielna, J mitralna, K pnia płucnego, L aorty
   const SURG_KEYS = { KeyH: 'tricuspid', KeyJ: 'mitral', KeyK: 'pulmonary', KeyL: 'aortic' };
 

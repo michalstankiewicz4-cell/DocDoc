@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.36.1">
+<link rel="stylesheet" href="css/style.css?v=0.37.0">
 </head>
 <body>
 <!-- ekran ładowania: widoczny od razu, znika po zbudowaniu serca i sceny (main.js) -->
@@ -279,6 +279,25 @@
             <h3>Antybiogram <span class="res-time"></span></h3>
             <dl id="res-abg-l" class="abg"></dl>
           </article>
+          <article id="res-cbc" class="slip" hidden>
+            <h3>Morfologia krwi <span class="res-time"></span></h3>
+            <p class="res-big"><b id="res-cbc-v"></b> G/l</p>
+            <p id="res-cbc-l" class="res-note"></p>
+          </article>
+          <article id="res-pcr" class="slip" hidden>
+            <h3>PCR <span class="res-time"></span></h3>
+            <p class="res-big"><b id="res-pcr-v"></b></p>
+            <p id="res-pcr-l" class="res-note"></p>
+          </article>
+          <article id="res-urine" class="slip" hidden>
+            <h3>Badanie moczu <span class="res-time"></span></h3>
+            <dl id="res-urine-l" class="abg"></dl>
+          </article>
+          <article id="res-ct" class="slip" hidden>
+            <h3>Tomografia komputerowa <span class="res-time"></span></h3>
+            <canvas id="res-ct-c" class="echo-canvas ct-canvas" aria-label="Obraz tomografii komputerowej"></canvas>
+            <p id="res-ct-l" class="res-note"></p>
+          </article>
         </div>
       </section>
 
@@ -501,32 +520,32 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.36.1"></script>
-<script src="js/lang/en.js?v=0.36.1"></script>
-<script src="js/i18n.js?v=0.36.1"></script>
-<script src="js/config.js?v=0.36.1"></script>
-<script src="js/heart-shape.js?v=0.36.1"></script>
-<script src="js/flow.js?v=0.36.1"></script>
-<script src="js/tissue-cells.js?v=0.36.1"></script>
-<script src="js/state.js?v=0.36.1"></script>
-<script src="js/input.js?v=0.36.1"></script>
-<script src="js/render/glsl.js?v=0.36.1"></script>
-<script src="js/render/tissue.js?v=0.36.1"></script>
-<script src="js/render/cells.js?v=0.36.1"></script>
-<script src="js/render/actors.js?v=0.36.1"></script>
-<script src="js/render/post.js?v=0.36.1"></script>
-<script src="js/render/biome.js?v=0.36.1"></script>
-<script src="js/render/view.js?v=0.36.1"></script>
-<script src="js/minimap.js?v=0.36.1"></script>
-<script src="js/audio.js?v=0.36.1"></script>
-<script src="js/doctor-ui.js?v=0.36.1"></script>
-<script src="js/patient-room.js?v=0.36.1"></script>
-<script src="js/doctor-devices.js?v=0.36.1"></script>
-<script src="js/doctor-cam.js?v=0.36.1"></script>
-<script src="js/net.js?v=0.36.1"></script>
-<script src="js/lobby.js?v=0.36.1"></script>
-<script src="js/match.js?v=0.36.1"></script>
-<script src="js/net-status.js?v=0.36.1"></script>
-<script src="js/main.js?v=0.36.1"></script>
+<script src="js/version.js?v=0.37.0"></script>
+<script src="js/lang/en.js?v=0.37.0"></script>
+<script src="js/i18n.js?v=0.37.0"></script>
+<script src="js/config.js?v=0.37.0"></script>
+<script src="js/heart-shape.js?v=0.37.0"></script>
+<script src="js/flow.js?v=0.37.0"></script>
+<script src="js/tissue-cells.js?v=0.37.0"></script>
+<script src="js/state.js?v=0.37.0"></script>
+<script src="js/input.js?v=0.37.0"></script>
+<script src="js/render/glsl.js?v=0.37.0"></script>
+<script src="js/render/tissue.js?v=0.37.0"></script>
+<script src="js/render/cells.js?v=0.37.0"></script>
+<script src="js/render/actors.js?v=0.37.0"></script>
+<script src="js/render/post.js?v=0.37.0"></script>
+<script src="js/render/biome.js?v=0.37.0"></script>
+<script src="js/render/view.js?v=0.37.0"></script>
+<script src="js/minimap.js?v=0.37.0"></script>
+<script src="js/audio.js?v=0.37.0"></script>
+<script src="js/doctor-ui.js?v=0.37.0"></script>
+<script src="js/patient-room.js?v=0.37.0"></script>
+<script src="js/doctor-devices.js?v=0.37.0"></script>
+<script src="js/doctor-cam.js?v=0.37.0"></script>
+<script src="js/net.js?v=0.37.0"></script>
+<script src="js/lobby.js?v=0.37.0"></script>
+<script src="js/match.js?v=0.37.0"></script>
+<script src="js/net-status.js?v=0.37.0"></script>
+<script src="js/main.js?v=0.37.0"></script>
 </body>
 </html>

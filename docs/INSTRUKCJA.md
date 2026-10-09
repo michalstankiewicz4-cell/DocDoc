@@ -163,6 +163,10 @@ Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 | `G` | USG jamy brzusznej |
 | `V` | antybiogram |
 | `N` | mikroskop |
+| `U` | morfologia krwi |
+| `I` | PCR |
+| `O` | badanie moczu |
+| `P` | tomografia komputerowa |
 | `1` | przeciwciała |
 | `2` | gorączka |
 | `3` | antybiotyk β-laktamowy |
@@ -182,6 +186,10 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
    | Echo serca | 8 s | obraz samego serca w stylu USG (bez jamy brzusznej): kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | USG jamy brzusznej | 8 s | obraz wątroby, nerki i naczyń brzucha: kolonie jako jasne ogniska, z podziałem na wątrobę, nerkę i naczynia |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
+   | Morfologia krwi | 5 s | leukocyty (G/l) i rozmaz: przy bakterii przewaga neutrofili, przy wirusie limfocytów (gdy zakażenie jest już wyraźne) |
+   | PCR | 25 s (odnowienie 45 s) | rodzaj patogenu z materiału genetycznego we krwi, bez szukania pod mikroskopem, z podpowiedzią leczenia; ujemny, gdy patogen nie płynie we krwi i nie ma kopii ani kolonii poza mięśniem |
+   | Badanie moczu | 4 s | krwinki czerwone (kolonie w nerce) i bakterie w moczu (tylko przy bakterii) |
+   | Tomografia komputerowa | 15 s (odnowienie 60 s) | przekrój całego ciała: dokładne położenie wszystkich ognisk, także w mięśniu serca |
    | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym); po znalezieniu zdjęcie patogenu z chwili pobrania, rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
 
 2. **Leczenie:**

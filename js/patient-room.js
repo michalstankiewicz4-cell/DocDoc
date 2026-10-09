@@ -213,6 +213,45 @@
           ctx.strokeStyle = '#3d4a46'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(hx + 8, hy); ctx.bezierCurveTo(330, 60, 560, 70, x - 20, y); ctx.stroke();
           ctx.fillStyle = '#56706a'; ctx.fillText(pu > pe ? 'USG' : 'Echo', x - 12, y + 30);
         } }
+      // półka pod stołem: analizator morfologii, termocykler PCR, pojemnik z moczem i pasek testowy
+      ctx.fillStyle = '#b4c2bd'; ctx.fillRect(486, 192, 208, 4);
+      { const p = prog('cbc'), x = 512, y = 176;
+        ctx.fillStyle = '#dfe7e4'; roundRect(x - 18, y - 2, 36, 18, 3); ctx.fill();
+        ctx.fillStyle = '#0d1311'; ctx.fillRect(x - 13, y + 2, 14, 8);
+        if (p >= 0) {
+          ctx.fillStyle = '#6fe3b4'; for (let i = 0; i < 4; i++) ctx.fillRect(x - 12 + i * 3, y + 9 - (2 + ((t * 9 + i * 2.3) % 5)), 2, 2 + ((t * 9 + i * 2.3) % 5));
+          ctx.fillStyle = '#c0392b'; ctx.fillRect(x + 6, y - 6 + Math.sin(t * 6) * 1.5, 3, 7);   // probówka w podajniku
+          ctx.fillStyle = '#56706a'; ctx.fillText('Morfologia', x - 26, y + 30);
+        } }
+      { const p = prog('pcr'), x = 572, y = 176;
+        ctx.fillStyle = '#e7eeeb'; roundRect(x - 17, y, 34, 16, 3); ctx.fill();
+        const open = p >= 0 ? 0 : 1;
+        ctx.fillStyle = '#9fb0aa'; roundRect(x - 17, y - 5 - open * 3, 34, 6, 2); ctx.fill();   // pokrywa
+        if (p >= 0) {
+          const heat = 0.5 + 0.5 * Math.sin(t * 2.4);   // cykle temperatury: denaturacja / przyłączanie / wydłużanie
+          ctx.fillStyle = `rgb(${Math.round(80 + 175 * heat)}, ${Math.round(140 - 60 * heat)}, ${Math.round(220 - 170 * heat)})`;
+          ctx.fillRect(x - 12, y + 6, 24, 4);
+          ctx.fillStyle = '#56706a'; ctx.fillText('PCR', x - 10, y + 30);
+        } }
+      { const p = prog('urine'), x = 628, y = 174;
+        ctx.fillStyle = 'rgba(240, 214, 90, 0.85)'; ctx.fillRect(x - 6, y + 6, 12, 12);
+        ctx.strokeStyle = '#9aa9a4'; ctx.lineWidth = 1.2; ctx.strokeRect(x - 6, y + 2, 12, 16);
+        if (p >= 0) {
+          ctx.fillStyle = '#fff'; ctx.fillRect(x + 12, y + 2, 4, 16);   // pasek testowy z polami barwiącymi się w czasie badania
+          const cols = ['#e8c35a', '#8fbf6a', '#c56a8a'];
+          for (let i = 0; i < 3; i++) { ctx.fillStyle = p > (i + 1) / 4 ? cols[i] : '#e9eceb'; ctx.fillRect(x + 12.5, y + 4 + i * 5, 3, 3); }
+          ctx.fillStyle = '#56706a'; ctx.fillText('Mocz', x - 12, y + 30);
+        } }
+      // tomografia: pierścień tomografu przesuwa się nad pacjentem
+      { const p = prog('ct');
+        if (p >= 0) {
+          const gx = 200 + (Math.sin(p * Math.PI * 3 - Math.PI / 2) * 0.5 + 0.5) * 190;
+          ctx.strokeStyle = 'rgba(230, 236, 234, 0.9)'; ctx.lineWidth = 9;
+          ctx.beginPath(); ctx.ellipse(gx, 112, 10, 42, 0, 0, 6.283); ctx.stroke();
+          ctx.strokeStyle = 'rgba(120, 200, 255, 0.55)'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.ellipse(gx, 112, 10, 42, 0, 0, 6.283); ctx.stroke();
+          ctx.fillStyle = '#56706a'; ctx.fillText('Tomografia', gx - 26, 172);
+        } }
 
       // objawy (tylko gdy lista się zmieniła)
       const sym = s.running ? DD.symptomList(s, m) : [];

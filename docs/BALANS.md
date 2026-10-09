@@ -44,3 +44,12 @@ Pozostałe wartości (kolonie, leki, badania, pożywienie, rodzaje patogenów) o
 | czułość posiewu, mikroskopu, echa, USG | `doctor.tests.*.sens` | 0,85 | co szósty–siódmy wynik fałszywie ujemny: opłaca się powtórzyć badanie, ale wynik nadal coś znaczy |
 | maskowanie (mutacja 6) | `mutations.mask` | 2 poziomy: objawy −30%, czułość −0,15, CRP −20% na poziom; czułość nie spada poniżej 0,3 | kosztuje punkty mutacji (1, potem 2), więc konkuruje z otoczką i szybkością |
 | sygnały chemiczne (B) | `signals` | 5 życia, odnowienie 30 s, objaw 20 s, masa 0,5 | masa 0,5 wystarcza na objaw „ostrzegawczy” (np. kaszel i duszność w prawym sercu), ale nie na „nasilony” |
+
+## Nowe badania (od v0.37.0)
+
+| Badanie | Czas / odnowienie | Czułość | Uzasadnienie |
+| --- | --- | --- | --- |
+| Morfologia | 5 / 15 s | rozmaz widoczny od 8% zakażenia | szybkie odróżnienie bakterii od wirusa, bez rodzaju |
+| PCR | 25 / 45 s | 0,95 | pewniejszy od mikroskopu i bez szukania, ale wolny — mikroskop zostaje szybszą drogą |
+| Badanie moczu | 4 / 15 s | 0,85, od masy kolonii w nerce 0,1 | tanie potwierdzenie objawu „krew w moczu” (także fałszywego od sygnałów) |
+| Tomografia | 15 / 60 s | 0,95 na ognisko | jedyne badanie z dokładnym położeniem kolonii w mięśniu; długie odnowienie, żeby nie zastąpiło echa i USG |
