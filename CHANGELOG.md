@@ -11,6 +11,11 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.36.1] - 2026-10-09
+### Zmienione
+- Domyślny język gry: angielski (wybór polskiego jest zapamiętywany).
+- Flagi przy przełączniku języka (Wielka Brytania, Polska).
+
 ## [0.36.0] - 2026-10-09
 ### Dodane
 - **Czułość badań:** posiew, mikroskop, echo serca i USG wykrywają patogen / ogniska z czułością 85% — wynik bywa fałszywie ujemny.
@@ -331,7 +336,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.1...HEAD
+[0.36.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.0...v0.36.1
 [0.36.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.33.0...v0.34.0

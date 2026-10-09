@@ -1,4 +1,4 @@
-// Język interfejsu: polski (domyślny) albo angielski.
+// Język interfejsu: angielski (domyślny) albo polski.
 // Kod gry pisze teksty po polsku; przy języku angielskim ten moduł tłumaczy je w chwili wyświetlenia:
 //  - teksty w dokumencie (węzły tekstowe i atrybuty title / aria-label / placeholder / alt) przez MutationObserver,
 //  - napisy rysowane na canvasie (fillText / strokeText / measureText).
@@ -8,8 +8,8 @@
 (function () {
   'use strict';
   const DD = window.DD = window.DD || {};
-  let lang = 'pl';
-  try { lang = localStorage.getItem('pz-lang') === 'en' ? 'en' : 'pl'; } catch (e) { /* brak dostępu do pamięci */ }
+  let lang = 'en';
+  try { lang = localStorage.getItem('pz-lang') === 'pl' ? 'pl' : 'en'; } catch (e) { /* brak dostępu do pamięci */ }
   DD.lang = lang;
   DD.setLang = function (l) {
     if (l === DD.lang) return;
@@ -118,6 +118,7 @@
     if (v !== n.data) n.data = v;
   }
   function attrs(el) {
+    if (el.closest && el.closest('[data-no-i18n]')) return;
     for (const a of ATTRS) {
       const v = el.getAttribute(a);
       if (v) { const tv = t(v); if (tv !== v) el.setAttribute(a, tv); }
@@ -127,7 +128,9 @@
     if (root.nodeType === 3) { textNode(root); return; }
     if (root.nodeType !== 1 || SKIP[root.nodeName] || root.hasAttribute('data-no-i18n')) return;
     attrs(root);
-    const tw = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+    const tw = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+      acceptNode: (n) => (n.nodeType === 1 && (SKIP[n.nodeName] || n.hasAttribute('data-no-i18n')) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT)
+    });
     let n;
     while ((n = tw.nextNode())) { if (n.nodeType === 3) textNode(n); else attrs(n); }
   }

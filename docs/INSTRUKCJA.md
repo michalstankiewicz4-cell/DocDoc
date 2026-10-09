@@ -40,7 +40,7 @@ Dokładne liczby: [BALANS.md](BALANS.md).
 
 ## Język
 
-Na ekranie startowym przełącznik **PL / EN** zmienia język całego interfejsu (gra przeładowuje stronę i zapamiętuje wybór w przeglądarce).
+Gra startuje po angielsku. Na ekranie startowym przełącznik z flagami **EN / PL** zmienia język całego interfejsu (gra przeładowuje stronę i zapamiętuje wybór w przeglądarce).
 W grze na 2 osoby każdy gracz może mieć inny język.
 
 ## Tryby gry
