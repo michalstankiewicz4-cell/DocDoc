@@ -16,6 +16,14 @@ Są już: tryb deweloperski (jedna osoba steruje obiema stronami) i gra na 2 oso
 - [ ] **[M]** **Multiplayer przez Supabase** — zamiast ręcznej wymiany kodów WebRTC: lobby z listą gier i dołączaniem jednym kliknięciem (Supabase Realtime do sygnalizacji / synchronizacji), konta graczy, ranking i historia meczów, mecze z losowym przeciwnikiem. Obecne połączenie WebRTC może zostać jako tryb bez serwera.
 - [ ] **[T]** Przy obu trybach: wybór strony (gram patogenem / lekarzem) na ekranie startowym, bot korzysta z tych samych komend co gracz (`DD.send`), więc nie dostaje przewagi poza zasadami.
 
+## Ulepszenie UI lekarza (następna sesja)
+
+- [ ] **[M]** Nowy wygląd panelu lekarza według wzorów w `docs/reference/ui-lekarza/`:
+  - `wzor-1-panel-neon.jpg` — obecny układ w stylu neonowego panelu (świecące ramki, ciemnogranatowe tło, ścieżki obwodów w tle, pompa obok monitora, kamera sali z aparaturą),
+  - `wzor-2-medcore.png` — rozbudowany panel szpitalny: menu boczne (Przegląd, Objawy, Badanie, Badania, Leczenie, Zabiegi, Wyniki, Dziennik), więcej parametrów życiowych (SpO₂, ciśnienie, oddech), lista objawów z paskami nasilenia, wyniki z zakładkami (krew / obrazowanie / inne), szybkie akcje, pasek ostrzeżeń na dole,
+  - `wzor-3-sylwetka-holo.jpg` — holograficzna sylwetka ze szkieletem i płucami (do „badania” pacjenta i mapy objawów).
+- [ ] **[T]** Przed zmianą: ustalić z Michałem, które elementy ze wzorów przenieść (część, np. SpO₂ czy ciśnienie, to nowe dane w grze).
+
 ## Operacje i zabiegi
 
 Są już: operacja zastawki, radioterapia narządu, przeszczep wątroby i nerki, amputacja nóg.

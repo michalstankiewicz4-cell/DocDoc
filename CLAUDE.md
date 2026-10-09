@@ -114,6 +114,7 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Markery nowotworowe, RTG, rezonans, biopsja (v0.42.0)
 - [x] Przeszczep narządu i amputacja (v0.43.0)
 - [x] Kolejni pacjenci: alergik, palacz, alkoholik, astmatyk, otyłość, ciąża (v0.44.0)
+- [ ] Następna sesja: ulepszenie UI lekarza wg wzorów Michała w `docs/reference/ui-lekarza/` (opis w `docs/TODO.md`)
 - [ ] Dalej wg `docs/PLAN.md`: obszary poza krwiobiegiem (płuca)
 - [x] Poprawki: powrót z mięśnia, zamiana ról; pasek przewijania; ekran startowy, loader, nazwa; SEO (v0.30.3–v0.31.1)
 - [x] Zakończenie rundy, filmy, zwijane statystyki (v0.32.0)
