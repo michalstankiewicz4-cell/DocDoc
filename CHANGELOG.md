@@ -11,6 +11,12 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.30.3] - 2026-10-09
+### Naprawione
+- Po wejściu w ścianę serca czasem nie dało się wrócić do krwi: komórki mięśnia przy samej ścianie potrafiły utworzyć szczelny mur. Przy ścianie naczynia jest teraz wolny pas bez komórek, a `Q` w mięśniu wyprowadza do krwi, gdy naczynie jest blisko.
+### Dodane
+- `docs/PLAN.md`: plan rozwoju ze wszystkimi pomysłami, od najszybszych do najtrudniejszych.
+
 ## [0.30.2] - 2026-10-09
 ### Dokumentacja
 - README: opis gry z wątrobą, nerką i rodzajami patogenów, wybór startu, pełne skróty klawiszy.
@@ -273,7 +279,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.2...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.3...HEAD
+[0.30.3]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.2...v0.30.3
 [0.30.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.1...v0.30.2
 [0.30.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.0...v0.30.1
 [0.30.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.1...v0.30.0

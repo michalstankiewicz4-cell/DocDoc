@@ -95,6 +95,8 @@ DD.CONFIG = {
     burrow: { bacteria: 2.5, virus: 1.0 },   // czas wnikania (s)
     speedMul: { bacteria: 0.35, virus: 0.45 },
     grid: 1.55, cellLength: 2.3, cellRadius: 0.36,
+    cellGap: 1.3,                  // pas bez komórek przy ścianie naczynia (droga powrotu do krwi)
+    exitReach: 4.5,                // Q w mięśniu wyprowadza do krwi, gdy naczynie jest bliżej niż tyle (SDF)
     drugPenetration: 0.5           // ułamek działania antybiotyków / leku przeciwwirusowego na kolonie w tkance
   },
 

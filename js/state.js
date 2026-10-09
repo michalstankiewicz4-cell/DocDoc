@@ -140,7 +140,18 @@
       case 'bact.toxin': releaseToxins(s); return;
       case 'bact.burrow': {
         const b = s.bact, Tt = C.tissue;
-        if (b.dead || b.transit || b.inTissue) return;
+        if (b.dead || b.transit) return;
+        if (b.inTissue) {
+          // Q w mięśniu: powrót do krwi, jeśli naczynie jest blisko
+          const dd = H.sample(b.x, b.y);
+          if (dd < Tt.exitReach) {
+            H.grad(b.x, b.y, g2);
+            b.x -= g2[0] * (dd + 0.7); b.y -= g2[1] * (dd + 0.7);
+            b.inTissue = false; b.z = 0; b.vx = b.vy = 0;
+            log(s, 'sys', 'Patogen wraca do krwi.');
+          }
+          return;
+        }
         if (b.burrowT > 0) { b.burrowT = 0; return; }            // drugie Q przerywa
         // wnikanie tylko w mięsień sercowy (w jamie brzusznej ściany naczyń nie prowadzą do mięśnia)
         if (b.contact && H.organAt(b.x, b.y) === 'heart') b.burrowT = Tt.burrow[s.kind] || Tt.burrow.bacteria;

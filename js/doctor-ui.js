@@ -638,7 +638,7 @@
       if (canFound) {
         const colTxt = b.colonyCd > 0 ? `Kolonia możliwa za ${Math.ceil(b.colonyCd)} s.` : b.hp > K.cost + 1 ? `E zakłada kolonię (−${K.cost} życia).` : 'Za mało życia na kolonię.';
         if (b.inTissue) {
-          $('h-contact').textContent = 'W mięśniu sercowym: przeciwciała cię tu nie dosięgną, leki działają słabiej. ' + colTxt + ' Do krwi wracasz, podpływając do ściany naczynia.';
+          $('h-contact').textContent = 'W mięśniu sercowym: przeciwciała cię tu nie dosięgną, leki działają słabiej. ' + colTxt + ' Do krwi wracasz, podpływając do ściany naczynia albo klawiszem Q.';
         } else if (b.burrowT > 0) {
           $('h-contact').textContent = `Wnikanie w ścianę: ${b.burrowT.toFixed(1).replace('.', ',')} s. Nie odpływaj od ściany. Q przerywa.`;
         } else {

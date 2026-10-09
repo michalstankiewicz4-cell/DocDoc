@@ -9,7 +9,8 @@ i aktualizuj sekcje „Stan” i „Lista zadań” po każdym wydaniu.
 - **Autor:** Michał (Warszawa). Rozmawiamy po polsku.
 - **Repo:** https://github.com/michalstankiewicz4-cell/PatientZero (dawniej `DocDoc`, GitHub przekierowuje stary adres).
 - **Gra online:** https://michalstankiewicz4-cell.github.io/PatientZero/ (GitHub Pages, wdrożenie automatyczne po pushu na `main`).
-- **Dokumentacja:** `README.md`, `docs/INSTRUKCJA.md` (gracze), `docs/ARCHITEKTURA.md` (kod), `CHANGELOG.md` (wersje).
+- **Dokumentacja:** `README.md`, `docs/INSTRUKCJA.md` (gracze), `docs/ARCHITEKTURA.md` (kod), `CHANGELOG.md` (wersje),
+  `docs/PLAN.md` (plan rozwoju — kolejne zadania bierz stąd, aktualizuj statusy).
 
 ## Zasady pracy (od Michała)
 
@@ -111,7 +112,7 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Wirus (`config.virus`): 70 życia, ruch ×0,8, wzrost kolonii ×1,3. Leki: β-laktam (bójczy), makrolid (statyczny), przeciwwirusowy; naturalna oporność bakterii wynika z rodzaju (skuteczność 20%), patrz „Rodzaje patogenów”.
 - Zdjęcie z mikroskopu pokazuje kształt patogenu (zbliżenie 5,5 j.; duch w doctor-cam musi mieć `species`). Podgląd z opóźnieniem usunięty w v0.23.0 na prośbę Michała.
 - Mikroskop (v0.23.0): preparat 720 × 600 px (3 × 3 pola), 3–8 skupisk poza polem startowym, trafienie = drobnoustrój < 34 px od środka; pusty preparat po obejrzeniu 16 z 20 pól.
-- Mięsień (`config.tissue`): pas ściany 1,2 < SDF < 7,2, płaszczyzna ruchu z = 3,3 (powierzchnia przekroju), komórki z `js/tissue-cells.js` (wspólne dla kolizji i renderu). Wykrywanie kolonii w mięśniu: echo (niewyraźnie, ±2,5 j.) i CRP (zawiera całą kolonizację).
+- Mięsień (`config.tissue`): przy ścianie naczynia wolny pas bez komórek (`cellGap` 1,3), Q w mięśniu wraca do krwi, gdy SDF < `exitReach` (4,5); pas ściany 1,2 < SDF < 7,2, płaszczyzna ruchu z = 3,3 (powierzchnia przekroju), komórki z `js/tissue-cells.js` (wspólne dla kolizji i renderu). Wykrywanie kolonii w mięśniu: echo (niewyraźnie, ±2,5 j.) i CRP (zawiera całą kolonizację).
 - Mutacje (`config.mutations`): punkty z przyrostu kolonii (1,6 pkt na 1,0 rozmiaru). Toksyny zakłócają badania pobrane w ciągu 15 s (CRP ×1,6 i 3× szum, echo ±4 j.).
 - Operacja zastawki (`config.doctor.surgery`): 10 s, stan −15, promień 5 j., patogen w pobliżu −40 życia, odnowienie 60 s.
 - Mecz: 2 rundy, remis 1:1 rozstrzyga szybsze zwycięstwo; wynik prowadzi host (`js/match.js`).

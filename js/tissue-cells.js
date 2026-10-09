@@ -21,7 +21,8 @@
     const cy = (j + 0.5 + (hash2(i, j, 2) - 0.5) * 0.55) * G;
     const d = H.sample(cx, cy);
     let cell = null;
-    if (d > T.minD + 0.3 && d < T.maxD - 0.2) {
+    // przy ścianie naczynia zostaje wolny pas (cellGap), żeby zawsze dało się wrócić do krwi
+    if (d > T.minD + T.cellGap && d < T.maxD - 0.2) {
       const g = H.grad(cx, cy);
       const ang = Math.atan2(g[1], g[0]) + Math.PI / 2 + (hash2(i, j, 3) - 0.5) * 0.35;
       const s = 0.85 + hash2(i, j, 4) * 0.3;
