@@ -1,7 +1,14 @@
 // Post-processing (własny łańcuch, bez zależności):
 // HDR -> bloom (3 poziomy) + głębia ostrości z bufora głębi -> aberracja chromatyczna,
 // falowanie gorąca przy gorączce, ACES, winieta, ziarno.
+// Filtr pixel art (Tab, ustawienie lokalne każdego gracza): obraz w dużych pikselach, mniej odcieni, dithering Bayera.
 (function () {
+  try { DD.pixelArt = localStorage.getItem('patientzero-pixel') === '1'; } catch (e) { DD.pixelArt = false; }
+  DD.setPixelArt = function (on) {
+    DD.pixelArt = !!on;
+    try { localStorage.setItem('patientzero-pixel', on ? '1' : '0'); } catch (e) { /* bez zapisu */ }
+  };
+
   const QUAD_VERT = /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 
   const BRIGHT = /* glsl */`
@@ -66,6 +73,21 @@
       gl_FragColor = vec4(col, 1.0);
     }`;
 
+  // pixel art: średnia z 4 próbek w bloku uPs × uPs, potem uLevels poziomów na kanał z ditheringiem 4×4
+  const PIXEL = /* glsl */`
+    uniform sampler2D tIn; uniform vec2 uRes; uniform float uPs; uniform float uLevels; uniform float uDither; varying vec2 vUv;
+    float bayer2(vec2 a){ a = floor(a); return fract(a.x / 2.0 + a.y * a.y * 0.75); }
+    float bayer4(vec2 a){ return bayer2(0.5 * a) * 0.25 + bayer2(a); }
+    void main(){
+      vec2 cell = floor(vUv * uRes / uPs);
+      vec2 c = (cell + 0.5) * uPs / uRes, o = 0.25 * uPs / uRes;
+      vec3 col = (texture2D(tIn, c + vec2(-o.x, -o.y)).rgb + texture2D(tIn, c + vec2(o.x, -o.y)).rgb
+                + texture2D(tIn, c + vec2(-o.x, o.y)).rgb + texture2D(tIn, c + vec2(o.x, o.y)).rgb) * 0.25;
+      float n = uLevels - 1.0;
+      col = floor(clamp(col, 0.0, 1.0) * n + 0.5 + (bayer4(cell) - 0.5) * uDither) / n;
+      gl_FragColor = vec4(col, 1.0);
+    }`;
+
   DD.createPost = function (renderer) {
     const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2));
@@ -89,6 +111,7 @@
       uRes: { value: new THREE.Vector2() }, uTime: { value: 0 }, uNear: { value: 0.1 }, uFar: { value: 300 },
       uFocus: { value: 17 }, uFever: { value: 0 }, uHit: { value: 0 }, uFade: { value: 0 }, uSlow: { value: 0 }, uExposure: { value: 0.95 }
     });
+    const mPix = mat(PIXEL, { tIn: { value: null }, uRes: { value: new THREE.Vector2() }, uPs: { value: 4 }, uLevels: { value: 5 }, uDither: { value: 0.5 } });
 
     let T = null;
     function resize(w, h) {
@@ -97,9 +120,11 @@
       T = {
         scene: mk(w, h, true),
         b1a: mk(...h2), b1b: mk(...h2), b2a: mk(...h4), b2b: mk(...h4), b3a: mk(...h8), b3b: mk(...h8),
-        da: mk(...h2), db: mk(...h2)
+        da: mk(...h2), db: mk(...h2),
+        full: mk(w, h)   // złożony obraz przed filtrem pixel art
       };
       mComp.uniforms.uRes.value.set(w, h);
+      mPix.uniforms.uRes.value.set(w, h);
     }
     function pass(m, target) { quad.material = m; renderer.setRenderTarget(target); renderer.render(sc, cam); }
     function blur(a, b, w, h, scale) {
@@ -130,7 +155,11 @@
       u.uNear.value = camera.near; u.uFar.value = camera.far;
       Object.assign(u.uTime, { value: p.time }); u.uFocus.value = p.focus;
       u.uFever.value = p.fever; u.uHit.value = p.hit; u.uFade.value = p.fade; u.uSlow.value = p.slow;
-      pass(mComp, null);
+      if (p.pixel > 1) {
+        pass(mComp, T.full);
+        mPix.uniforms.tIn.value = T.full.texture; mPix.uniforms.uPs.value = p.pixel; mPix.uniforms.uLevels.value = p.levels; mPix.uniforms.uDither.value = p.dither;
+        pass(mPix, null);
+      } else pass(mComp, null);
     }
     return { resize, render };
   };

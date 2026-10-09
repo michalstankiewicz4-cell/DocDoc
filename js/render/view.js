@@ -83,7 +83,8 @@
       const fade = b.transit ? Math.min(1, Math.sin(Math.PI * (1 - b.transit.t / b.transit.total)) * 1.4) : 0;
       post.render(scene, camera, {
         time: s.time, focus: camera.position.distanceTo(new THREE.Vector3(V.tx, V.ty, tz)),
-        fever: feverK, hit: b.hitFlash, fade, slow: b.slowT > 0 ? Math.min(1, b.slowT) : 0
+        fever: feverK, hit: b.hitFlash, fade, slow: b.slowT > 0 ? Math.min(1, b.slowT) : 0,
+        pixel: DD.pixelArt ? Math.round(C.ui.pixelArt.size * V.pr) : 0, levels: C.ui.pixelArt.levels, dither: C.ui.pixelArt.dither
       });
     };
     V.resize = resize;

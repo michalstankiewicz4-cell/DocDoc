@@ -208,7 +208,8 @@ DD.CONFIG = {
   ending: { duration: 5 },
 
   // minimapa patogenu: ukryta (kod zostaje; true = pokazuj)
-  ui: { minimap: false, revealTime: 4.5 },
+  ui: { minimap: false, revealTime: 4.5,
+    pixelArt: { size: 4, levels: 12, dither: 0.25 } },   // filtr pixel art (Tab): rozmiar piksela w px ekranu, poziomy na kanał koloru, siła ditheringu (0–1)
 
   camera: { fov: 40, zoom: 17, zoomMin: 14, zoomMax: 21 },   // zoom kamery patogenu: kółko myszy reguluje go tylko delikatnie
 

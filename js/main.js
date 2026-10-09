@@ -49,6 +49,10 @@
     window.addEventListener('keydown', (e) => {
       if (e.target && e.target.tagName === 'TEXTAREA') return;
       if (e.code === 'KeyM' && !e.repeat) { DD.Audio.toggle(); soundLabel(); }
+      else if (e.code === 'Tab' && !/^(INPUT|SELECT)$/.test(e.target && e.target.tagName)) {
+        e.preventDefault();   // Tab przełącza filtr pixel art zamiast przenosić fokus
+        if (!e.repeat) DD.setPixelArt(!DD.pixelArt);
+      }
       else if (DD.Audio.on) DD.Audio.init();
     });
     window.addEventListener('pointerdown', () => { if (DD.Audio.on) DD.Audio.init(); });

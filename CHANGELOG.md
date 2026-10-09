@@ -11,6 +11,11 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.46.0] - 2026-10-09
+
+### Dodane
+- Filtr pixel art pod klawiszem `Tab` (włącz/wyłącz, zapamiętany): widok 3D w pikselach 4 px, 12 poziomów na kanał koloru, delikatny dithering. Ustawienie lokalne każdego gracza (także w grze sieciowej); panel lekarza bez zmian.
+
 ## [0.45.0] - 2026-10-09
 
 ### Usunięte
@@ -409,7 +414,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.45.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.46.0...HEAD
+[0.46.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.45.0...v0.46.0
 [0.45.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.2...v0.45.0
 [0.44.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.1...v0.44.2
 [0.44.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.0...v0.44.1

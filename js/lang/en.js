@@ -132,6 +132,7 @@ DD.I18N_EN = {
   'rozmnóż': 'replicate',
   'kółko': 'wheel',
   'zoom': 'zoom',
+  'pixel art': 'pixel art',
   'Dźwięk włączony': 'Sound on',
   'Dźwięk wyłączony': 'Sound off',
   'Patogen zniszczony': 'Pathogen destroyed',

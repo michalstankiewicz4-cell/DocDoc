@@ -57,6 +57,12 @@ Na ekranie wyboru narządu są nieaktywne kafelki: Głowa, Tułów, Ręka, Skór
 - [ ] **[C]** Kolejne bakterie i wirusy (np. gruźlica — powolna, ukryta; HIV — osłabia odporność pacjenta w czasie gry).
 - [ ] **[C]** Pacjent ze schorzeniami łączonymi (np. senior + diabetyk).
 
+## Pixel art (Tab, od v0.46.0)
+
+Jest: pikselizacja widoku 3D, mniej odcieni, dithering (kroki 1–2).
+- [ ] **[M]** Krok 3: czarne kontury obiektów (krwinki, patogen, kolonie) — decyzja po testach.
+- [ ] **[M]** Krok 4: panel lekarza i HUD w stylu pixel art (pikselowa czcionka, kanciaste ramki, EKG / sala / USG w niskiej rozdzielczości).
+
 ## Propozycje Claude czekające na decyzję Michała
 
 - [ ] **[C]** Sala w ciemniejszym, nocnym oświetleniu (pasowałaby do panelu OIOM-u).
