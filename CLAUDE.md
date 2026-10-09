@@ -26,6 +26,15 @@ i aktualizuj sekcje „Stan” i „Lista zadań” po każdym wydaniu.
 5. **Przebieg gry ma wynikać z działań graczy.** Żadnych sztucznych etapów ani skryptowanych faz (decyzja Michała).
 6. Interfejs i komentarze po polsku. Bogata, spójna grafika jest ważna.
 
+## Jak pracuje Michał (styl współpracy)
+
+- Pracuje iteracyjnie: sam testuje grę, zgłasza konkretne błędy i prosi o celowane poprawki — nie przepisuj całych modułów bez potrzeby.
+- Często wysyła kilka próśb naraz albo w trakcie pracy: zbieraj je, układaj od najszybszej do najtrudniejszej i wypuszczaj jako osobne wersje.
+- Lubi, gdy gra działa bez serwera (z pliku i z GitHub Pages) — nie wprowadzaj bundlera ani backendu.
+- Bogata, spójna grafika i dopracowane detale interfejsu są dla niego równie ważne jak działanie.
+- Odpowiedzi po polsku, krótko; nie potrzebuje długich podsumowań — wystarczy, co zrobione, decyzje do potwierdzenia i co dalej.
+- Pomysły na przyszłość zapisuj w `docs/TODO.md`, liczby balansu w `docs/BALANS.md`.
+
 ## Środowisko (uwagi techniczne dla Claude)
 
 - Push przez git działa tylko dla gałęzi. **Tagów nie da się wypchnąć** z sesji Claude (proxy zwraca 403), dlatego tagi robi workflow `release.yml`.
