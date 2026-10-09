@@ -4,6 +4,17 @@ Lista rzeczy do zrobienia kiedyś: pomysły Michała, propozycje Claude czekają
 Plan bieżących etapów jest w [PLAN.md](PLAN.md), liczby balansu w [BALANS.md](BALANS.md).
 Oznaczenia: **[M]** pomysł Michała, **[C]** propozycja Claude (wprowadzać dopiero po zgodzie Michała), **[T]** sprawa techniczna lub do sprawdzenia.
 
+## Tryby gry
+
+Są już: tryb deweloperski (jedna osoba steruje obiema stronami) i gra na 2 osoby przez sieć.
+
+- [ ] **[M]** **Tryb PvE** — gra w pojedynkę przeciw komputerowi sterowanemu prostymi regułami (bot):
+  - bot-lekarz: zleca badania po objawach, dobiera lek do wyniku (mikroskop, PCR, posiew), robi zabiegi, gdy obrazowanie pokaże ogniska,
+  - bot-patogen: płynie do ścian, zakłada kolonie, kupuje mutacje, ucieka przed przeciwciałami, ukrywa się w koloniach,
+  - poziomy trudności (np. opóźnienie reakcji bota, czy „widzi” więcej niż gracz).
+- [ ] **[M]** **Tryb PvAI** — gra przeciw sztucznej inteligencji (model językowy), która dostaje to samo, co widzi gracz (objawy, wyniki, dziennik — albo HUD patogenu) i co kilka sekund decyduje o ruchu; może komentować swoje decyzje.
+- [ ] **[T]** Przy obu trybach: wybór strony (gram patogenem / lekarzem) na ekranie startowym, bot korzysta z tych samych komend co gracz (`DD.send`), więc nie dostaje przewagi poza zasadami.
+
 ## Operacje i zabiegi
 
 Są już: operacja zastawki, radioterapia narządu, przeszczep wątroby i nerki, amputacja nóg.

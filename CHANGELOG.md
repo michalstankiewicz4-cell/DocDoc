@@ -13,7 +13,7 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [0.44.1] - 2026-10-09
 ### Dokumentacja
-- `docs/TODO.md`: lista na przyszłość — operacje, eksploracja całego organizmu, kolejne patogeny, propozycje czekające na decyzję, sprawy techniczne.
+- `docs/TODO.md`: lista na przyszłość — tryby PvE i PvAI, operacje, eksploracja całego organizmu, kolejne patogeny, propozycje czekające na decyzję, sprawy techniczne.
 
 ## [0.44.0] - 2026-10-09
 ### Dodane
