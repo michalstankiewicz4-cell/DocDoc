@@ -13,7 +13,7 @@ Status: ✅ zrobione, 🔧 w trakcie, ⬜ do zrobienia.
 | ✅ | Pasek przewijania | W stylu gry (ciemny, jak aparatura). |
 | ✅ | Ekran startowy | Usunąć kafelki z opisem patogenu i lekarza oraz zdanie „Asymetryczna gra…”. |
 | ✅ | Nazwa „Patient Zero” | Ze spacją w tytule, na ekranie startowym i w dokumentacji. |
-| ⬜ | Wyszukiwarki (SEO) | Opis strony, słowa kluczowe (m.in. biology, doctor, game, hospitality, medicine, vibecoding, webrtc), podgląd przy udostępnianiu linku. |
+| ✅ | Wyszukiwarki (SEO) | Opis strony, słowa kluczowe (m.in. biology, doctor, game, hospitality, medicine, vibecoding, webrtc), podgląd przy udostępnianiu linku. |
 | ✅ | Ekran ładowania | Loader zanim pojawi się ekran startowy (żeby kliknięcie nie trafiało w „martwą” stronę). |
 | ⬜ | Statystyki zwinięte | Na ekranie końcowym widoczne dopiero po rozwinięciu. |
 

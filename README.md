@@ -5,6 +5,8 @@ przez bijące serce, wątrobę i nerkę, zakłada kolonie i próbuje doprowadzi�
 **Lekarz** nie widzi go wprost. Przy aparaturze OIOM-u zleca badania (CRP, posiew, echo serca, USG jamy brzusznej, antybiogram, mikroskop),
 czyta objawy i dobiera leczenie.
 
+*Browser game for two players: a pathogen in the bloodstream versus a doctor in the ICU — biology, medicine and WebRTC multiplayer.*
+
 **Zagraj:** https://michalstankiewicz4-cell.github.io/PatientZero/
 
 Aktualna wersja jest na ekranie startowym gry i w [CHANGELOG.md](CHANGELOG.md).

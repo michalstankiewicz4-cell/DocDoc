@@ -11,6 +11,11 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.31.1] - 2026-10-09
+### Dodane
+- **Wyszukiwarki i udostępnianie linku:** opis strony, słowa kluczowe (m.in. biology, doctor, game, hospitality, medicine, vibecoding, webrtc), adres kanoniczny, podgląd przy udostępnianiu (Open Graph, Twitter) z obrazkiem `img/og.jpg`, dane strukturalne (schema.org VideoGame), ikona strony, `robots.txt` i `sitemap.xml`.
+- README: jednozdaniowy opis po angielsku.
+
 ## [0.31.0] - 2026-10-09
 ### Zmienione
 - Ekran startowy bez kafelków z opisem patogenu i lekarza oraz bez zdania wprowadzającego — od razu wybór trybu.
@@ -294,7 +299,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.1...HEAD
+[0.31.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.0...v0.31.1
 [0.31.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.5...v0.31.0
 [0.30.5]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.4...v0.30.5
 [0.30.4]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.3...v0.30.4

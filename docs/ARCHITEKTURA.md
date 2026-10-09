@@ -13,7 +13,9 @@ Dokument dla programistów. Opisuje budowę kodu i zasady, których trzymamy si�
 ## Pliki
 
 ```
-index.html              układ ekranu, nakładki (start, lobby, koniec gry), kolejność skryptów
+index.html              układ ekranu, nakładki (ładowanie, start, lobby, koniec gry), metadane SEO, kolejność skryptów
+img/                    og.jpg (podgląd linku), icon.svg (ikona strony)
+robots.txt, sitemap.xml dla wyszukiwarek
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
 js/version.js           DD.VERSION
 js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species), leki, badania, pożywienie, kopie, kamera, UI
