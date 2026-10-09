@@ -221,13 +221,13 @@
         } }
       // półka pod stołem: analizator morfologii, termocykler PCR, pojemnik z moczem i pasek testowy
       ctx.fillStyle = '#b4c2bd'; ctx.fillRect(486, 192, 208, 4);
-      { const p = prog('cbc'), x = 512, y = 176;
+      { const p = Math.max(prog('cbc'), prog('markers')), x = 512, y = 176;   // analizator: morfologia i markery
         ctx.fillStyle = '#dfe7e4'; roundRect(x - 18, y - 2, 36, 18, 3); ctx.fill();
         ctx.fillStyle = '#0d1311'; ctx.fillRect(x - 13, y + 2, 14, 8);
         if (p >= 0) {
           ctx.fillStyle = '#6fe3b4'; for (let i = 0; i < 4; i++) ctx.fillRect(x - 12 + i * 3, y + 9 - (2 + ((t * 9 + i * 2.3) % 5)), 2, 2 + ((t * 9 + i * 2.3) % 5));
           ctx.fillStyle = '#c0392b'; ctx.fillRect(x + 6, y - 6 + Math.sin(t * 6) * 1.5, 3, 7);   // probówka w podajniku
-          ctx.fillStyle = '#56706a'; ctx.fillText('Morfologia', x - 26, y + 30);
+          ctx.fillStyle = '#56706a'; ctx.fillText(prog('markers') > prog('cbc') ? 'Markery' : 'Morfologia', x - 26, y + 30);
         } }
       { const p = prog('pcr'), x = 572, y = 176;
         ctx.fillStyle = '#e7eeeb'; roundRect(x - 17, y, 34, 16, 3); ctx.fill();
@@ -247,6 +247,31 @@
           const cols = ['#e8c35a', '#8fbf6a', '#c56a8a'];
           for (let i = 0; i < 3; i++) { ctx.fillStyle = p > (i + 1) / 4 ? cols[i] : '#e9eceb'; ctx.fillRect(x + 12.5, y + 4 + i * 5, 3, 3); }
           ctx.fillStyle = '#56706a'; ctx.fillText('Mocz', x - 12, y + 30);
+        } }
+      // RTG: lampa nad klatką i błysk naświetlenia
+      { const p = prog('xray');
+        if (p >= 0) {
+          ctx.fillStyle = '#7d8b87'; ctx.fillRect(226, 34, 6, 30); ctx.fillStyle = '#9aa8a3'; roundRect(212, 60, 34, 14, 3); ctx.fill();
+          const fl = Math.max(0, Math.sin(p * Math.PI * 4)) * 0.6;
+          ctx.fillStyle = `rgba(200, 230, 255, ${fl})`; ctx.beginPath(); ctx.moveTo(214, 74); ctx.lineTo(244, 74); ctx.lineTo(262, 112); ctx.lineTo(196, 112); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = '#56706a'; ctx.fillText('RTG', 218, 28);
+        } }
+      // rezonans: tunel aparatu nad pacjentem, pulsujące pole
+      { const p = prog('mri');
+        if (p >= 0) {
+          ctx.fillStyle = 'rgba(214, 222, 228, 0.88)'; roundRect(190, 60, 170, 84, 40); ctx.fill();
+          ctx.strokeStyle = `rgba(110, 170, 255, ${0.35 + 0.35 * Math.sin(t * 9)})`; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.ellipse(275, 102, 60, 26, 0, 0, 6.283); ctx.stroke();
+          ctx.fillStyle = '#56706a'; ctx.fillText('Rezonans', 252, 54);
+        } }
+      // biopsja: igła wbita w okolicy narządu
+      { const p = prog('biopsy'), T0 = d.tests && d.tests.biopsy;
+        if (p >= 0) {
+          const reg = T0 && T0.pending ? T0.pending.region : 'liver';
+          const tx = reg === 'heart' ? 236 : reg === 'liver' ? 262 : 280, ty = reg === 'heart' ? 108 - lift : 112;
+          ctx.strokeStyle = '#c9d2cf'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + 14, ty - 26); ctx.stroke();
+          ctx.fillStyle = '#5f6f6a'; roundRect(tx + 12, ty - 34, 6, 10, 2); ctx.fill();
+          ctx.fillStyle = '#56706a'; ctx.fillText('Biopsja', tx - 4, ty - 40);
         } }
       // tomografia: pierścień tomografu przesuwa się nad pacjentem
       { const p = prog('ct');

@@ -196,7 +196,7 @@ Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 | `Y` | lek przeciwgrzybiczy |
 | `H` `J` `K` `L` | operacja zastawki: trójdzielnej, mitralnej, pnia płucnego, aorty |
 
-Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń. Chemioterapia i radioterapia nie mają skrótów — są tylko w menu.
+Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń. Chemioterapia, radioterapia, markery, RTG, rezonans i biopsja nie mają skrótów — są tylko w menu (przy biopsji wybierasz narząd przyciskiem w pozycji menu).
 
 ### Jak grać
 1. **Badania** mogą biec równolegle, a każdy wynik opisuje chwilę pobrania próbki. Pierwszy wynik dowolnego badania odblokowuje leczenie.
@@ -212,6 +212,10 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń. Chemioter
    | PCR | 25 s (odnowienie 45 s) | rodzaj patogenu z materiału genetycznego we krwi, bez szukania pod mikroskopem, z podpowiedzią leczenia; ujemny, gdy patogen nie płynie we krwi i nie ma kopii ani kolonii poza mięśniem, oraz zawsze przy nowotworze (to komórki pacjenta) |
    | Badanie moczu | 4 s | krwinki czerwone (kolonie w nerce), bakterie (przy bakterii) i grzyby (przy grzybie) w moczu |
    | Tomografia komputerowa | 15 s (odnowienie 60 s) | przekrój całego ciała: dokładne położenie wszystkich ognisk, także w mięśniu serca |
+   | Markery nowotworowe | 6 s | stężenie (ng/ml): rośnie tylko przy nowotworze, z masą guzów; norma poniżej 5 |
+   | RTG klatki piersiowej | 5 s | zdjęcie klatki: powiększona sylwetka serca (dużo ognisk w sercu) i guzki w płucach (ogniska prawego serca); czułość 70% |
+   | Rezonans magnetyczny | 25 s (odnowienie 60 s) | jak tomografia, do tego wielkość każdego ogniska (etap guza: mały, średni, duży) |
+   | Biopsja | 12 s (odnowienie 45 s), stan −3 | wycinek z wybranego narządu (serce, wątroba, nerka): ropień z bakteriami, zapalenie wirusowe, strzępki grzyba, komórki nowotworowe albo tkanka prawidłowa |
    | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie, drożdżaki i komórki atypowe w barwieniu, wirusy w mikroskopie elektronowym); po znalezieniu zdjęcie patogenu z chwili pobrania, rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
 
 2. **Leczenie:**

@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.42.0] - 2026-10-09
+### Dodane
+- **Nowe badania:** markery nowotworowe, RTG klatki piersiowej (zdjęcie z sylwetką serca i guzkami w płucach), rezonans magnetyczny (obraz całego ciała z wielkością ognisk) i biopsja wybranego narządu (rozpoznanie: ropień, zapalenie wirusowe, grzyb, rak; stan pacjenta −3). Dostępne z menu „Badania”, z wydrukami, lampkami, animacjami w sali i opisem w wiki.
+
 ## [0.41.1] - 2026-10-09
 ### Dokumentacja
 - Uzupełnione wszystkie pliki: README (patogeny, badania, leczenie, pacjenci, języki, sterowanie), INSTRUKCJA (nowotwór i grzyb w tabelach, ekran lekarza z wiki i głośnością, badania przy każdym patogenie, objawy nowotworu, statystyki), ARCHITEKTURA (mutacje zależne od rodzaju, leki i radioterapia, ukrywanie informacji, pacjent, nowotwór, wiki, paczka sieciowa), BALANS (przegląd leków i zabiegów), PLAN (statusy, dodatki, kolejne kroki), CLAUDE.md (stan projektu).
@@ -380,7 +384,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.1...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.42.0...HEAD
+[0.42.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.1...v0.42.0
 [0.41.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.0...v0.41.1
 [0.41.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.40.1...v0.41.0
 [0.40.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.40.0...v0.40.1

@@ -24,7 +24,11 @@
     { kind: 'cbc', key: 'U', short: 'Morfologia', name: 'Morfologia krwi', desc: 'Leukocyty i rozmaz: przewaga neutrofili (bakteria) albo limfocytów (wirus).' },
     { kind: 'pcr', key: 'I', short: 'PCR', name: 'PCR', desc: 'Materiał genetyczny patogenu we krwi: rodzaj bez szukania pod mikroskopem. Długo trwa.' },
     { kind: 'urine', key: 'O', short: 'Mocz', name: 'Badanie moczu', desc: 'Krwinki czerwone i bakterie w moczu: kolonie w nerce.' },
-    { kind: 'ct', key: 'P', short: 'Tomografia', name: 'Tomografia komputerowa', desc: 'Całe ciało: dokładne położenie ognisk, także w mięśniu serca. Długie odnowienie.' }
+    { kind: 'ct', key: 'P', short: 'Tomografia', name: 'Tomografia komputerowa', desc: 'Całe ciało: dokładne położenie ognisk, także w mięśniu serca. Długie odnowienie.' },
+    { kind: 'markers', key: '', short: 'Markery', name: 'Markery nowotworowe', desc: 'Białka wydzielane przez guzy: rosną z masą nowotworu. Norma poniżej 5 ng/ml.' },
+    { kind: 'xray', key: '', short: 'RTG', name: 'RTG klatki piersiowej', desc: 'Szybkie, mało dokładne: powiększone serce i guzki w płucach (ogniska prawego serca).' },
+    { kind: 'mri', key: '', short: 'Rezonans', name: 'Rezonans magnetyczny', desc: 'Całe ciało jak tomografia, do tego wielkość każdego ogniska (etap guza). Najdłuższe.' },
+    { kind: 'biopsy', key: '', short: 'Biopsja', name: 'Biopsja', desc: 'Wycinek z narządu: co jest w tkance (ropień, zapalenie wirusowe, grzyb, rak). Stan pacjenta −3.', regions: [['heart', 'Serce'], ['liver', 'Wątroba'], ['kidney', 'Nerka']] }
   ];
 
   // ikony (obrys 24 × 24) dla pozycji menu
@@ -47,7 +51,11 @@
     cbc: '<path d="M8 3v13a4 4 0 0 0 8 0V3"/><path d="M7 3h10M8 11h8"/>',
     pcr: '<path d="M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9M9 7h6M9 17h6"/>',
     urine: '<path d="M7 4h10l-1 16H8z"/><path d="M7.4 10h9.2"/>',
-    ct: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M3 20h18"/>'
+    ct: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M3 20h18"/>',
+    markers: '<path d="M4 20V10M9 20V6M14 20v-8M19 20V4"/><path d="M3 20h18"/>',
+    xray: '<path d="M12 3v18M7 7c-3 1-4 4-4 7M17 7c3 1 4 4 4 7M8 10c-2 .5-3 2-3 4M16 10c2 .5 3 2 3 4M8 13c-1 .4-1.5 1.2-1.5 2.4M16 13c1 .4 1.5 1.2 1.5 2.4"/>',
+    mri: '<rect x="2" y="5" width="20" height="14" rx="7"/><circle cx="12" cy="12" r="3.5"/><path d="M2 12h6.5M15.5 12H22"/>',
+    biopsy: '<path d="M3 21l6-6M9 15l9-9 3 3-9 9zM14 6l4 4"/>'
   };
   const svg = (k) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
   // dla wiki lekarza (js/wiki.js)
@@ -129,8 +137,14 @@
     for (const t of TESTS) {
       const b = document.createElement('button');
       b.className = 'test-btn'; b.id = 'test-' + t.kind; b.type = 'button'; b.setAttribute('role', 'menuitem');
-      b.innerHTML = `<span class="test-bar" aria-hidden="true"><span></span></span>${svg(t.kind)}<span class="test-row"><span class="test-name">${t.name}</span><kbd>${t.key}</kbd></span><span class="test-desc">${t.desc}</span><span class="test-state"></span>`;
-      b.addEventListener('click', () => { DD.send({ type: 'doc.test', kind: t.kind }); pick(); });
+      b.innerHTML = `<span class="test-bar" aria-hidden="true"><span></span></span>${svg(t.kind)}<span class="test-row"><span class="test-name">${t.name}</span>${t.key ? `<kbd>${t.key}</kbd>` : ''}</span><span class="test-desc">${t.desc}</span>`
+        + (t.regions ? `<span class="test-regions">${t.regions.map(([r, n]) => `<span class="test-region" role="button" tabindex="0" data-region="${r}">${n}</span>`).join('')}</span>` : '')
+        + '<span class="test-state"></span>';
+      // biopsja: wybór narządu przyciskiem w pozycji menu
+      b.addEventListener('click', (e) => {
+        if (t.regions) { const r = e.target.closest('[data-region]'); if (!r) return; DD.send({ type: 'doc.test', kind: t.kind, region: r.dataset.region }); pick(); return; }
+        DD.send({ type: 'doc.test', kind: t.kind }); pick();
+      });
       $('tests').appendChild(b);
       testBtns[t.kind] = b;
       // lampka badania na konsoli (widać stan bez otwierania menu)
@@ -186,9 +200,10 @@
     const drawEcho = makeUS($('res-echo-c'), DD.Heart.HEART_BOX, 240, 232);
     const drawUsg = makeUS($('res-usg-c'), DD.Heart.ABDOMEN_BOX, 240, 300);
 
-    // tomografia: przekrój całego ciała (świat gry) w skali szarości, ogniska jako jasne plamy z dokładnym położeniem
-    const drawCt = (function () {
-      const canvas = $('res-ct-c'), W0 = DD.CONFIG.world, w = 180, h = 380;
+    // tomografia i rezonans: przekrój całego ciała (świat gry) w skali szarości, ogniska z dokładnym położeniem.
+    // Rezonans: krew ciemna (brak sygnału z płynącej krwi), tkanki jasne, ognisko z pierścieniem wielkości.
+    function makeBody(canvasId, mode) {
+      const canvas = $(canvasId), W0 = DD.CONFIG.world, w = 180, h = 380;
       const box = { minX: W0.minX, maxX: W0.maxX, minY: W0.minY, maxY: W0.maxY };
       let bg = null;
       return function draw(res) {
@@ -206,8 +221,10 @@
             let v = 6;
             if (x >= box.minX && x <= box.maxX && y >= box.minY && y <= box.maxY) {
               const d = H.sample(x, y), o = H.organAt(x, y), n = Math.random() * 6;
-              // krew z kontrastem jasna, ściany szare, miąższ wątroby i nerki średni, tło tkanek ciemne
-              v = d < 0 ? 205 + n : d < 1.2 ? 150 + n : (o === 'liver' || o === 'kidney') ? 112 + n : d < 7 ? 92 + n - d * 3 : 46 + n;
+              const organ = o === 'liver' || o === 'kidney';
+              v = mode === 'mri'
+                ? (d < 0 ? 18 + n : d < 1.2 ? 120 + n : organ ? 175 + n : d < 7 ? 150 + n - d * 4 : 90 + n)
+                : (d < 0 ? 205 + n : d < 1.2 ? 150 + n : organ ? 112 + n : d < 7 ? 92 + n - d * 3 : 46 + n);
             }
             img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
           }
@@ -219,11 +236,35 @@
           ctx.fillStyle = inT ? 'rgba(255, 255, 255, 0.85)' : '#fff';
           ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)'; ctx.lineWidth = 1;
           ctx.beginPath(); ctx.arc(px, py, r, 0, 6.283); ctx.fill(); ctx.stroke();
+          if (mode === 'mri') { ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; ctx.beginPath(); ctx.arc(px, py, r + 2 + size * 2, 0, 6.283); ctx.stroke(); }
         }
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.font = '10px system-ui, sans-serif';
         ctx.fillText('P', 4, 12); ctx.fillText('L', w - 10, 12);
       };
-    })();
+    }
+    const drawCt = makeBody('res-ct-c', 'ct');
+    const drawMri = makeBody('res-mri-c', 'mri');
+
+    // RTG klatki piersiowej: żebra, płuca, sylwetka serca (powiększona przy dużej masie ognisk), guzki w płucach
+    function drawXray(res) {
+      const canvas = $('res-xray-c'), w = 220, h = 190, pr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = w * pr; canvas.height = h * pr; canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+      const g = canvas.getContext('2d'); g.setTransform(pr, 0, 0, pr, 0, 0);
+      g.fillStyle = '#0b0b0b'; g.fillRect(0, 0, w, h);
+      const lung = (cx, s) => { const gr = g.createRadialGradient(cx, 95, 10, cx, 95, 80); gr.addColorStop(0, '#2a2a2a'); gr.addColorStop(1, '#575757');
+        g.fillStyle = gr; g.beginPath(); g.ellipse(cx, 98, 48, 72, s * 0.08, 0, 6.283); g.fill(); };
+      lung(62, 1); lung(158, -1);
+      g.strokeStyle = 'rgba(220, 220, 220, 0.55)'; g.lineWidth = 3;
+      for (let i = 0; i < 7; i++) { const y = 32 + i * 20;
+        g.beginPath(); g.moveTo(108, y); g.quadraticCurveTo(40, y - 6, 18, y + 22); g.stroke();
+        g.beginPath(); g.moveTo(112, y); g.quadraticCurveTo(180, y - 6, 202, y + 22); g.stroke(); }
+      g.fillStyle = '#d8d8d8'; g.fillRect(104, 8, 12, 175);   // kręgosłup
+      const k = res.bigHeart ? 1.35 : 1;   // sylwetka serca (przy powiększeniu szersza)
+      g.fillStyle = 'rgba(235, 235, 235, 0.92)'; g.beginPath(); g.ellipse(118, 125, 34 * k, 30 * k, -0.4, 0, 6.283); g.fill();
+      g.fillStyle = 'rgba(250, 250, 250, 0.95)';
+      for (let i = 0; i < res.nodules; i++) { const a = i * 2.3; g.beginPath(); g.arc(i % 2 ? 150 + Math.cos(a) * 20 : 62 + Math.cos(a) * 20, 70 + Math.sin(a) * 28, 3.5, 0, 6.283); g.fill(); }
+      g.fillStyle = 'rgba(255, 255, 255, 0.8)'; g.font = '10px system-ui, sans-serif'; g.fillText('P', 4, 12); g.fillText('L', w - 10, 12);
+    }
 
     // Mikroskop: preparat (3 × 3 pola widzenia) rysowany raz na wynik; lekarz przesuwa go myszą albo strzałkami
     // i szuka patogenu. Rodzaj ujawnia się, gdy drobnoustrój trafi w środek pola widzenia.
@@ -567,7 +608,7 @@
       shownSeq = d.resultSeq;
       const T = d.tests;
       // drukarka: nowy wydruk wysuwa się na górę stosu
-      const PRINTED = ['crp', 'culture', 'echo', 'usg', 'abg', 'cbc', 'pcr', 'urine', 'ct'];
+      const PRINTED = ['crp', 'culture', 'echo', 'usg', 'abg', 'cbc', 'pcr', 'urine', 'ct', 'markers', 'xray', 'mri', 'biopsy'];
       const anyPrint = PRINTED.some((k) => T[k] && T[k].res);
       $('print-empty').hidden = anyPrint;
       const slips = document.querySelector('.slips');
@@ -635,6 +676,32 @@
         const nH = n('heart'), nL = n('liver'), nK = n('kidney'), nO = C0.length - nH - nL - nK;
         $('res-ct-l').textContent = C0.length ? `Ogniska w sercu: ${nH} (w mięśniu: ${nM}), w wątrobie: ${nL}, w nerce: ${nK}, w naczyniach: ${nO}` : 'Bez widocznych zmian';
       } else $('res-ct').hidden = true;
+      if (T.markers && T.markers.res) {
+        $('res-markers').hidden = false; time($('res-markers'), T.markers);
+        const v = T.markers.res.value;
+        $('res-markers-v').textContent = String(v).replace('.', ',');
+        $('res-markers-l').textContent = v < 5 ? 'W normie' : v < 15 ? 'Podwyższone' : 'Bardzo wysokie';
+      } else if ($('res-markers')) $('res-markers').hidden = true;
+      if (T.xray && T.xray.res) {
+        $('res-xray').hidden = false; time($('res-xray'), T.xray);
+        const r = T.xray.res; drawXray(r);
+        $('res-xray-l').textContent = !r.bigHeart && !r.nodules ? 'Bez widocznych zmian'
+          : [r.bigHeart ? 'Powiększona sylwetka serca' : '', r.nodules ? `guzki w płucach: ${r.nodules}` : ''].filter(Boolean).join(', ');
+      } else $('res-xray').hidden = true;
+      if (T.mri && T.mri.res) {
+        $('res-mri').hidden = false; time($('res-mri'), T.mri);
+        drawMri(T.mri.res);
+        const C0 = T.mri.res.colonies, ST = C.cancer.stages;
+        const sm = C0.filter((c) => c[2] < ST[0]).length, md = C0.filter((c) => c[2] >= ST[0] && c[2] < ST[1]).length, lg = C0.length - sm - md;
+        $('res-mri-l').textContent = C0.length ? `Ognisk: ${C0.length} (w mięśniu: ${C0.filter((c) => c[3]).length}). Małe ${sm}, średnie ${md}, duże ${lg}` : 'Bez widocznych zmian';
+      } else $('res-mri').hidden = true;
+      if (T.biopsy && T.biopsy.res) {
+        $('res-biopsy').hidden = false; time($('res-biopsy'), T.biopsy);
+        const r = T.biopsy.res, ORG = { heart: 'Serce', liver: 'Wątroba', kidney: 'Nerka' };
+        const HIS = { bacteria: 'Ropień z bakteriami', virus: 'Zapalenie wirusowe (wtręty w komórkach)', fungus: 'Strzępki grzyba w tkance', cancer: 'Komórki nowotworowe (rak)' };
+        $('res-biopsy-v').textContent = ORG[r.region];
+        $('res-biopsy-l').textContent = r.finding ? HIS[r.finding] : 'Tkanka prawidłowa';
+      } else $('res-biopsy').hidden = true;
       if (T.abg.res) {
         $('res-abg').hidden = false; time($('res-abg'), T.abg);
         const lbl = (r) => r < 0.2 ? ['wrażliwa', 'ok'] : r < 0.5 ? ['średnio wrażliwa', 'warm'] : ['oporna', 'high'];

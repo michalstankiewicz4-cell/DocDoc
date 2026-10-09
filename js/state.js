@@ -42,7 +42,11 @@
           cbc: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           pcr: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
           urine: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
-          ct: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
+          ct: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          markers: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          xray: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          mri: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null },
+          biopsy: { state: 'idle', t: 0, cd: 0, sampleT: -1, res: null, pending: null }
         },
         resultSeq: 0,
         surgery: { state: 'idle', t: 0, cd: 0, valve: null },
@@ -234,7 +238,7 @@
         if (b.contact && H.organAt(b.x, b.y) === 'heart') b.burrowT = Tt.burrow[s.kind] || Tt.burrow.bacteria;
         return;
       }
-      case 'doc.test': orderTest(s, cmd.kind || 'culture'); return;
+      case 'doc.test': orderTest(s, cmd.kind || 'culture', cmd.region); return;
       case 'doc.surgery': {
         const SU = d.surgery, cfg = D.surgery;
         const v = H.VALVES.find((x) => x.id === cmd.valve);
@@ -337,17 +341,22 @@
 
   // ---------- BADANIA ----------
   const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram', micro: 'mikroskop', usg: 'USG jamy brzusznej',
-    cbc: 'morfologia', pcr: 'PCR', urine: 'badanie moczu', ct: 'tomografia komputerowa' };
-  function orderTest(s, kind) {
+    cbc: 'morfologia', pcr: 'PCR', urine: 'badanie moczu', ct: 'tomografia komputerowa', markers: 'markery nowotworowe', xray: 'RTG klatki piersiowej', mri: 'rezonans magnetyczny' };
+  function orderTest(s, kind, region) {
     const d = s.doctor, T = d.tests[kind], cfg = D.tests[kind];
     if (!T || T.state === 'running' || T.cd > 0) return;
     if (kind === 'abg' && !(d.tests.culture.res && d.tests.culture.res.positive)) return; // wymaga dodatniego posiewu
+    if (kind === 'biopsy' && !BIOPSY_ORGAN[region]) return;   // biopsja: wybrany narząd
     T.state = 'running'; T.t = cfg.duration; T.sampleT = s.time;
-    T.pending = sampleFor(s, kind);    // wynik opisuje chwilę pobrania
+    T.pending = sampleFor(s, kind, region);    // wynik opisuje chwilę pobrania
+    if (cfg.patientCost) { s.patient.cond -= cfg.patientCost; s.stats.condByTreatment += cfg.patientCost; }
     s.stats.tests++; if (s.stats.firstTestAt < 0) s.stats.firstTestAt = s.time;
-    log(s, 'doc', `Zlecono badanie: ${TEST_NAME[kind]}.`);
+    log(s, 'doc', kind === 'biopsy' ? `Zlecono badanie: biopsja (${BIOPSY_ORGAN[region]}).` : `Zlecono badanie: ${TEST_NAME[kind]}.`);
   }
-  function sampleFor(s, kind) {
+  const BIOPSY_ORGAN = { heart: 'serce', liver: 'wątroba', kidney: 'nerka' };
+  // co pokazuje biopsja tkanki zajętej przez dany rodzaj patogenu
+  const HISTO = { bacteria: 'ropień z bakteriami', virus: 'zapalenie wirusowe (wtręty w komórkach)', fungus: 'strzępki grzyba w tkance', cancer: 'komórki nowotworowe (rak)' };
+  function sampleFor(s, kind, region) {
     const b = s.bact;
     const tox = s.toxinT > 0;   // toksyny zakłócają wyniki
     if (kind === 'crp') {
@@ -408,6 +417,31 @@
       return { colonies: s.colonies.filter(() => rnd(s) < se).map((c) => [
         Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0, H.organAt(c.x, c.y)]) };
     }
+    // markery nowotworowe: przy nowotworze rosną z masą guzów (maskowanie je obniża), poza tym w normie
+    if (kind === 'markers') {
+      const mass = s.kind === 'cancer' ? s.colonies.reduce((a, c) => a + c.size, 0) * (1 - C.mutations.mask.crp * maskLvl(s)) : 0;
+      const v = 2.5 + mass * 9 + (rnd(s) * 2 - 1) * D.tests.markers.noise * (tox ? 3 : 1);
+      return { value: Math.max(0.5, Math.round(v * 10) / 10) };
+    }
+    // RTG klatki piersiowej: powiększona sylwetka serca (duża masa ognisk w sercu) i guzki w płucach (ogniska prawego serca)
+    if (kind === 'xray') {
+      let heart = 0, right = 0;
+      for (const c of s.colonies) { if (H.organAt(c.x, c.y) === 'heart') heart += c.size; if ((c.region || H.regionOf(c.x, c.y)) === 'right') right += c.size; }
+      const se = sens(s, 'xray');
+      return { bigHeart: heart >= D.tests.xray.bigHeart && rnd(s) < se, nodules: right > 0.2 && rnd(s) < se ? Math.min(6, 1 + Math.floor(right * 2)) : 0 };
+    }
+    // rezonans: jak tomografia, z wielkością ogniska
+    if (kind === 'mri') {
+      const se = sens(s, 'mri');
+      return { colonies: s.colonies.filter(() => rnd(s) < se).map((c) => [
+        Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0, H.organAt(c.x, c.y)]) };
+    }
+    // biopsja: wycinek z narządu — rodzaj zmian, jeśli w narządzie są ogniska (bez względu na maskowanie: to tkanka pod mikroskopem)
+    if (kind === 'biopsy') {
+      const mass = s.colonies.reduce((a, c) => a + (H.organAt(c.x, c.y) === region ? c.size : 0), 0);
+      const hit = mass > 0.1 && rnd(s) < D.tests.biopsy.sens;
+      return { region, finding: hit ? s.kind : null };
+    }
     if (kind === 'abg') {
       const out = {};
       for (const k of ['antibodies', 'fever', 'abxA', 'abxB', 'antifungal']) out[k] = (1 - b.resist[k]) * susceptibility(s, k);
@@ -455,6 +489,16 @@
       const n = (o) => r.colonies.filter((c) => c[4] === o).length;
       const nH = n('heart'), nL = n('liver'), nK = n('kidney'), nO = r.colonies.length - nH - nL - nK;
       text = r.colonies.length ? `Tomografia: ogniska w sercu ${nH}, w wątrobie ${nL}, w nerce ${nK}, w naczyniach ${nO}.` : 'Tomografia bez zmian.';
+    } else if (kind === 'markers') {
+      text = `Markery nowotworowe: ${String(r.value).replace('.', ',')} ng/ml${r.value >= 5 ? ' (podwyższone)' : ' (w normie)'}.`;
+    } else if (kind === 'xray') {
+      text = !r.bigHeart && !r.nodules ? 'RTG klatki piersiowej bez zmian.'
+        : `RTG klatki piersiowej: ${[r.bigHeart ? 'powiększona sylwetka serca' : '', r.nodules ? `guzki w płucach: ${r.nodules}` : ''].filter(Boolean).join(', ')}.`;
+    } else if (kind === 'mri') {
+      const ST = C.cancer.stages, big = r.colonies.filter((c) => c[2] >= ST[1]).length;
+      text = r.colonies.length ? `Rezonans: ognisk ${r.colonies.length}, w tym w mięśniu serca ${r.colonies.filter((c) => c[3]).length}, dużych ${big}.` : 'Rezonans bez zmian.';
+    } else if (kind === 'biopsy') {
+      text = `Biopsja (${BIOPSY_ORGAN[r.region]}): ${r.finding ? HISTO[r.finding] : 'tkanka prawidłowa'}.`;
     }
     log(s, 'doc', 'Wynik: ' + text + (first ? ' Odblokowano leczenie.' : ''));
   }

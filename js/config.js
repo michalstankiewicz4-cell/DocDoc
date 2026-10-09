@@ -43,7 +43,11 @@ DD.CONFIG = {
       cbc:     { duration: 5,  cooldown: 15, noise: 1.2 },  // morfologia: leukocyty (G/l) i przewaga neutrofili (bakteria) / limfocytów (wirus)
       pcr:     { duration: 25, cooldown: 45, sens: 0.95 },  // PCR: materiał genetyczny patogenu we krwi → rodzaj (bez szukania pod mikroskopem)
       urine:   { duration: 4,  cooldown: 15, sens: 0.85, minMass: 0.1 },  // badanie moczu: krwinki czerwone i bakterie, gdy są kolonie w nerce
-      ct:      { duration: 15, cooldown: 60, sens: 0.95 }   // tomografia: całe ciało, dokładne położenie, także kolonie w mięśniu
+      ct:      { duration: 15, cooldown: 60, sens: 0.95 },  // tomografia: całe ciało, dokładne położenie, także kolonie w mięśniu
+      markers: { duration: 6,  cooldown: 20, noise: 1.5 },  // markery nowotworowe (ng/ml): rosną z masą guzów; norma < 5
+      xray:    { duration: 5,  cooldown: 20, sens: 0.7, bigHeart: 1.0 },  // RTG klatki: powiększone serce (masa ognisk w sercu ≥ bigHeart), guzki w płucach z prawego serca
+      mri:     { duration: 25, cooldown: 60, sens: 0.98 },  // rezonans: jak tomografia, do tego wielkość (etap) każdego ogniska
+      biopsy:  { duration: 12, cooldown: 45, sens: 0.9, patientCost: 3 }   // biopsja narządu (serce / wątroba / nerka): rodzaj zmian w tkance
     },
     antibodies: { cooldown: 18, count: 56, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },

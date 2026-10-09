@@ -102,7 +102,8 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Głośność monitora, powrót do menu (v0.40.0–0.40.1)
 - [x] Nowotwór: guzy, etapy z wielkości, angiogeneza, przerzuty, niewydolność narządów; chemio- i radioterapia (v0.41.0)
 - [x] Uzupełnienie całej dokumentacji (v0.41.1)
-- [ ] Dalej wg `docs/PLAN.md`: RTG, rezonans, biopsja, markery nowotworowe; przeszczep narządu, amputacja; obszary poza krwiobiegiem; kolejni pacjenci
+- [x] Markery nowotworowe, RTG, rezonans, biopsja (v0.42.0)
+- [ ] Dalej wg `docs/PLAN.md`: przeszczep narządu, amputacja; obszary poza krwiobiegiem; kolejni pacjenci
 - [x] Poprawki: powrót z mięśnia, zamiana ról; pasek przewijania; ekran startowy, loader, nazwa; SEO (v0.30.3–v0.31.1)
 - [x] Zakończenie rundy, filmy, zwijane statystyki (v0.32.0)
 
@@ -162,4 +163,5 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Wiki (v0.39.0): okno nad panelem lekarza, gra w tle trwa; teksty dwujęzyczne w `js/wiki.js` (nie w `en.js`); zdjęcia z gry robione skryptem Playwright (patogeny 3D z bliska, kolonie, obrazy echa/USG/TK, sala). Nowa mechanika = dopisać do wiki.
 - Głośność monitora (v0.40.0, od v0.40.1 także alarmy i linia płaska): poziomy 0–5 (domyślnie 3 = dawna głośność, krzywa ^1,6), `localStorage` `patientzero-beep`; dzwonek wyniku bez zmian. „Wróć do menu” przeładowuje stronę (w grze sieciowej rozłącza).
 - Nowotwór (v0.41.0): kind 'cancer'; mutacje 7/8/9/0 → divide/apoptosis/angio/meta (`Game.mutKey`); chemioterapia bez skrótu klawiszowego (wszystkie litery zajęte), radioterapia w menu Zabiegi (`doc.radio` z `region`), `s.radio` synchronizowane; posiew/PCR ujemne, mikroskop pokazuje komórki atypowe; przerzuty osiadają jak zarodniki grzyba. Liczby w `docs/BALANS.md`.
+- Badania v0.42.0 (markery, RTG, rezonans, biopsja): bez skrótów klawiszowych (brak wolnych liter), biopsja przez `doc.test` z `region` (przyciski narządów w pozycji menu), koszt dla pacjenta `tests.biopsy.patientCost`. Liczby w `docs/BALANS.md`.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk; wątroba > 0,3 żółtaczka; nerka > 0,3 krew w moczu; > 0,9 objaw nasilony).

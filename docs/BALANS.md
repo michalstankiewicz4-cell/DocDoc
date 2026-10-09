@@ -69,6 +69,10 @@ Pozostałe wartości (kolonie, badania podstawowe, pożywienie, rodzaje patogen�
 | PCR | 25 / 45 s | 0,95 | pewniejszy od mikroskopu i bez szukania, ale wolny — mikroskop zostaje szybszą drogą |
 | Badanie moczu | 4 / 15 s | 0,85, od masy kolonii w nerce 0,1 | tanie potwierdzenie objawu „krew w moczu” (także fałszywego od sygnałów) |
 | Tomografia | 15 / 60 s | 0,95 na ognisko | jedyne badanie z dokładnym położeniem kolonii w mięśniu; długie odnowienie, żeby nie zastąpiło echa i USG |
+| Markery nowotworowe | 6 / 20 s | 2,5 + 9 × masa guzów ±1,5 ng/ml | proste potwierdzenie raka; przy innych patogenach zawsze w normie |
+| RTG klatki | 5 / 20 s | 0,7; serce powiększone od masy 1,0 | szybkie, tanie, ale mało dokładne — sygnał do echa |
+| Rezonans | 25 / 60 s | 0,98 na ognisko | najdokładniejszy obraz z wielkością ognisk; najdłuższy |
+| Biopsja | 12 / 45 s, stan −3 | 0,9, od masy 0,1 w narządzie | pewne rozpoznanie rodzaju zmian, ale trzeba trafić w narząd i kosztuje pacjenta |
 
 ## Grzyb (od v0.38.0, `config.fungus`, `species.candida`)
 

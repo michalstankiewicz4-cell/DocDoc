@@ -823,3 +823,12 @@ body[data-role="doc"] .half-doc {
 }
 .beep-ctl button:hover { border-color: var(--ch-hr); color: var(--ch-hr); }
 .beep-lvl { min-width: 46px; text-align: center; font-size: 11px; letter-spacing: 1px; color: var(--ch-hr); }
+
+/* biopsja: wybór narządu w pozycji menu */
+.test-regions { display: flex; gap: 6px; flex-wrap: wrap; grid-column: 1 / -1; margin-top: 4px; }
+.test-region {
+  padding: 3px 10px; border-radius: 999px; border: 1px solid var(--dev-edge); background: var(--dev-2); color: var(--txt);
+  font: 600 12px/1.2 var(--font-dev); letter-spacing: 0.04em; cursor: pointer;
+}
+.test-region:hover { border-color: var(--ch-cond); color: var(--ch-cond); }
+.test-btn:disabled .test-region { opacity: 0.45; cursor: default; }
