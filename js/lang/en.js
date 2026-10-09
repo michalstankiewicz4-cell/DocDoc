@@ -433,6 +433,10 @@ DD.I18N_EN = {
   'Lek przeciwwirusowy działa częściowo (60%).': 'The antiviral works partially (60%).',
 
   'Wiki lekarza': 'Doctor wiki',
+  'Głośność beep': 'Beep volume',
+  'Ścisz beep': 'Beep quieter',
+  'Pogłośnij beep': 'Beep louder',
+  'Beep wyciszony': 'Beep muted',
   'Zamknij': 'Close',
   // ---------- grzyb (v0.38.0) ----------
   'Grzyby': 'Fungi',

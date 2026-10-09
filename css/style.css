@@ -811,3 +811,14 @@ body[data-role="doc"] .half-doc {
 .wk-table th, .wk-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--dev-edge); vertical-align: top; }
 .wk-table th { font: 600 13px/1.2 var(--font-dev); color: var(--txt-dim); letter-spacing: 0.05em; text-transform: uppercase; }
 @media (max-width: 560px) { .wk-row { flex-wrap: wrap; } .wk-thumb { width: 72px; height: 72px; } }
+
+/* ---------- głośność beep na monitorze ---------- */
+.dev-bar-right { display: inline-flex; align-items: center; gap: 12px; }
+.beep-ctl { display: inline-flex; align-items: center; gap: 5px; color: var(--txt-dim); }
+.beep-ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.beep-ctl button {
+  width: 22px; height: 22px; border-radius: 5px; border: 1px solid var(--dev-edge); background: var(--dev-2); color: var(--txt);
+  font: 700 15px/1 var(--font-dev); cursor: pointer; display: grid; place-items: center; padding: 0;
+}
+.beep-ctl button:hover { border-color: var(--ch-hr); color: var(--ch-hr); }
+.beep-lvl { min-width: 46px; text-align: center; font-size: 11px; letter-spacing: 1px; color: var(--ch-hr); }

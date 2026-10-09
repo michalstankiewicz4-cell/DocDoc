@@ -41,6 +41,11 @@
     const soundLabel = () => { $('sound-label').textContent = DD.Audio.on ? 'Dźwięk włączony' : 'Dźwięk wyłączony'; };
     soundLabel();
     $('btn-sound').addEventListener('click', () => { DD.Audio.toggle(); soundLabel(); $('btn-sound').blur(); });
+    // głośność beep na monitorze lekarza
+    const beepShow = () => { const L = DD.Audio.beepLevel; $('beep-lvl').textContent = L ? '▮'.repeat(L) + '▯'.repeat(DD.Audio.BEEP_MAX - L) : '✕'; $('beep-lvl').title = L ? '' : 'Beep wyciszony'; };
+    beepShow();
+    $('beep-down').addEventListener('click', (e) => { DD.Audio.setBeep(DD.Audio.beepLevel - 1); beepShow(); e.currentTarget.blur(); });
+    $('beep-up').addEventListener('click', (e) => { DD.Audio.init(); DD.Audio.setBeep(DD.Audio.beepLevel + 1); beepShow(); e.currentTarget.blur(); });
     window.addEventListener('keydown', (e) => {
       if (e.target && e.target.tagName === 'TEXTAREA') return;
       if (e.code === 'KeyM' && !e.repeat) { DD.Audio.toggle(); soundLabel(); }
@@ -60,6 +65,8 @@
       });
     });
     $('end-swap').addEventListener('click', () => DD.Match.swap());
+    // powrót do menu: przeładowanie strony (w grze na 2 osoby kończy połączenie)
+    $('end-menu').addEventListener('click', () => location.reload());
     $('end-again').addEventListener('click', () => {
       DD.send({ type: 'game.start', organ: state.organ || 'heart', kind: N.role === 'doc' ? undefined : DD.chosenKind });
       $('end').hidden = true;

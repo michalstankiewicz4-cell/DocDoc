@@ -11,6 +11,11 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-10-09
+### Dodane
+- **Głośność beep** na monitorze lekarza: przyciski `−` / `+` i wskaźnik poziomu (0–5, 0 wycisza), zapamiętane w przeglądarce. Alarmy grają jak wcześniej.
+- Przycisk **„Wróć do menu”** na ekranie końcowym obok „Zagraj jeszcze raz”.
+
 ## [0.39.0] - 2026-10-09
 ### Dodane
 - **Wiki lekarza:** przycisk „Wiki” w nagłówku karty pacjenta otwiera bazę wiedzy (po polsku i angielsku): patogeny ze zdjęciami z gry i miniaturami z mikroskopu, badania z obrazami echa, USG i tomografii, leki i zabiegi z ikonami, objawy z przyczynami, pacjenci, oporność i inne fakty. Liczby czytane z konfiguracji gry.
@@ -357,7 +362,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.39.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.40.0...HEAD
+[0.40.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.39.0...v0.40.0
 [0.39.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.1...v0.37.0

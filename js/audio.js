@@ -15,6 +15,14 @@
 (function () {
   const A = { ctx: null, on: true, master: null, lastPhase: 0 };
   try { A.on = localStorage.getItem('patientzero-sound') !== 'off'; } catch (e) { /* brak dostępu */ }
+  // głośność beep pulsoksymetru: 0 (wyciszony) … 5, domyślnie 3 (dawna głośność)
+  A.BEEP_MAX = 5; A.beepLevel = 3;
+  try { const v = parseInt(localStorage.getItem('patientzero-beep'), 10); if (v >= 0 && v <= 5) A.beepLevel = v; } catch (e) { /* brak dostępu */ }
+  A.setBeep = function (lvl) {
+    A.beepLevel = Math.max(0, Math.min(A.BEEP_MAX, lvl));
+    try { localStorage.setItem('patientzero-beep', String(A.beepLevel)); } catch (e) { /* brak dostępu */ }
+    return A.beepLevel;
+  };
 
   // przeglądarki pozwalają włączyć dźwięk dopiero po geście użytkownika
   A.init = function () {
@@ -104,7 +112,7 @@
     o.connect(g); g.connect(A.room);
     o.start(start); o.stop(start + dur + 0.02);
   }
-  function pulseBeep() { tone(880, A.ctx.currentTime + 0.01, 0.07, 0.16); }
+  function pulseBeep() { if (A.beepLevel > 0) tone(880, A.ctx.currentTime + 0.01, 0.07, 0.16 * Math.pow(A.beepLevel / 3, 1.6)); }
   // alarm średniego priorytetu: trzy tony (jak w monitorach zgodnych z IEC 60601-1-8)
   function feverAlarm() {
     const t = A.ctx.currentTime + 0.02;

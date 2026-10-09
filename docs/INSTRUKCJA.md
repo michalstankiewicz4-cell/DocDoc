@@ -151,6 +151,7 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
 ## Lekarz
 
 ### Ekran lekarza
+- **Głośność beep:** na pasku monitora przyciski `−` i `+` ściszają i pogłaśniają beep pulsoksymetru (6 poziomów, najniższy wycisza; alarmy bez zmian). Ustawienie zapamiętuje przeglądarka.
 - **Wiki** (przycisk w nagłówku karty pacjenta): baza wiedzy w grze — patogeny (zdjęcia, obraz w mikroskopie, leczenie, typowe wyniki), badania (czas, odnowienie, czułość, co pokazują i co je zakłóca), leki i zabiegi, objawy z przyczynami, pacjenci i inne fakty. Gra w tym czasie trwa; `Esc` zamyka.
 Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 - **Monitor:** EKG i odczyty w kolorach kanałów (tętno zielone, temperatura żółta, stan pacjenta błękitny, zakażenie różowe). Przy alarmie dioda i ramka ekranu świecą na czerwono.
@@ -232,6 +233,8 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
 6. **Dziennik** zapisuje badania, wyniki i podane leki.
 
 ## Koniec rundy
+
+Na ekranie końcowym: „Zagraj jeszcze raz”, w meczu „Rewanż z zamianą ról” i „Wróć do menu” (w grze na 2 osoby kończy połączenie).
 
 Po zwycięstwie gra trwa jeszcze około 5 sekund. Przy sepsie serce zwalnia aż do zatrzymania, prąd krwi ustaje, a monitor lekarza przechodzi w ciągły pisk, który powoli cichnie. Potem obaj gracze widzą krótki film (wygrana lekarza albo wygrana patogenu, można go pominąć), a na końcu podsumowanie. Statystyki rozwija się przyciskiem „Statystyki rundy”.
 
