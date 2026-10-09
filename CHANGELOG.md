@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.44.1] - 2026-10-09
+### Dokumentacja
+- `docs/TODO.md`: lista na przyszłość — operacje, eksploracja całego organizmu, kolejne patogeny, propozycje czekające na decyzję, sprawy techniczne.
+
 ## [0.44.0] - 2026-10-09
 ### Dodane
 - **Kolejni pacjenci w losowaniu:** alergik, palacz, alkoholik, astmatyk, otyłość, ciąża (teraz 11 pacjentów). Nowe mnożniki: koszt leczenia dla pacjenta (alergik, astmatyk, ciąża) i wzrost kolonii w narządzie (palacz — serce, alkoholik — wątroba). Koszt na przyciskach leczenia uwzględnia pacjenta.
@@ -392,7 +396,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.1...HEAD
+[0.44.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.0...v0.44.1
 [0.44.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.1...v0.42.0

@@ -37,6 +37,7 @@ Pełne zasady i sterowanie: [docs/INSTRUKCJA.md](docs/INSTRUKCJA.md).
 | [docs/ARCHITEKTURA.md](docs/ARCHITEKTURA.md) | programiści | budowa kodu, stan i komendy, sieć, render, język, jak dodać funkcję |
 | [docs/BALANS.md](docs/BALANS.md) | projektanci | liczby balansu (pacjenci, badania, grzyb, nowotwór) z uzasadnieniem |
 | [docs/PLAN.md](docs/PLAN.md) | wszyscy | plan rozwoju i statusy kolejnych aktualizacji |
+| [docs/TODO.md](docs/TODO.md) | wszyscy | na przyszłość: operacje, cały organizm, propozycje, sprawy techniczne |
 | [CHANGELOG.md](CHANGELOG.md) | wszyscy | historia wersji |
 | [CLAUDE.md](CLAUDE.md) | Claude | kontekst projektu do wznowienia pracy w nowej rozmowie |
 

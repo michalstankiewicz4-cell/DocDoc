@@ -10,7 +10,7 @@ i aktualizuj sekcje „Stan” i „Lista zadań” po każdym wydaniu.
 - **Repo:** https://github.com/michalstankiewicz4-cell/PatientZero (dawniej `DocDoc`, GitHub przekierowuje stary adres).
 - **Gra online:** https://michalstankiewicz4-cell.github.io/PatientZero/ (GitHub Pages, wdrożenie automatyczne po pushu na `main`).
 - **Dokumentacja:** `README.md`, `docs/INSTRUKCJA.md` (gracze), `docs/ARCHITEKTURA.md` (kod), `CHANGELOG.md` (wersje),
-  `docs/PLAN.md` (plan rozwoju — kolejne zadania bierz stąd, aktualizuj statusy).
+  `docs/PLAN.md` (plan rozwoju — kolejne zadania bierz stąd, aktualizuj statusy), `docs/TODO.md` (na przyszłość: operacje, cały organizm, propozycje — dopisuj tam nowe pomysły).
 
 ## Zasady pracy (od Michała)
 
