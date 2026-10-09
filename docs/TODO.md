@@ -59,8 +59,8 @@ Na ekranie wyboru narządu są nieaktywne kafelki: Głowa, Tułów, Ręka, Skór
 
 ## Pixel art (Tab, od v0.46.0)
 
-Jest: pikselizacja widoku 3D, mniej odcieni, dithering (kroki 1–2).
-- [ ] **[M]** Krok 3: czarne kontury obiektów (krwinki, patogen, kolonie) — decyzja po testach.
+Jest: tryb 1 — pikselizacja widoku 3D, mniej odcieni, dithering (kroki 1–2); tryb 2 (v0.47.0) — styl z dokumentacji: paleta, burgundowe kontury, bez rozmycia i ziarna, kamera na siatce pikseli.
+- [ ] **[T]** Paleta trybu 2 po testach (np. brązowe plamki z ditheringu w wątrobie, kontury dalekich krwinek).
 - [ ] **[M]** Krok 4: panel lekarza i HUD w stylu pixel art (pikselowa czcionka, kanciaste ramki, EKG / sala / USG w niskiej rozdzielczości).
 
 ## Propozycje Claude czekające na decyzję Michała

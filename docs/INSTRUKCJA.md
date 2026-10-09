@@ -82,7 +82,7 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `B` | sygnały chemiczne: fałszywy objaw |
 | kółko myszy | delikatna regulacja przybliżenia (w wąskim zakresie) |
 | `M` | dźwięk włącz/wyłącz |
-| `Tab` | filtr pixel art włącz/wyłącz (duże piksele, mniej odcieni; ustawienie każdego gracza osobno, zapamiętane) |
+| `Tab` | filtr obrazu po kolei: zwykły → pixel art (duże piksele, mniej odcieni) → styl retro (stała paleta, kontury, ostry obraz) → zwykły; ustawienie każdego gracza osobno, zapamiętane |
 
 ### Wybór patogenu
 Przed startem gracz patogenu wybiera jedną z trzech bakterii, jeden z trzech wirusów, grzyba (Candida) albo nowotwór (rak) (na ekranie wyboru narządu, a w grze na 2 osoby także na ekranie oczekiwania). Lekarz nie wie, co wybrałeś, ale może to rozpoznać pod mikroskopem.

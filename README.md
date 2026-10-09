@@ -25,7 +25,7 @@ Aktualna wersja jest na ekranie startowym gry i w [CHANGELOG.md](CHANGELOG.md).
 4. Język zmienia przełącznik z flagami (EN / PL) na ekranie startowym.
 
 Sterowanie w skrócie:
-- **patogen:** `W` `A` `S` `D` ruch, `E` kolonia (u grzyba przy kolonii: magazyn zarodników), `Q` wnikanie w ścianę serca, `F` ukrycie, `R` rozmnożenie, `B` sygnały chemiczne (fałszywy objaw), `7`–`0` i `6` mutacje, `T` toksyny, kółko myszy lekko reguluje przybliżenie, `Tab` filtr pixel art;
+- **patogen:** `W` `A` `S` `D` ruch, `E` kolonia (u grzyba przy kolonii: magazyn zarodników), `Q` wnikanie w ścianę serca, `F` ukrycie, `R` rozmnożenie, `B` sygnały chemiczne (fałszywy objaw), `7`–`0` i `6` mutacje, `T` toksyny, kółko myszy lekko reguluje przybliżenie, `Tab` filtr pixel art (zwykły → pixel art → styl retro → zwykły);
 - **lekarz:** `Z` `X` `C` `G` `V` `N` `U` `I` `O` `P` badania, `1`–`5` i `Y` leczenie, `H` `J` `K` `L` operacja zastawki; chemioterapia, radioterapia i wszystko inne także z rozwijanych menu w panelu. Przycisk „Wiki” otwiera bazę wiedzy.
 Pełne zasady i sterowanie: [docs/INSTRUKCJA.md](docs/INSTRUKCJA.md).
 

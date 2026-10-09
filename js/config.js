@@ -209,7 +209,19 @@ DD.CONFIG = {
 
   // minimapa patogenu: ukryta (kod zostaje; true = pokazuj)
   ui: { minimap: false, revealTime: 4.5,
-    pixelArt: { size: 4, levels: 12, dither: 0.25 } },   // filtr pixel art (Tab): rozmiar piksela w px ekranu, poziomy na kanał koloru, siła ditheringu (0–1)
+    // filtr pixel art (Tab: zwykły → pixel art → styl z dokumentacji → zwykły)
+    pixelArt: { size: 4, levels: 12, dither: 0.25,   // tryb 1: rozmiar piksela w px ekranu, poziomy na kanał koloru, siła ditheringu (0–1)
+      // tryb 2 (wg dokumentacji pixel art od Michała): paleta krwi, złota i cyjanu z dokumentu + barwy narządów i patogenów z gry;
+      // spread = siła ditheringu przed wyborem koloru, edge = względna różnica głębi, od której rysuje się kontur
+      doc: { size: 4, spread: 0.06, edge: 0.05, outline: '#350A16', palette: [
+        '#1A0408', '#350A16', '#68101A', '#8F111B', '#A91D24', '#E83B32', '#FF493C', '#FF7055',   // krew i tkanki (dokument)
+        '#B8862B', '#D98A2B', '#FFC247', '#FFE9A0',   // pożywienie, gronkowiec (złoto z dokumentu)
+        '#79DDFB', '#E6F0F2', '#D7B9B5', '#FFF1EA',   // cyjan, chłodna biel, ciepła szarość z dokumentu; jasne refleksy
+        '#1F4A2E', '#3FAE86', '#8AFFD8', '#7FBF3A', '#D8FF80',   // bakterie (E. coli, paciorkowiec, kolonie)
+        '#2A1240', '#5B46C8', '#9A5FD0', '#D9B8FF',   // wirusy
+        '#7A2A48', '#B24F8C', '#F0A0C0',              // grypa, nowotwór
+        '#E9DFC2', '#2B0E07', '#6B3A16', '#A88F78'    // grzyb, wątroba, włóknik
+      ] } } },
 
   camera: { fov: 40, zoom: 17, zoomMin: 14, zoomMax: 21 },   // zoom kamery patogenu: kółko myszy reguluje go tylko delikatnie
 

@@ -63,8 +63,14 @@
       V.zMul = V.zMul ?? 1;
       V.zMul += ((b.inTissue ? 0.6 : 1) - V.zMul) * (o && o.snap ? 1 : 1 - Math.exp(-dt * 3));
       const z = V.zoom * V.zMul;
-      camera.position.set(V.tx + Math.sin(s.time * 40) * sh, V.ty - z * 0.3 + Math.cos(s.time * 37) * sh, z + tz);
-      camera.lookAt(V.tx, V.ty + 0.4, tz);
+      // styl pixel art z dokumentacji: kamera przesuwa się skokami co jeden duży piksel, żeby obraz nie „pływał”
+      let cx = V.tx, cy = V.ty;
+      if (DD.pixelArt === 2) {
+        const step = 2 * z * Math.tan(C.camera.fov * Math.PI / 360) * C.ui.pixelArt.doc.size / Math.max(1, container.clientHeight);
+        cx = Math.round(cx / step) * step; cy = Math.round(cy / step) * step;
+      }
+      camera.position.set(cx + Math.sin(s.time * 40) * sh, cy - z * 0.3 + Math.cos(s.time * 37) * sh, z + tz);
+      camera.lookAt(cx, cy + 0.4, tz);
 
       const SH = DD.SHARED;
       SH.uTime.value = s.time;
@@ -84,7 +90,7 @@
       post.render(scene, camera, {
         time: s.time, focus: camera.position.distanceTo(new THREE.Vector3(V.tx, V.ty, tz)),
         fever: feverK, hit: b.hitFlash, fade, slow: b.slowT > 0 ? Math.min(1, b.slowT) : 0,
-        pixel: DD.pixelArt ? Math.round(C.ui.pixelArt.size * V.pr) : 0, levels: C.ui.pixelArt.levels, dither: C.ui.pixelArt.dither
+        mode: DD.pixelArt, pixel: DD.pixelArt ? Math.round((DD.pixelArt === 2 ? C.ui.pixelArt.doc.size : C.ui.pixelArt.size) * V.pr) : 0, levels: C.ui.pixelArt.levels, dither: C.ui.pixelArt.dither
       });
     };
     V.resize = resize;

@@ -11,6 +11,11 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.47.0] - 2026-10-09
+
+### Dodane
+- Trzeci tryb obrazu pod `Tab` (zwykły → pixel art → styl retro → zwykły), wg dokumentacji pixel art: stała paleta (krew, złoto, cyjan z dokumentu + barwy narządów i patogenów), burgundowe kontury obiektów, dithering tylko na przejściach, bez ziarna, głębi ostrości i aberracji, słabsza poświata, kamera przesuwa się co jeden duży piksel.
+
 ## [0.46.0] - 2026-10-09
 
 ### Dodane
@@ -414,7 +419,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.46.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.47.0...HEAD
+[0.47.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.46.0...v0.47.0
 [0.46.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.45.0...v0.46.0
 [0.45.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.2...v0.45.0
 [0.44.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.1...v0.44.2

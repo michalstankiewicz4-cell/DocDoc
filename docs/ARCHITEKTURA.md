@@ -44,7 +44,7 @@ js/render/tissue.js     tkanka: gęsta siatka przemieszczana z tekstury SDF
 js/render/cells.js      krwinki (instancing, kształt Evansa–Funga), drobiny osocza i elementy tła (pęcherzyki, płytki, białe krwinki — C.cells.extras)
 js/render/actors.js     patogen (osobna grupa 3D dla każdego rodzaju z C.species) i jego kopie, pożywienie, przeciwciała, kolonie, zastawki, struny, mięśnie brodawkowate
 js/render/biome.js      biom mięśnia: kardiomiocyty (prążkowanie, jądra, wstawki), kolagen
-js/render/post.js       post-processing: bloom, głębia ostrości, aberracja, ACES, winieta, ziarno; filtr pixel art (`DD.pixelArt`, Tab)
+js/render/post.js       post-processing: bloom, głębia ostrości, aberracja, ACES, winieta, ziarno; filtr pixel art (`DD.pixelArt` 0/1/2, Tab)
 js/render/view.js       widok 3D: kamera, światło, łańcuch renderu
 tools/bump.js           zmiana wersji
 tools/history-tags.txt  tagi wersji sprzed automatu wydań
@@ -153,3 +153,8 @@ Kod gry i HTML są po polsku. Przy języku angielskim `i18n.js` tłumaczy w chwi
 Przełącznik `Tab` (`main.js`) wywołuje `DD.setPixelArt`, stan w `localStorage` (`patientzero-pixel`). Ustawienie jest lokalne: nie idzie przez sieć, każdy gracz włącza je u siebie.
 Gdy jest włączony, `post.js` składa obraz do celu `T.full`, a ostatnie przejście (`PIXEL`) dzieli ekran na bloki `C.ui.pixelArt.size` px (× pixel ratio),
 uśrednia 4 próbki w bloku, ogranicza kolory do `levels` poziomów na kanał i dodaje dithering Bayera 4×4 o sile `dither`. Działa w widoku patogenu i w zdjęciu mikroskopu (`doctor-cam.js`); panel lekarza (HTML) bez zmian.
+
+Od v0.47.0 `DD.pixelArt` ma trzy wartości (Tab przełącza po kolei, `localStorage` zapisuje liczbę): 0 zwykły, 1 jak wyżej, 2 styl z dokumentacji pixel art Michała.
+Tryb 2: kompozycja dostaje `uClean = 1` (bez aberracji, głębi ostrości i ziarna, bloom 0,15 zamiast 0,4), potem przejście `PALETTE` wybiera dla bloku najbliższy kolor z `C.ui.pixelArt.doc.palette`
+(dithering Bayera o sile `spread` przed wyborem, więc pojawia się tylko na przejściach) i rysuje kontur `outline`, gdy sąsiedni blok w buforze głębi jest dalej o więcej niż `edge` (względnie).
+`view.js` w trybie 2 przyciąga kamerę do siatki dużych pikseli (obraz nie „pływa” przy ruchu).

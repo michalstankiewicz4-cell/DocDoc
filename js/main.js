@@ -51,7 +51,7 @@
       if (e.code === 'KeyM' && !e.repeat) { DD.Audio.toggle(); soundLabel(); }
       else if (e.code === 'Tab' && !/^(INPUT|SELECT)$/.test(e.target && e.target.tagName)) {
         e.preventDefault();   // Tab przełącza filtr pixel art zamiast przenosić fokus
-        if (!e.repeat) DD.setPixelArt(!DD.pixelArt);
+        if (!e.repeat) DD.setPixelArt(DD.pixelArt + 1);   // zwykły → pixel art → styl z dokumentacji → zwykły
       }
       else if (DD.Audio.on) DD.Audio.init();
     });
