@@ -15,7 +15,7 @@
 (function () {
   const A = { ctx: null, on: true, master: null, lastPhase: 0 };
   try { A.on = localStorage.getItem('patientzero-sound') !== 'off'; } catch (e) { /* brak dostępu */ }
-  // głośność beep pulsoksymetru: 0 (wyciszony) … 5, domyślnie 3 (dawna głośność)
+  // głośność monitora (beep pulsoksymetru, alarmy, pisk linii płaskiej): 0 (wyciszony) … 5, domyślnie 3 (dawna głośność)
   A.BEEP_MAX = 5; A.beepLevel = 3;
   try { const v = parseInt(localStorage.getItem('patientzero-beep'), 10); if (v >= 0 && v <= 5) A.beepLevel = v; } catch (e) { /* brak dostępu */ }
   A.setBeep = function (lvl) {
@@ -112,16 +112,17 @@
     o.connect(g); g.connect(A.room);
     o.start(start); o.stop(start + dur + 0.02);
   }
-  function pulseBeep() { if (A.beepLevel > 0) tone(880, A.ctx.currentTime + 0.01, 0.07, 0.16 * Math.pow(A.beepLevel / 3, 1.6)); }
+  const monVol = () => Math.pow(A.beepLevel / 3, 1.6);   // mnożnik głośności monitora (0 = wyciszony)
+  function pulseBeep() { if (A.beepLevel > 0) tone(880, A.ctx.currentTime + 0.01, 0.07, 0.16 * monVol()); }
   // alarm średniego priorytetu: trzy tony (jak w monitorach zgodnych z IEC 60601-1-8)
   function feverAlarm() {
     const t = A.ctx.currentTime + 0.02;
-    [523, 659, 784].forEach((f, i) => tone(f, t + i * 0.2, 0.15, 0.11, 'triangle'));
+    if (A.beepLevel > 0) [523, 659, 784].forEach((f, i) => tone(f, t + i * 0.2, 0.15, 0.11 * monVol(), 'triangle'));
   }
   // alarm wysokiego priorytetu: szybkie pięć tonów (stan krytyczny pacjenta)
   function criticalAlarm() {
     const t = A.ctx.currentTime + 0.02;
-    [988, 784, 988, 784, 988].forEach((f, i) => tone(f, t + i * 0.13, 0.1, 0.13, 'square'));
+    if (A.beepLevel > 0) [988, 784, 988, 784, 988].forEach((f, i) => tone(f, t + i * 0.13, 0.1, 0.13 * monVol(), 'square'));
   }
   function resultChime() {
     const t = A.ctx.currentTime + 0.02;
@@ -172,7 +173,7 @@
     }
     if (A.flat) {
       const k = flatOn ? s.ending.t / DD.CONFIG.ending.duration : 0;
-      A.flat.g.gain.setTargetAtTime(0.13 * k * k, A.ctx.currentTime, 0.12);
+      A.flat.g.gain.setTargetAtTime(Math.max(0.0001, 0.13 * k * k * monVol()), A.ctx.currentTime, 0.12);
       if (!flatOn || k <= 0.001) { const f = A.flat; A.flat = null; f.g.gain.setTargetAtTime(0.0001, A.ctx.currentTime, 0.1); f.o.stop(A.ctx.currentTime + 0.6); }
     }
     if (hearRoom && s.running && !s.ending && !s.over) {

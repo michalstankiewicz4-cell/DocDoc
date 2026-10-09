@@ -151,7 +151,7 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
 ## Lekarz
 
 ### Ekran lekarza
-- **Głośność beep:** na pasku monitora przyciski `−` i `+` ściszają i pogłaśniają beep pulsoksymetru (6 poziomów, najniższy wycisza; alarmy bez zmian). Ustawienie zapamiętuje przeglądarka.
+- **Głośność monitora:** na pasku monitora przyciski `−` i `+` ściszają i pogłaśniają dźwięki monitora: beep pulsoksymetru, alarmy i pisk linii płaskiej (6 poziomów, najniższy wycisza). Ustawienie zapamiętuje przeglądarka.
 - **Wiki** (przycisk w nagłówku karty pacjenta): baza wiedzy w grze — patogeny (zdjęcia, obraz w mikroskopie, leczenie, typowe wyniki), badania (czas, odnowienie, czułość, co pokazują i co je zakłóca), leki i zabiegi, objawy z przyczynami, pacjenci i inne fakty. Gra w tym czasie trwa; `Esc` zamyka.
 Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 - **Monitor:** EKG i odczyty w kolorach kanałów (tętno zielone, temperatura żółta, stan pacjenta błękitny, zakażenie różowe). Przy alarmie dioda i ramka ekranu świecą na czerwono.

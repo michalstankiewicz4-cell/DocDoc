@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.40.1] - 2026-10-09
+### Zmienione
+- Przyciski `−` / `+` na monitorze ściszają i pogłaśniają też alarmy i pisk linii płaskiej, nie tylko beep.
+
 ## [0.40.0] - 2026-10-09
 ### Dodane
 - **Głośność beep** na monitorze lekarza: przyciski `−` / `+` i wskaźnik poziomu (0–5, 0 wycisza), zapamiętane w przeglądarce. Alarmy grają jak wcześniej.
@@ -362,7 +366,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.40.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.40.1...HEAD
+[0.40.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.40.0...v0.40.1
 [0.40.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.39.0...v0.40.0
 [0.39.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.37.0...v0.38.0
