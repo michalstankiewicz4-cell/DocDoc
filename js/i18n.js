@@ -37,7 +37,12 @@
       b.addEventListener('click', () => DD.setLang(b.dataset.lang));
     });
   });
-  if (lang === 'pl') return;
+  if (lang === 'pl') {
+    // strona jest opisana po angielsku (SEO); po polsku zmieniamy język dokumentu i tytuł karty
+    document.documentElement.lang = 'pl';
+    document.title = 'Patient Zero — gra przeglądarkowa: patogen kontra lekarz';
+    return;
+  }
 
   const LETTER = /[A-Za-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]/;
   const POLISH = /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/;
@@ -148,8 +153,6 @@
   }
 
   function start() {
-    document.documentElement.lang = 'en';
-    document.title = t(document.title);
     walk(document.body);
     new MutationObserver((list) => {
       for (const m of list) {

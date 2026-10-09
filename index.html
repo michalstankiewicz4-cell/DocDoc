@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Patient Zero — gra przeglądarkowa: patogen kontra lekarz</title>
-<meta name="description" content="Patient Zero to darmowa gra przeglądarkowa na 2 osoby: bakteria albo wirus płynie z krwią przez serce, wątrobę i nerkę, a lekarz na OIOM-ie stawia diagnozę badaniami i leczy. Biologia i medycyna w grze, multiplayer przez WebRTC.">
-<meta name="keywords" content="Patient Zero, gra, game, biology, biologia, medicine, medycyna, doctor, lekarz, hospital, hospitality, szpital, pathogen, patogen, bakteria, wirus, virus, bacteria, gra przeglądarkowa, browser game, multiplayer, WebRTC, Three.js, vibecoding">
+<title>Patient Zero — browser game: pathogen vs doctor</title>
+<meta name="description" content="Patient Zero is a free 2-player browser game: a bacterium, virus, fungus or cancer cell travels with the blood through the heart, liver and kidney, while an ICU doctor runs tests, makes a diagnosis and treats the patient. Biology and medicine as a game, multiplayer over WebRTC, in English and Polish.">
+<meta name="keywords" content="Patient Zero, game, browser game, biology, medicine, doctor, hospital, hospitality, ICU, pathogen, bacteria, virus, fungus, cancer, diagnosis, educational game, multiplayer, 2 players, WebRTC, Three.js, vibecoding">
 <meta name="author" content="Michał Stankiewicz">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#2a0709">
@@ -13,16 +13,17 @@
 <link rel="icon" type="image/svg+xml" href="img/icon.svg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Patient Zero">
-<meta property="og:title" content="Patient Zero — patogen kontra lekarz">
-<meta property="og:description" content="Asymetryczna gra na 2 osoby w przeglądarce: patogen w układzie krążenia kontra lekarz przy aparaturze OIOM-u.">
+<meta property="og:title" content="Patient Zero — pathogen vs doctor">
+<meta property="og:description" content="An asymmetric 2-player browser game: a pathogen in the bloodstream versus a doctor at the ICU monitors.">
 <meta property="og:url" content="https://michalstankiewicz4-cell.github.io/PatientZero/">
 <meta property="og:image" content="https://michalstankiewicz4-cell.github.io/PatientZero/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:locale" content="pl_PL">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="pl_PL">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Patient Zero — patogen kontra lekarz">
-<meta name="twitter:description" content="Gra przeglądarkowa na 2 osoby: biologia, medycyna i WebRTC.">
+<meta name="twitter:title" content="Patient Zero — pathogen vs doctor">
+<meta name="twitter:description" content="A 2-player browser game about biology and medicine, played over WebRTC.">
 <meta name="twitter:image" content="https://michalstankiewicz4-cell.github.io/PatientZero/img/og.jpg">
 <script type="application/ld+json">
 {
@@ -31,12 +32,12 @@
   "name": "Patient Zero",
   "url": "https://michalstankiewicz4-cell.github.io/PatientZero/",
   "image": "https://michalstankiewicz4-cell.github.io/PatientZero/img/og.jpg",
-  "description": "Asymetryczna gra przeglądarkowa na 2 osoby: patogen (bakteria albo wirus) w układzie krążenia pacjenta kontra lekarz, który diagnozuje i leczy.",
+  "description": "An asymmetric 2-player browser game: a pathogen (bacterium, virus, fungus or cancer cell) in the patient's bloodstream versus a doctor who diagnoses and treats.",
   "genre": ["Strategy", "Simulation", "Educational"],
   "gamePlatform": "Web browser",
   "applicationCategory": "Game",
   "playMode": ["MultiPlayer", "SinglePlayer"],
-  "inLanguage": "pl",
+  "inLanguage": ["en", "pl"],
   "isAccessibleForFree": true,
   "keywords": "biology, doctor, game, hospitality, medicine, vibecoding, webrtc",
   "author": { "@type": "Person", "name": "Michał Stankiewicz" },
@@ -46,7 +47,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.47.0">
+<link rel="stylesheet" href="css/style.css?v=0.47.1">
 </head>
 <body>
 <!-- ekran ładowania: widoczny od razu, znika po zbudowaniu serca i sceny (main.js) -->
@@ -574,33 +575,33 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.47.0"></script>
-<script src="js/lang/en.js?v=0.47.0"></script>
-<script src="js/i18n.js?v=0.47.0"></script>
-<script src="js/config.js?v=0.47.0"></script>
-<script src="js/heart-shape.js?v=0.47.0"></script>
-<script src="js/flow.js?v=0.47.0"></script>
-<script src="js/tissue-cells.js?v=0.47.0"></script>
-<script src="js/state.js?v=0.47.0"></script>
-<script src="js/input.js?v=0.47.0"></script>
-<script src="js/render/glsl.js?v=0.47.0"></script>
-<script src="js/render/tissue.js?v=0.47.0"></script>
-<script src="js/render/cells.js?v=0.47.0"></script>
-<script src="js/render/actors.js?v=0.47.0"></script>
-<script src="js/render/post.js?v=0.47.0"></script>
-<script src="js/render/biome.js?v=0.47.0"></script>
-<script src="js/render/view.js?v=0.47.0"></script>
-<script src="js/minimap.js?v=0.47.0"></script>
-<script src="js/audio.js?v=0.47.0"></script>
-<script src="js/doctor-ui.js?v=0.47.0"></script>
-<script src="js/patient-room.js?v=0.47.0"></script>
-<script src="js/doctor-devices.js?v=0.47.0"></script>
-<script src="js/doctor-cam.js?v=0.47.0"></script>
-<script src="js/wiki.js?v=0.47.0"></script>
-<script src="js/net.js?v=0.47.0"></script>
-<script src="js/lobby.js?v=0.47.0"></script>
-<script src="js/match.js?v=0.47.0"></script>
-<script src="js/net-status.js?v=0.47.0"></script>
-<script src="js/main.js?v=0.47.0"></script>
+<script src="js/version.js?v=0.47.1"></script>
+<script src="js/lang/en.js?v=0.47.1"></script>
+<script src="js/i18n.js?v=0.47.1"></script>
+<script src="js/config.js?v=0.47.1"></script>
+<script src="js/heart-shape.js?v=0.47.1"></script>
+<script src="js/flow.js?v=0.47.1"></script>
+<script src="js/tissue-cells.js?v=0.47.1"></script>
+<script src="js/state.js?v=0.47.1"></script>
+<script src="js/input.js?v=0.47.1"></script>
+<script src="js/render/glsl.js?v=0.47.1"></script>
+<script src="js/render/tissue.js?v=0.47.1"></script>
+<script src="js/render/cells.js?v=0.47.1"></script>
+<script src="js/render/actors.js?v=0.47.1"></script>
+<script src="js/render/post.js?v=0.47.1"></script>
+<script src="js/render/biome.js?v=0.47.1"></script>
+<script src="js/render/view.js?v=0.47.1"></script>
+<script src="js/minimap.js?v=0.47.1"></script>
+<script src="js/audio.js?v=0.47.1"></script>
+<script src="js/doctor-ui.js?v=0.47.1"></script>
+<script src="js/patient-room.js?v=0.47.1"></script>
+<script src="js/doctor-devices.js?v=0.47.1"></script>
+<script src="js/doctor-cam.js?v=0.47.1"></script>
+<script src="js/wiki.js?v=0.47.1"></script>
+<script src="js/net.js?v=0.47.1"></script>
+<script src="js/lobby.js?v=0.47.1"></script>
+<script src="js/match.js?v=0.47.1"></script>
+<script src="js/net-status.js?v=0.47.1"></script>
+<script src="js/main.js?v=0.47.1"></script>
 </body>
 </html>
