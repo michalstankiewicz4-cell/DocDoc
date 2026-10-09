@@ -44,17 +44,21 @@ Aktualna wersja: zobacz `js/version.js` i `CHANGELOG.md`.
 Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
 - Serce w przekroju (SDF), prąd krwi zależny od cyklu serca, zastawki, struny ścięgniste, krążenie płucne i duże.
 - Jama brzuszna: aorta zstępująca i brzuszna, żyła główna dolna, wątroba (zraziki, żyła wrotna, żyły wątrobowe), nerka (kora, piramidy, kłębuszki).
-- Patogen: 3 bakterie i 3 wirusy (`config.species`, wybór ukryty przed lekarzem, rozpoznawany mikroskopem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
-  wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0), toksyny (T),
-  pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
-- Lekarz: sala z pacjentem i objawami z położenia kolonii, EKG z zaburzeniami rytmu, stan pacjenta, 6 badań (CRP, posiew,
-  echo serca, USG jamy brzusznej, antybiogram, mikroskop), 5 leków (przeciwciała, gorączka, β-laktam, makrolid, przeciwwirusowy), oporność nabyta i naturalna,
-  operacja zastawki, mikroskop z szukaniem patogenu na preparacie i zdjęciem z chwili pobrania, alarmy monitora.
+- Patogen: 3 bakterie, 3 wirusy, grzyb Candida (grzybnia, magazyny zarodników) i nowotwór (guzy, angiogeneza, przerzuty, niewydolność narządów)
+  (`config.species`, wybór ukryty przed lekarzem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
+  wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0 i 6, zależne od rodzaju), toksyny (T),
+  sygnały chemiczne — fałszywe objawy (B), pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
+- Losowanie pacjenta (dziecko, senior, sportowiec, diabetyk, po przeszczepie) zmieniające szanse obu stron.
+- Lekarz: sala z pacjentem i objawami z położenia kolonii (czasem fałszywymi), EKG z zaburzeniami rytmu, stan pacjenta, 10 badań z czasem i czułością (CRP, posiew,
+  echo serca, USG jamy brzusznej, antybiogram, mikroskop, morfologia, PCR, badanie moczu, tomografia), leczenie (przeciwciała, gorączka, β-laktam, makrolid,
+  przeciwwirusowy, przeciwgrzybiczy, chemioterapia), zabiegi (operacja zastawki, radioterapia narządu), oporność nabyta i naturalna,
+  mikroskop z szukaniem patogenu na preparacie i zdjęciem z chwili pobrania, alarmy monitora z regulacją głośności, wiki lekarza (baza wiedzy).
 - Dźwięk: patogen „pod wodą” (serce, szum krwi, kaszel), lekarz w sali (beep pulsoksymetru, alarmy, dzwonek wyniku).
-- Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, statystyki końcowe.
-- Wersjonowanie, CHANGELOG, automatyczne wydania, dokumentacja.
+- Tryb deweloperski i gra na 2 osoby (WebRTC + kody), statystyki połączenia, mecz z zamianą ról, zakończenie z filmem, statystyki końcowe, powrót do menu.
+- Język angielski (domyślny) i polski, SEO, loader.
+- Wersjonowanie, CHANGELOG, automatyczne wydania, dokumentacja (INSTRUKCJA, ARCHITEKTURA, BALANS, PLAN).
 
-Warunki wygranej: patogen — stan pacjenta 0% (sepsa), lekarz — brak patogenu i kolonii.
+Warunki wygranej: patogen — stan pacjenta 0% (sepsa, przy nowotworze wyniszczenie), lekarz — brak patogenu i kolonii.
 
 ## Lista zadań (zlecone przez Michała, kolejność od najłatwiejszego)
 
@@ -97,7 +101,8 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Wiki lekarza (v0.39.0)
 - [x] Głośność monitora, powrót do menu (v0.40.0–0.40.1)
 - [x] Nowotwór: guzy, etapy z wielkości, angiogeneza, przerzuty, niewydolność narządów; chemio- i radioterapia (v0.41.0)
-- [ ] Dalej wg `docs/PLAN.md`: nowe badania i leczenie, grzyb, rak, obszary poza krwiobiegiem
+- [x] Uzupełnienie całej dokumentacji (v0.41.1)
+- [ ] Dalej wg `docs/PLAN.md`: RTG, rezonans, biopsja, markery nowotworowe; przeszczep narządu, amputacja; obszary poza krwiobiegiem; kolejni pacjenci
 - [x] Poprawki: powrót z mięśnia, zamiana ról; pasek przewijania; ekran startowy, loader, nazwa; SEO (v0.30.3–v0.31.1)
 - [x] Zakończenie rundy, filmy, zwijane statystyki (v0.32.0)
 

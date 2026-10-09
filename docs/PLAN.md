@@ -58,8 +58,24 @@ Nie wszystko musi dziać się w układzie krwionośnym — np. astma i palacz w 
 ## Etap 6. Nowe badania i leczenie
 
 Badania: ✅ morfologia, PCR, badanie moczu, tomografia (v0.37.0); ⬜ RTG, rezonans, biopsja, markery nowotworowe — razem z rakiem / płucami (posiew już jest).
-Leczenie: chemioterapia, radioterapia, amputacja, przeszczep narządu.
+Leczenie: ✅ lek przeciwgrzybiczy (v0.38.0), chemioterapia, radioterapia (v0.41.0); ⬜ amputacja, przeszczep narządu.
 Część z nich ma sens dopiero przy nowych patogenach (etap 7–8).
+
+## Dodatki poza planem (prośby Michała w trakcie)
+
+| | Zadanie | Wersja |
+| --- | --- | --- |
+| ✅ | Angielski jako domyślny język, flagi przy przełączniku | v0.36.1 |
+| ✅ | Film na koniec na środku (~30% ekranu) | v0.37.0 |
+| ✅ | Wiki lekarza (baza wiedzy ze zdjęciami) | v0.39.0 |
+| ✅ | Głośność monitora (beep, alarmy, linia płaska), „Wróć do menu” | v0.40.0–0.40.1 |
+| ✅ | Uzupełnienie całej dokumentacji | v0.41.1 |
+
+## Kolejne kroki (od najszybszego)
+
+1. ⬜ Nowe badania przy nowotworze: markery nowotworowe, biopsja, RTG, rezonans.
+2. ⬜ Przeszczep narządu (wątroba, nerka) i amputacja.
+3. ⬜ Obszary poza krwiobiegiem (płuca) i kolejni pacjenci: alergie, palacz, alkoholizm, astma, otyłość, ciąża.
 
 ## Etap 7. Nowy patogen: grzyb ✅ v0.38.0
 

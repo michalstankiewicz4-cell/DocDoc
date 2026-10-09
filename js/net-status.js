@@ -19,7 +19,7 @@
     badge.addEventListener('click', () => toggle());
     window.addEventListener('keydown', (e) => {
       if (e.target && e.target.tagName === 'TEXTAREA') return;
-      if (e.code === 'KeyI' && !e.repeat && N.mode !== 'local') toggle();
+      if (e.code === 'KeyI' && !e.repeat && N.mode !== 'local' && N.role !== 'doc') toggle();   // u lekarza I to PCR
     });
 
     function update(dt) {

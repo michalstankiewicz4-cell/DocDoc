@@ -15,14 +15,14 @@ Dokument dla programistów. Opisuje budowę kodu i zasady, których trzymamy si�
 ```
 index.html              układ ekranu, nakładki (ładowanie, start, lobby, koniec gry), metadane SEO, kolejność skryptów
 media/                  filmy na koniec rundy (doctor, priest; MP4 i WebM)
-img/                    og.jpg (podgląd linku), icon.svg (ikona strony)
+img/                    og.jpg (podgląd linku), icon.svg (ikona strony), wiki/ (zdjęcia z gry do wiki lekarza)
 robots.txt, sitemap.xml dla wyszukiwarek
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
 js/version.js           DD.VERSION
 js/wiki.js              wiki lekarza (baza wiedzy): treść dwujęzyczna T(pl, en), liczby z DD.CONFIG, zdjęcia z img/wiki/
 js/lang/en.js           słownik angielski: tekst polski → angielski ({0} wstawka, {#0} wstawka liczbowa)
 js/i18n.js              język interfejsu: DD.t, tłumaczenie dokumentu (MutationObserver) i napisów na canvasie przy języku EN
-js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species), pacjenci (C.patients, opis w docs/BALANS.md), leki, badania, pożywienie, kopie, kamera, UI
+js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species, C.virus, C.fungus, C.cancer), pacjenci (C.patients), mutacje, sygnały, leki i zabiegi, badania (czułość), pożywienie, kopie, kamera, UI; opis liczb w docs/BALANS.md
 js/heart-shape.js       geometria serca, wątroby i nerki (SDF, maski narządów, nazwy miejsc, wyjścia z mapy): SDF z elips i naczyń + dokładna transformata odległości
 js/flow.js              pole przepływu (3 pola bazowe mieszane wg fazy cyklu) + curl noise
 js/tissue-cells.js      kardiomiocyty w ścianie serca (proceduralne, deterministyczne): kolizje i render
@@ -33,8 +33,8 @@ js/match.js             mecz z zamianą ról: wyniki rund, zamiana ról, ekran k
 js/net-status.js        wskaźnik połączenia, ostrzeżenie, panel szczegółów
 js/lobby.js             ekran tworzenia i dołączania do gry
 js/minimap.js           minimapa patogenu (dwa widoki: serce, jama brzuszna; domyślnie ukryta, C.ui.minimap)
-js/audio.js             dźwięk (Web Audio, synteza bez plików)
-js/doctor-ui.js         panel lekarza (rozwijane menu zleceń, lampki, drukarka, mikroskop, USG) i HUD patogenu
+js/audio.js             dźwięk (Web Audio, synteza bez plików); głośność monitora lekarza (A.beepLevel)
+js/doctor-ui.js         panel lekarza (rozwijane menu zleceń, lampki, drukarka, mikroskop, echo / USG / tomografia, radioterapia) i HUD patogenu; udostępnia DD.DOC_ACTIONS, DD.DOC_TESTS, DD.docIcon, DD.drawOrganism dla wiki
 js/doctor-devices.js    pompa infuzyjna (leki we krwi) i sylwetka z obszarami objawów (canvas 2D)
 js/patient-room.js      sala z pacjentem (canvas 2D), DD.symptomList (objawy z położenia kolonii), laboratorium, alarm monitora
 js/doctor-cam.js        zdjęcie patogenu w chwili pobrania krwi do mikroskopu (niewidoczny widok 3D)
@@ -76,21 +76,32 @@ Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, w
 
 ## Patogeny
 
-- **Rodzaje** są w `C.species`: `kind` (`bacteria` / `virus`), nazwa, wrażliwość na leki (`natural` — klasa antybiotyku, na którą bakteria jest oporna; `antiviral` — skuteczność leku przeciwwirusowego), mnożniki `speed`, `growth`, `biofilm` oraz opisy do mikroskopu (`micro`, `treat`).
-- `state.kind` to `bacteria` / `virus`, `state.species` to rodzaj. `Game.speciesOf()` mapuje dawne wartości `bacteria` / `virus` na rodzaj domyślny (`C.defaultSpecies`).
-- **Wygląd 3D:** `actors.js` ma osobną grupę dla każdego rodzaju (`LOOKS`); kopie patogenu to klony tej grupy. Każdy stan, który rysuje patogen (także duch w `doctor-cam.js`), musi mieć `species`.
+- **Rodzaje** są w `C.species`: `kind` (`bacteria` / `virus` / `fungus` / `cancer`), nazwa, wrażliwość na leki (`natural` — klasa antybiotyku, na którą bakteria jest oporna; `antiviral` — skuteczność leku przeciwwirusowego), mnożniki `speed`, `growth`, `biofilm` oraz opisy do mikroskopu (`micro`, `treat`).
+- `state.kind` to `bacteria` / `virus` / `fungus` / `cancer`, `state.species` to rodzaj. `Game.speciesOf()` mapuje dawne wartości `bacteria` / `virus` na rodzaj domyślny (`C.defaultSpecies`).
+- **Wygląd 3D:** `actors.js` ma osobną grupę dla każdego rodzaju (`LOOKS`); kopie patogenu to klony tej grupy. Każdy stan, który rysuje patogen (także duch w `doctor-cam.js`), musi mieć `species`. Wygląd kolonii zależy od `kind` (`COL_LOOK`).
+- **Mutacje:** klawisze 7, 8, 9, 0, 6 wysyłają `bact.mutate` z nazwą slotu (`speed`, `fever`, `capsule`, `toxins`, `mask`); `Game.mutKey(s, slot)` zamienia ją na mutację danego rodzaju (grzyb: `pierce`, `drugres`, `spores`; rak: `divide`, `apoptosis`, `angio`, `meta`). Nazwy w panelu: `C.fungus.mutNames`, `C.cancer.mutNames`.
+- **Leki:** skuteczność dawki = oporność nabyta (`useDrug`) × `susceptibility(s, lek)` (rodzaj patogenu i mutacje) × pacjent (`PT(s).drug`). Działające leki są w `s.drugs`; radioterapia osobno w `s.radio = { region, t, eff }`.
+- **Ukrywanie informacji:** czułość badań `D.tests.*.sens` (obniżana przez maskowanie), fałszywy objaw `s.fakeSym` (sygnały chemiczne), wzmocnienie objawów `Game.symptomGain(s)` (pacjent × maskowanie). Wpisy dziennika z `who: 'bact'` nie trafiają do lekarza.
+- **Pacjent:** `s.ptype` losuje host w `game.start`; mnożniki czyta `Game.patientOf(s)` (`PT`).
 
 ## Grzyb
 
 Kolonia grzyba ma pola `hy` (długość strzępki), `hs` (kierunek wzdłuż ściany ±1), `hd` (strzępka skończona) i `store` (magazyn zarodników). `Heart.wallWalk(x, y, sign, len, seed)` wyznacza drogę strzępki po ścianie (kroki 0,35 j. po stycznej do SDF, z meandrami zależnymi od `seed`), z niej `state.js` bierze koniec strzępki (nowa kolonia), a `render/actors.js` rysuje odcinki strzępki (instanced cylinders) i zarodniki magazynów. Mutacje grzyba mapuje `Game.mutKey`.
 
+## Nowotwór
+
+Kolonie raka to guzy: rosną do `C.cancer.smallCap`, a z mutacją `angio` do `maxSize`; etap (mały / średni / duży) wynika tylko z `size` (`C.cancer.stages`). `cancerColony()` wypuszcza przerzuty (kopie z `meta: 1`), które osiadają przy ścianie tak jak zarodniki grzyba. `Game.organFailure(s)` zwraca narządy z masą guzów ≥ `organFail` — z niej korzysta spadek stanu pacjenta i lista objawów. `actors.js` rysuje guzy większą liczbą guzków i naczynia guza (`vesMesh`).
+
 ## Panel lekarza
 
 - **Układ** (`index.html`, `.ward`): siatka 6 kolumn z urządzeniami `.dev` (ciemne `.dev-dark`, jasne `.dev-light`); poniżej 640 px szerokości panelu wszystko w jednej kolumnie (container query).
-- **Konsola zleceń:** przyciski badań, leków i operacji (`doctor-ui.js`) siedzą w rozwijanych listach `.menu-list`; wybór pozycji wysyła komendę i zamyka menu. Lampki (`#lamps`) i podsumowania na przyciskach menu odświeża `update()`.
+- **Konsola zleceń:** przyciski badań, leków i zabiegów (operacja zastawki, radioterapia) (`doctor-ui.js`) siedzą w rozwijanych listach `.menu-list`; wybór pozycji wysyła komendę i zamyka menu. Lampki (`#lamps`) i podsumowania na przyciskach menu odświeża `update()`.
 - **Objawy:** `DD.symptomList(s)` zwraca `[nazwa, poziom, obszar]`; korzysta z niej lista objawów w sali i sylwetka (`doctor-devices.js`).
 - **Wyniki:** `renderResults()` działa tylko przy nowym wyniku (`resultSeq`). Nowy wydruk trafia na górę `.slips` z animacją `printing`; mikroskop i USG mają własne rysowanie (`showMicro`, `makeUS`).
 - **Mikroskop:** preparat 3 × 3 pola rysowany raz na wynik (`buildSlide`), widok przesuwany myszą albo strzałkami (`microPan`), znalezienie i pusty preparat sprawdza `microCheck`; zdjęcie robi `doctor-cam.js`, a pokazuje je mikroskop dopiero po znalezieniu (`dataset.ready` = czas pobrania).
+
+- **Wiki** (`wiki.js`): okno nad panelem lekarza; sekcje generowane z `DD.CONFIG`, teksty dwujęzyczne `T(pl, en)`, zdjęcia w `img/wiki/` (robione skryptem Playwright z gry). Nowa mechanika = nowy wpis w wiki.
+- **Głośność monitora:** przyciski na pasku monitora zmieniają `DD.Audio.beepLevel` (0–5); dotyczy beep, alarmów i linii płaskiej.
 
 ## Zakończenie rundy
 
@@ -104,6 +115,8 @@ Warunek wygranej ustawia `s.ending = { win, t }` (a nie od razu `s.over`). Przez
 - **Gość** wygładza pozycje między paczkami i odrzuca paczki starsze od ostatniej.
 
 Pożywienie (`fo`) i kopie (`cp`) idą płaskimi tablicami `[x, y, rodzaj, id]` i `[x, y, kierunek, id, narodziny]`; gość wygładza element tylko wtedy, gdy pod tym samym indeksem jest ten sam `id`.
+
+Kolonia w paczce ma 13 pól (z polami grzyba: `hy`, `hs`, `hd`, `store`); pacjent (`pt`), sygnały i radioterapia (`mu`) też są w paczce.
 
 Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `guestFrame()`.
 
@@ -130,4 +143,5 @@ Kod gry i HTML są po polsku. Przy języku angielskim `i18n.js` tłumaczy w chwi
 3. Jeśli gość ma to widzieć, uzupełnij `encode()` i `guestFrame()` w `js/net.js`. Jeśli to komenda, dodaj ją do uprawnień ról.
 4. UI dopisz w `js/doctor-ui.js` albo osobnym pliku i dołącz skrypt w `index.html` przed `main.js`.
 5. Każdy nowy tekst widoczny dla gracza dopisz do `js/lang/en.js` (szablon z `{0}` / `{#0}`, gdy tekst ma wstawki). Sprawdzenie: język EN, `DD.i18nDebug = true` przed startem, potem `DD.i18nMiss` w konsoli.
-6. Zaktualizuj `docs/INSTRUKCJA.md`, dodaj wpis w `CHANGELOG.md` i podbij wersję (`node tools/bump.js`).
+6. Dopisz wpis do wiki lekarza (`js/wiki.js`), jeśli to wiedza przydatna lekarzowi.
+7. Zaktualizuj `docs/INSTRUKCJA.md`, `docs/BALANS.md` (liczby), `docs/PLAN.md` (status), dodaj wpis w `CHANGELOG.md` i podbij wersję (`node tools/bump.js`).

@@ -33,9 +33,25 @@ Szacunkowa trudność dla lekarza (do sprawdzenia w testach): sportowiec < dziec
 Do obserwacji w testach: czy „po przeszczepie” nie jest zbyt trudny dla lekarza (słabe przeciwciała i tanie kolonie naraz)
 i czy dziecko z wczesnymi objawami nie kończy się zbyt szybko.
 
+## Leki i zabiegi — przegląd (`config.doctor`, `config.patient.sideEffect`)
+
+| Leczenie | Działa na | Czas | Odnowienie | Stan pacjenta | Główne działanie |
+| --- | --- | --- | --- | --- | --- |
+| Przeciwciała | wszystkie (nowotwór ×0,5) | do 45 s | 18 s | −2 | 56 przeciwciał, 12 obrażeń przy trafieniu |
+| Gorączka | wszystkie | 20 s | 30 s | −1 + spadek w czasie gorączki | 1,6 obrażeń/s, wzrost kolonii ×0,5 |
+| β-laktam | bakterie | 8 s | 22 s | −4 | 2,6 obrażeń/s, kurczy kolonie |
+| Makrolid | bakterie | 10 s | 22 s | −4 | spowolnienie ×0,45, wstrzymuje wzrost |
+| Przeciwwirusowy | wirusy (grypa 100%, adeno 60%, Coxsackie 20%) | 10 s | 22 s | −4 | 1,8 obrażeń/s, spowolnienie ×0,6 |
+| Przeciwgrzybiczy | grzyb | 10 s | 22 s | −4 | 2,0 obrażeń/s, kurczy grzybnię |
+| Chemioterapia | nowotwór | 12 s | 40 s | −9 | 1,6 obrażeń/s, kurczy wszystkie guzy |
+| Radioterapia | nowotwór w jednym narządzie | 8 s | 35 s | −5 | kurczy guzy w narządzie, 4 obrażeń/s |
+| Operacja zastawki | ogniska przy zastawce | 10 s | 60 s | −15 | usuwa ogniska w promieniu 5 j., patogen −40 |
+
+Oporność nabyta: każda kolejna dawka tego samego leczenia działa o 20 punktów procentowych słabiej, najwyżej do 20% skuteczności (`config.resistance`).
+
 ## Inne liczby
 
-Pozostałe wartości (kolonie, leki, badania, pożywienie, rodzaje patogenów) opisuje sekcja „Decyzje projektowe” w `CLAUDE.md`.
+Pozostałe wartości (kolonie, badania podstawowe, pożywienie, rodzaje patogenów) opisuje sekcja „Decyzje projektowe” w `CLAUDE.md`.
 
 ## Ukrywanie informacji (od v0.36.0)
 

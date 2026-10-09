@@ -7,12 +7,12 @@ Zmiany między wersjami: [CHANGELOG.md](../CHANGELOG.md).
 
 Gra toczy się w układzie krążenia pacjenta pokazanym w przekroju: w sercu, a pod przeponą w wątrobie i nerce.
 
-- **Patogen** (jedna z trzech bakterii albo jeden z trzech wirusów — wybiera gracz patogenu, lekarz tego nie wie) płynie z prądem krwi, przeciska się przez zastawki, zakłada kolonie na ścianach, mutuje i rozmnaża się.
-- **Lekarz** nie widzi patogenu wprost. Obserwuje monitor i objawy, zleca badania, szuka patogenu pod mikroskopem i dobiera leczenie.
+- **Patogen** (jedna z trzech bakterii, jeden z trzech wirusów, grzyb Candida albo nowotwór — wybiera gracz patogenu, lekarz tego nie wie) płynie z prądem krwi, przeciska się przez zastawki, zakłada kolonie na ścianach (grzyb: grzybnię, nowotwór: guzy), mutuje, rozmnaża się i może zwodzić lekarza fałszywymi objawami.
+- **Lekarz** nie widzi patogenu wprost. Obserwuje monitor i objawy, zleca badania (każde trwa i ma określoną czułość), szuka patogenu pod mikroskopem, sprawdza fakty w wiki i dobiera leczenie.
 
 | Kto | Wygrywa, gdy |
 | --- | --- |
-| Patogen | stan pacjenta spadnie do 0% (sepsa) |
+| Patogen | stan pacjenta spadnie do 0% (sepsa; przy nowotworze: wyniszczenie) |
 | Lekarz | nie zostanie ani patogen, ani żadna kolonia |
 
 ## Stan pacjenta
@@ -67,11 +67,11 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | Klawisz | Działanie |
 | --- | --- |
 | `W` `A` `S` `D` | ruch |
-| `E` | załóż kolonię (przy ścianie albo w mięśniu, kosztuje 25 życia) |
+| `E` | załóż kolonię (przy ścianie albo w mięśniu, kosztuje 25 życia); grzyb przy własnej kolonii: magazyn zarodników |
 | `Q` | wnikanie w ścianę serca (przy ścianie; drugie `Q` przerywa); w mięśniu: powrót do krwi |
 | `F` | ukrycie w kolonii / wyjście z ukrycia |
 | `R` | rozmnożenie: kopia patogenu (przy pełnym pasku pożywienia) |
-| `7` `8` `9` `0` `6` | mutacje: szybkość, odporność na gorączkę, otoczka, toksyny, maskowanie objawów |
+| `7` `8` `9` `0` `6` | mutacje: szybkość, odporność na gorączkę, otoczka, toksyny, maskowanie objawów (grzyb i nowotwór mają pod 7–0 własne, opis niżej) |
 | `T` | toksyny (po mutacji) |
 | `B` | sygnały chemiczne: fałszywy objaw |
 | kółko myszy | delikatna regulacja przybliżenia (w wąskim zakresie) |
@@ -82,12 +82,12 @@ Przed startem gracz patogenu wybiera jedną z trzech bakterii, jeden z trzech wi
 
 **Miejsce startu:** serce (żyła główna górna), nerka (tętnica łukowata w nerce) albo wątroba (żyła centralna zrazika). Pozostałe narządy na ekranie wyboru są jeszcze niedostępne.
 
-| | Bakterie | Wirusy | Grzyb (Candida) |
-| --- | --- | --- | --- |
-| Życie | 100 | 70 | 100 |
-| Ruch | szybszy | wolniejszy | wolny (−20%) |
-| Kolonie | biofilm, wzrost normalny | zakażone komórki, wzrost o 30% szybszy | grzybnia: strzępki rosną wzdłuż ścian i zakładają nowe kolonie |
-| Działają na nie | przeciwciała, gorączka, antybiotyki | przeciwciała, gorączka, lek przeciwwirusowy | przeciwciała, gorączka, lek przeciwgrzybiczy |
+| | Bakterie | Wirusy | Grzyb (Candida) | Nowotwór |
+| --- | --- | --- | --- | --- |
+| Życie | 100 | 70 | 100 | 100 |
+| Ruch | szybszy | wolniejszy | wolny (−20%) | wolny (−30%) |
+| Kolonie | biofilm, wzrost normalny | zakażone komórki, wzrost o 30% szybszy | grzybnia: strzępki rosną wzdłuż ścian i zakładają nowe kolonie | guzy: mały → średni → duży (z wielkości), przerzuty |
+| Działają na nie | przeciwciała, gorączka, antybiotyki | przeciwciała, gorączka, lek przeciwwirusowy | przeciwciała, gorączka, lek przeciwgrzybiczy | przeciwciała (słabiej), gorączka, chemio- i radioterapia |
 
 | Rodzaj | Wygląd | Leczenie | Rozgrywka |
 | --- | --- | --- | --- |
@@ -98,6 +98,7 @@ Przed startem gracz patogenu wybiera jedną z trzech bakterii, jeden z trzech wi
 | Wirus Coxsackie B | mały, gładki dwudziestościan | lek przeciwwirusowy tylko 20% | wolniejszy (−10%), kolonie rosną o 25% szybciej |
 | Adenowirus | dwudziestościan z włóknami | lek przeciwwirusowy 60% | kolonie rosną o 10% wolniej, ale przeciwciała niszczą je o 25% słabiej |
 | Drożdżak Candida | owalna, pączkująca komórka ze strzępką | lek przeciwgrzybiczy 100% | grzybnia, magazyny zarodników, własne mutacje (niżej) |
+| Komórka nowotworowa | duża, nieregularna, z ciemnym jądrem | chemioterapia, radioterapia | guzy, angiogeneza, przerzuty, niewydolność narządów (niżej) |
 
 **Nowotwór (rak):**
 - Grasz krążącą komórką nowotworową. Kolonie to **guzy** (zakładane `E` jak kolonie). Etap guza wynika z jego wielkości: mały (< 0,5), średni (0,5–1,2), duży (≥ 1,2) — liczbę guzów w każdym etapie pokazuje HUD.
@@ -144,37 +145,41 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
   - `8` odporność na gorączkę (−30% obrażeń na poziom, 2 poziomy),
   - `9` otoczkę (−30% obrażeń od przeciwciał na poziom, 2 poziomy),
   - `0` toksyny (odblokowuje `T`).
+  - (grzyb i nowotwór mają pod `7`–`0` własne mutacje — opis w „Wybór patogenu”),
   - `6` maskowanie objawów (2 poziomy): na poziom objawy u pacjenta słabsze o 30%, badania mniej czułe (o 15 punktów procentowych), CRP niższe o 20%.
 - **Sygnały chemiczne** (`B`): kosztują 5 życia, odnowienie 30 s. Przez 20 s pacjent ma fałszywy objaw w obszarze, w którym nie ma kolonii (np. krew w moczu, choć nerka jest zdrowa). Echo i USG go nie potwierdzą.
 - **Toksyny** (`T`): kosztują 10 życia, obniżają stan pacjenta o 6 i przez 15 s zakłócają badania, które lekarz wtedy zleci.
-- **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii, która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
+- **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii (grzyb: w magazynie zarodników, jeśli ma), która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
+- **Radioterapia:** gdy lekarz naświetla narząd, w którym jesteś, HUD ostrzega „Naświetlanie!” — warto z niego wypłynąć.
 
 ### Ekran
 - **Lewy górny róg:** rodzaj patogenu i nazwa miejsca, w którym jesteś (np. „Prawa komora”, „Zraziki wątroby”, „Tętnica łukowata”).
-- **Prawy dolny róg:** mutacje, punkty mutacji i dostępne zdolności (ukrycie, toksyny, rozmnożenie).
-- **Lewy dolny róg:** życie, kolonizacja, stan pacjenta, pożywienie, liczba kolonii i kopii oraz aktywne efekty (gorączka, antybiotyk, przyczepione przeciwciała, oporność).
+- **Lewy górny róg** pokazuje też wylosowanego pacjenta.
+- **Prawy dolny róg:** mutacje, punkty mutacji i dostępne zdolności (ukrycie, toksyny, rozmnożenie, sygnały chemiczne, magazyn zarodników, ostrzeżenie o naświetlaniu).
+- **Lewy dolny róg:** życie, kolonizacja, stan pacjenta, pożywienie, liczba kolonii (u nowotworu także guzy małe / średnie / duże) i kopii oraz aktywne efekty (gorączka, leki z ich rzeczywistym działaniem, przyczepione przeciwciała, oporność).
+- **Pasek klawiszy** na dole przypomina sterowanie; `M` (albo klik) włącza i wyłącza dźwięk.
 - **Minimapa** (obecnie ukryta, można ją włączyć w `js/config.js`: `ui.minimap`): serca albo jamy brzusznej (przełącza się sama, gdy patogen przepłynie pod przeponę). PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie, przyciemnione kropki to kopie patogenu.
 
 ## Lekarz
 
 ### Ekran lekarza
-- **Głośność monitora:** na pasku monitora przyciski `−` i `+` ściszają i pogłaśniają dźwięki monitora: beep pulsoksymetru, alarmy i pisk linii płaskiej (6 poziomów, najniższy wycisza). Ustawienie zapamiętuje przeglądarka.
-- **Wiki** (przycisk w nagłówku karty pacjenta): baza wiedzy w grze — patogeny (zdjęcia, obraz w mikroskopie, leczenie, typowe wyniki), badania (czas, odnowienie, czułość, co pokazują i co je zakłóca), leki i zabiegi, objawy z przyczynami, pacjenci i inne fakty. Gra w tym czasie trwa; `Esc` zamyka.
 Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
-- **Monitor:** EKG i odczyty w kolorach kanałów (tętno zielone, temperatura żółta, stan pacjenta błękitny, zakażenie różowe). Przy alarmie dioda i ramka ekranu świecą na czerwono.
-- **Pompa infuzyjna z kroplówką:** pokazuje leki, które są teraz we krwi (przeciwciała, antybiotyki, lek przeciwwirusowy, gorączka), z pozostałym czasem; krople kapią szybciej w czasie wlewu.
+- **Nagłówek „Karta pacjenta”:** wylosowany pacjent, przycisk **Wiki** i czas od przyjęcia.
+- **Wiki:** baza wiedzy w grze (po polsku i angielsku) — patogeny (zdjęcia z gry, obraz w mikroskopie, leczenie, typowe wyniki), badania (czas, odnowienie, czułość, co pokazują i co je zakłóca), leki i zabiegi, objawy z przyczynami, pacjenci i inne fakty. Gra w tym czasie trwa; `Esc` zamyka.
+- **Monitor:** EKG i odczyty w kolorach kanałów (tętno zielone, temperatura żółta, stan pacjenta błękitny, zakażenie różowe). Przy alarmie dioda i ramka ekranu świecą na czerwono. Na pasku monitora przyciski `−` i `+` ściszają i pogłaśniają jego dźwięki: beep pulsoksymetru, alarmy i pisk linii płaskiej (6 poziomów, najniższy wycisza; ustawienie zapamiętuje przeglądarka).
+- **Pompa infuzyjna z kroplówką:** pokazuje leki, które są teraz we krwi (przeciwciała, antybiotyki, leki przeciwwirusowy i przeciwgrzybiczy, chemioterapia, gorączka), z pozostałym czasem; krople kapią szybciej w czasie wlewu.
 - **Objawy na sylwetce:** schemat ciała na siatce; obszary z objawami świecą (bursztynowo, a przy nasilonych objawach na czerwono): płuca, serce, wątroba, nerka, nogi. Gorączka ociepla obrys ciała, bladość i sinica go wybielają.
 - **Kamera w sali:** pacjent na łóżku i lista objawów.
-- **Konsola zleceń:** trzy rozwijane menu — Badania, Leczenie, Operacja. Wybór pozycji od razu ją zleca (klawisze działają jak wcześniej). Pod menu lampki badań: zielona gotowe, żółta w toku, szara odnowienie.
+- **Konsola zleceń:** trzy rozwijane menu — Badania, Leczenie, Zabiegi (operacja zastawki, radioterapia). Wybór pozycji od razu ją zleca (klawisze działają jak wcześniej). Pod menu lampki badań: zielona gotowe, żółta w toku, szara odnowienie.
 - **Mikroskop:** osobne urządzenie z preparatem do przeszukania.
-- **Drukarka wyników:** każdy wynik wysuwa się jako wydruk na papierze termicznym (najnowszy pierwszy); obrazy echa i USG są drukowane w odcieniach szarości.
+- **Drukarka wyników:** każdy wynik wysuwa się jako wydruk na papierze termicznym (najnowszy pierwszy); obrazy echa, USG i tomografii są drukowane w odcieniach szarości.
 - **Dziennik** jako terminal.
 
 ### Sterowanie
 | Klawisz | Działanie |
 | --- | --- |
 | `Z` | CRP |
-| `X` (albo `B`) | posiew krwi |
+| `X` | posiew krwi |
 | `C` | echo serca |
 | `G` | USG jamy brzusznej |
 | `V` | antybiogram |
@@ -191,7 +196,7 @@ Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 | `Y` | lek przeciwgrzybiczy |
 | `H` `J` `K` `L` | operacja zastawki: trójdzielnej, mitralnej, pnia płucnego, aorty |
 
-Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
+Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń. Chemioterapia i radioterapia nie mają skrótów — są tylko w menu.
 
 ### Jak grać
 1. **Badania** mogą biec równolegle, a każdy wynik opisuje chwilę pobrania próbki. Pierwszy wynik dowolnego badania odblokowuje leczenie.
@@ -199,19 +204,19 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
    | Badanie | Czas | Co pokazuje |
    | --- | --- | --- |
    | CRP | 4 s | poziom stanu zapalnego (przybliżony, z szumem pomiaru); monitor pokazuje z niego szacunek zakażenia „≈” |
-   | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek bakterii we krwi (patogen i jego kopie) |
+   | Posiew krwi | 12 s | dokładną kolonizację, liczbę komórek patogenu we krwi (patogen i jego kopie); dodatni przy bakterii i grzybie, ujemny przy wirusie i nowotworze |
    | Echo serca | 8 s | obraz samego serca w stylu USG (bez jamy brzusznej): kolonie na ścianach jako jasne ogniska, kolonie w mięśniu jako niewyraźne zgrubienia w przybliżonym miejscu |
    | USG jamy brzusznej | 8 s | obraz wątroby, nerki i naczyń brzucha: kolonie jako jasne ogniska, z podziałem na wątrobę, nerkę i naczynia |
    | Antybiogram | 18 s | wrażliwość patogenu na każde leczenie; wymaga dodatniego posiewu |
-   | Morfologia krwi | 5 s | leukocyty (G/l) i rozmaz: przy bakterii przewaga neutrofili, przy wirusie limfocytów (gdy zakażenie jest już wyraźne) |
-   | PCR | 25 s (odnowienie 45 s) | rodzaj patogenu z materiału genetycznego we krwi, bez szukania pod mikroskopem, z podpowiedzią leczenia; ujemny, gdy patogen nie płynie we krwi i nie ma kopii ani kolonii poza mięśniem |
-   | Badanie moczu | 4 s | krwinki czerwone (kolonie w nerce) i bakterie w moczu (tylko przy bakterii) |
+   | Morfologia krwi | 5 s | leukocyty (G/l) i rozmaz: przy bakterii i grzybie przewaga neutrofili, przy wirusie limfocytów (gdy zakażenie jest już wyraźne), przy nowotworze rozmaz prawidłowy |
+   | PCR | 25 s (odnowienie 45 s) | rodzaj patogenu z materiału genetycznego we krwi, bez szukania pod mikroskopem, z podpowiedzią leczenia; ujemny, gdy patogen nie płynie we krwi i nie ma kopii ani kolonii poza mięśniem, oraz zawsze przy nowotworze (to komórki pacjenta) |
+   | Badanie moczu | 4 s | krwinki czerwone (kolonie w nerce), bakterie (przy bakterii) i grzyby (przy grzybie) w moczu |
    | Tomografia komputerowa | 15 s (odnowienie 60 s) | przekrój całego ciała: dokładne położenie wszystkich ognisk, także w mięśniu serca |
-   | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie w barwieniu Grama, wirusy w mikroskopie elektronowym); po znalezieniu zdjęcie patogenu z chwili pobrania, rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
+   | Mikroskop | 6 s | preparat krwi do przeszukania (bakterie, drożdżaki i komórki atypowe w barwieniu, wirusy w mikroskopie elektronowym); po znalezieniu zdjęcie patogenu z chwili pobrania, rodzaj z podpowiedzią leczenia pojawia się, gdy znajdziesz drobnoustrój |
 
 2. **Leczenie:**
-   - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na bakterie i wirusy. Gdy patogen ma kopie, część przeciwciał atakuje kopie zamiast niego.
-   - **Gorączka** podnosi temperaturę do 39,6 °C. Patogen traci życie, a kolonie rosną wolniej. Działa na oba patogeny, ale obciąża pacjenta.
+   - **Przeciwciała** pojawiają się w całej krwi i płyną z prądem, a w pobliżu patogenu albo kolonii same do nich płyną. Działają na każdy patogen (na nowotwór o połowę słabiej). Gdy patogen ma kopie, część przeciwciał atakuje kopie zamiast niego.
+   - **Gorączka** podnosi temperaturę do 39,6 °C. Patogen traci życie, a kolonie rosną wolniej. Działa na każdy patogen, ale obciąża pacjenta.
    - **β-laktam** (bakteriobójczy) niszczy bakterię i kurczy kolonie.
    - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.
    - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
@@ -222,7 +227,7 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
    - **Czułość badań:** posiew, mikroskop, echo i USG wykrywają to, co jest, z czułością 85% (echo i USG osobno dla każdego ogniska). Wynik bywa więc fałszywie ujemny — warto badanie powtórzyć. Maskowanie patogenu obniża czułość.
    - **Fałszywe objawy:** patogen może wywołać objaw bez choroby w danym miejscu (sygnały chemiczne). Objaw bez potwierdzenia w echu lub USG może być fałszywy.
    - Dziennik lekarza nie pokazuje ruchów patogenu — lekarz zna tylko objawy, wyniki badań i stan pacjenta.
-   - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie. Konkretny rodzaj (i podpowiedź leczenia) pokazuje mikroskop.
+   - **Jak rozpoznać patogen:** posiew przy bakterii i grzybie jest dodatni, a przy wirusie i nowotworze ujemny, choć CRP rośnie. Rozmaz odróżnia wirusa (limfocyty) od bakterii i grzyba (neutrofile), badanie moczu bakterie od grzybów, PCR ujemny przy dodatnim obrazowaniu wskazuje nowotwór. Konkretny rodzaj (i podpowiedź leczenia) pokazuje mikroskop albo PCR. Fakty o każdym patogenie są w wiki.
    - **Operacja zastawki** trwa 10 s i obciąża pacjenta (stan −15). Po zakończeniu usuwa wszystkie ogniska w promieniu kilku milimetrów od wybranej zastawki, także w ścianie, a patogen w pobliżu traci 40 życia. Kolejna operacja jest możliwa po 60 s. Dobrze ją połączyć z echem serca, które pokazuje, gdzie są ogniska.
 3. **Oporność nabyta:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Na przycisku widać siłę następnej dawki i jej koszt dla pacjenta. Rzeczywiste działanie zależy jeszcze od rodzaju patogenu i jego naturalnej oporności.
 4. **Sala z pacjentem i objawy:** kamera w sali pokazuje pacjenta na łóżku, a sylwetka obok podświetla obszary z objawami. Objawy wynikają z tego, gdzie są kolonie:
@@ -236,8 +241,12 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
    | krew w moczu (czerwony mocz w worku przy łóżku) | kolonie w nerce |
    | gorączka i poty | temperatura od 37,8 °C |
    | bladość, sinica | stan pacjenta poniżej 55% / 25% |
+   | chudnięcie, osłabienie | zaawansowany nowotwór |
+   | niewydolność serca / wątroby / nerek | duże guzy w tym narządzie |
 
-   W czasie badań na stole w sali widać laboratorium (wirówka, mikroskop, szalka z posiewem, antybiogram, wózek USG z głowicą na klatce albo na brzuchu). Kroplówka w sali i pompa infuzyjna pokazują leki we krwi. Przy stanie poniżej 30% albo gorączce od 39 °C dioda i ramka monitora świecą na czerwono i gra alarm.
+   Objaw może być fałszywy (sygnały chemiczne patogenu) albo osłabiony (maskowanie) — potwierdzaj go badaniami.
+
+   W czasie badań w sali widać laboratorium (wirówka, mikroskop, szalka z posiewem, antybiogram, wózek USG z głowicą na klatce albo na brzuchu, a na półce pod stołem analizator morfologii, termocykler PCR i pojemnik z moczem z paskiem testowym); przy tomografii nad pacjentem przesuwa się pierścień tomografu. Kroplówka w sali i pompa infuzyjna pokazują leki we krwi. Przy stanie poniżej 30% albo gorączce od 39 °C dioda i ramka monitora świecą na czerwono i gra alarm.
 5. **Mikroskop:** przeciągaj preparat myszą (albo kliknij obraz i używaj strzałek), aż drobnoustrój znajdzie się w środku okularu. Wtedy wokół niego pojawia się zielony pierścień, obok kolorowe zdjęcie patogenu z chwili pobrania, a pod obrazem nazwa rodzaju i podpowiedź leczenia. Po 15 s szukania przy brzegu okularu pojawia się pulsująca strzałka w stronę najbliższego skupiska. Jeśli w chwili pobrania patogenu nie było we krwi (był w mięśniu albo ukryty, bez kopii i kolonii na ścianach naczyń), preparat jest pusty — po przeszukaniu większości preparatu wynik to „Brak drobnoustrojów”.
 6. **Dziennik** zapisuje badania, wyniki i podane leki.
 
@@ -245,11 +254,11 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
 
 Na ekranie końcowym: „Zagraj jeszcze raz”, w meczu „Rewanż z zamianą ról” i „Wróć do menu” (w grze na 2 osoby kończy połączenie).
 
-Po zwycięstwie gra trwa jeszcze około 5 sekund. Przy sepsie serce zwalnia aż do zatrzymania, prąd krwi ustaje, a monitor lekarza przechodzi w ciągły pisk, który powoli cichnie. Potem obaj gracze widzą krótki film (wygrana lekarza albo wygrana patogenu, można go pominąć), a na końcu podsumowanie. Statystyki rozwija się przyciskiem „Statystyki rundy”.
+Po zwycięstwie gra trwa jeszcze około 5 sekund. Przy sepsie (wyniszczeniu) serce zwalnia aż do zatrzymania, prąd krwi ustaje, a monitor lekarza przechodzi w ciągły pisk, który powoli cichnie. Potem obaj gracze widzą krótki film na środku ekranu (wygrana lekarza albo wygrana patogenu, można go pominąć), a na końcu podsumowanie. Statystyki rozwija się przyciskiem „Statystyki rundy”.
 
 Po wygranej jednej ze stron ekran końcowy podaje rodzaj patogenu i statystyki obu graczy:
-- **patogen:** przebyta droga, najwyższa kolonizacja, kolonie założone i zniszczone, odrodzenia, czas przy ścianie, przejścia przez zastawki, wniknięcia w ścianę, mutacje, toksyny, czas w ukryciu, zjedzone pożywienie, kopie (utworzone, zniszczone, obumarłe), przeciwciała zwiedzione przez kopie, przejścia przez krążenie płucne i duże, odwiedzone jamy serca, najmniej życia;
-- **lekarz:** liczba badań, czas pierwszego badania i leczenia, liczba dawek każdego leku, operacje i usunięte nimi ogniska, trafienia przeciwciał oraz obrażenia od leków, przeciwciał i gorączki.
+- **patogen:** przebyta droga, najwyższa kolonizacja, kolonie założone i zniszczone, odrodzenia, czas przy ścianie, przejścia przez zastawki, wniknięcia w ścianę, mutacje, toksyny, sygnały chemiczne, u grzyba kolonie ze strzępek, magazyny zarodników i kolonie z zarodników, u nowotworu przerzuty, czas w ukryciu, zjedzone pożywienie, kopie (utworzone, zniszczone, obumarłe), przeciwciała zwiedzione przez kopie, przejścia przez krążenie płucne i duże, odwiedzone jamy serca, najmniej życia;
+- **lekarz:** liczba badań, czas pierwszego badania i leczenia, liczba dawek każdego leku (także chemio- i radioterapii), operacje i usunięte nimi ogniska, trafienia przeciwciał oraz obrażenia od leków, przeciwciał i gorączki.
 
 „Zagraj jeszcze raz” zaczyna nową rundę w tym samym narządzie i z tym samym rodzajem patogenu (chyba że gracz patogenu wybierze inny).
 
@@ -257,7 +266,7 @@ Po wygranej jednej ze stron ekran końcowy podaje rodzaj patogenu i statystyki o
 
 - **Patogen** słyszy wszystko jak pod wodą: przytłumione „lub-dub” serca i szum krwi, który narasta w skurczu i w silnym prądzie.
 - **Kaszel pacjenta** słyszą obaj gracze, tym częściej, im większa kolonizacja. Patogen słyszy go głucho od środka, lekarz wyraźnie w sali. To wskazówka dla lekarza, że zakażenie postępuje.
-- **Lekarz** słyszy salę szpitalną: „beep” pulsoksymetru przy każdym uderzeniu serca, alarm monitora (trzy tony co 6 s) przy gorączce od 39 °C, alarm wysokiego priorytetu (pięć szybkich tonów co 3 s) przy stanie pacjenta poniżej 30% i dzwonek, gdy przychodzi wynik badania.
+- **Lekarz** słyszy salę szpitalną: „beep” pulsoksymetru przy każdym uderzeniu serca, alarm monitora (trzy tony co 6 s) przy gorączce od 39 °C, alarm wysokiego priorytetu (pięć szybkich tonów co 3 s) przy stanie pacjenta poniżej 30% i dzwonek, gdy przychodzi wynik badania. Głośność dźwięków monitora (beep, alarmy, linia płaska) regulują przyciski `−` / `+` na monitorze.
 - W trybie deweloperskim słychać obie warstwy, lekarza ciszej.
 
 Dźwięk włącza się po pierwszym kliknięciu albo klawiszu, bo przeglądarki wcześniej go blokują. `M` wycisza, a wybór zostaje zapamiętany.
@@ -265,7 +274,7 @@ Dźwięk włącza się po pierwszym kliknięciu albo klawiszu, bo przeglądarki 
 ## Połączenie (gra na 2 osoby)
 
 - **Wskaźnik w prawym dolnym rogu:** kolor (zielony dobre, żółty słabe, czerwony brak danych), ping i liczba paczek stanu na sekundę.
-- **Klawisz `I`** albo kliknięcie wskaźnika: szczegóły (rola, trasa połączenia, ping, zgubione paczki, przesłane dane).
+- **Klawisz `I`** (u patogenu; u lekarza `I` to PCR) albo kliknięcie wskaźnika: szczegóły (rola, trasa połączenia, ping, zgubione paczki, przesłane dane).
 - **Ostrzeżenie** pojawia się po 2 s bez danych z odliczaniem. Po 6 s gra pokazuje rozłączenie.
 - **Wyjście gracza:** gdy drugi gracz zamknie kartę, zobaczysz „Drugi gracz opuścił grę”.
 
