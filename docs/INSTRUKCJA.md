@@ -71,8 +71,9 @@ Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie ste
 | `Q` | wnikanie w ścianę serca (przy ścianie; drugie `Q` przerywa); w mięśniu: powrót do krwi |
 | `F` | ukrycie w kolonii / wyjście z ukrycia |
 | `R` | rozmnożenie: kopia patogenu (przy pełnym pasku pożywienia) |
-| `7` `8` `9` `0` | mutacje: szybkość, odporność na gorączkę, otoczka, toksyny |
+| `7` `8` `9` `0` `6` | mutacje: szybkość, odporność na gorączkę, otoczka, toksyny, maskowanie objawów |
 | `T` | toksyny (po mutacji) |
+| `B` | sygnały chemiczne: fałszywy objaw |
 | kółko myszy | delikatna regulacja przybliżenia (w wąskim zakresie) |
 | `M` | dźwięk włącz/wyłącz |
 
@@ -129,6 +130,8 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
   - `8` odporność na gorączkę (−30% obrażeń na poziom, 2 poziomy),
   - `9` otoczkę (−30% obrażeń od przeciwciał na poziom, 2 poziomy),
   - `0` toksyny (odblokowuje `T`).
+  - `6` maskowanie objawów (2 poziomy): na poziom objawy u pacjenta słabsze o 30%, badania mniej czułe (o 15 punktów procentowych), CRP niższe o 20%.
+- **Sygnały chemiczne** (`B`): kosztują 5 życia, odnowienie 30 s. Przez 20 s pacjent ma fałszywy objaw w obszarze, w którym nie ma kolonii (np. krew w moczu, choć nerka jest zdrowa). Echo i USG go nie potwierdzą.
 - **Toksyny** (`T`): kosztują 10 życia, obniżają stan pacjenta o 6 i przez 15 s zakłócają badania, które lekarz wtedy zleci.
 - **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii, która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
 
@@ -188,6 +191,9 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
    - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.
    - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
    - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Skuteczność zależy od rodzaju patogenu (tabela w „Wybór patogenu”); rodzaj pokazuje mikroskop, a antybiogram wrażliwość z uwzględnieniem oporności nabytej.
+   - **Czułość badań:** posiew, mikroskop, echo i USG wykrywają to, co jest, z czułością 85% (echo i USG osobno dla każdego ogniska). Wynik bywa więc fałszywie ujemny — warto badanie powtórzyć. Maskowanie patogenu obniża czułość.
+   - **Fałszywe objawy:** patogen może wywołać objaw bez choroby w danym miejscu (sygnały chemiczne). Objaw bez potwierdzenia w echu lub USG może być fałszywy.
+   - Dziennik lekarza nie pokazuje ruchów patogenu — lekarz zna tylko objawy, wyniki badań i stan pacjenta.
    - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie. Konkretny rodzaj (i podpowiedź leczenia) pokazuje mikroskop.
    - **Operacja zastawki** trwa 10 s i obciąża pacjenta (stan −15). Po zakończeniu usuwa wszystkie ogniska w promieniu kilku milimetrów od wybranej zastawki, także w ścianie, a patogen w pobliżu traci 40 życia. Kolejna operacja jest możliwa po 60 s. Dobrze ją połączyć z echem serca, które pokazuje, gdzie są ogniska.
 3. **Oporność nabyta:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Na przycisku widać siłę następnej dawki i jej koszt dla pacjenta. Rzeczywiste działanie zależy jeszcze od rodzaju patogenu i jego naturalnej oporności.

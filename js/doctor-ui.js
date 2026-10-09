@@ -71,7 +71,8 @@
       { what: 'speed', key: '7', name: 'Szybkość' },
       { what: 'fever', key: '8', name: 'Odporność na gorączkę' },
       { what: 'capsule', key: '9', name: 'Otoczka (przeciwciała)' },
-      { what: 'toxins', key: '0', name: 'Toksyny' }
+      { what: 'toxins', key: '0', name: 'Toksyny' },
+      { what: 'mask', key: '6', name: 'Maskowanie objawów' }
     ];
     const mutBtns = {};
     for (const m of MUTS) {
@@ -432,6 +433,7 @@
           ['Wniknięcia w ścianę serca', String(S.tissueEntries || 0)],
           ['Mutacje', String(S.mutations || 0)],
           ['Uwolnienia toksyn', String(S.toxins || 0)],
+          ['Sygnały chemiczne', String(S.signals || 0)],
           ['Czas w ukryciu', num(S.hiddenTime) + ' s'],
           ['Zjedzone pożywienie', String(S.eaten || 0)],
           ['Kopie: utworzone / zniszczone / obumarłe', `${S.copiesMade || 0} / ${S.copiesLost || 0} / ${S.copiesExpired || 0}`],
@@ -642,7 +644,7 @@
         ul.innerHTML = '';
         for (let i = s.log.length - 1; i >= Math.max(0, s.log.length - 14); i--) {
           const e = s.log[i];
-          if (e.who === 'sys' && e.text.startsWith('Bakteria płynie')) continue; // lekarz tego nie widzi
+          if (e.who === 'bact') continue;   // ruchy patogenu: lekarz ich nie widzi (zna tylko objawy, wyniki i stan pacjenta)
           const li = document.createElement('li');
           li.dataset.who = e.who;
           li.innerHTML = `<time>${mmss(e.t)}</time><span>${e.text}</span>`;
@@ -704,8 +706,12 @@
       if (b.hidden) ab.push(`<b>Ukryty w kolonii</b>: przeciwciała cię nie widzą. F wychodzi.`);
       else if (s.colonies.some((c) => !!c.inTissue === !!b.inTissue && Math.hypot(c.x - b.x, c.y - b.y) < C.hide.radius)) ab.push('F: ukryj się w kolonii.');
       if (food >= C.copies.cost && ncop < C.copies.max) ab.push('<b>R: rozmnóż się</b> (kopia odciąga przeciwciała).');
+      { const X = C.signals, REG = { right: 'prawe serce', left: 'lewe serce', legs: 'nogi', liver: 'wątroba', kidney: 'nerka' };
+        if (s.fakeSym) ab.push(`Fałszywy objaw (${REG[s.fakeSym.region]}) jeszcze ${Math.ceil(s.fakeSym.t)} s.`);
+        else if (b.signalCd > 0) ab.push(`Sygnały chemiczne za ${Math.ceil(b.signalCd)} s.`);
+        else ab.push(`B: sygnały chemiczne (fałszywy objaw, −${X.hpCost} życia).`); }
       if (b.mut && b.mut.toxins) ab.push(b.toxinCd > 0 ? `Toksyny za ${Math.ceil(b.toxinCd)} s.` : `T: toksyny (−${C.toxins.hpCost} życia, stan pacjenta −${C.toxins.patientDamage}, zakłócają badania).`);
-      $('mut-ability').innerHTML = ab.join(' ');
+      $('mut-ability').innerHTML = ab.map((x) => `<span>${x}</span>`).join(' ');   // osobne węzły (tłumaczenie zdań)
       $('respawn').hidden = !(b.dead > 0);
       if (b.dead > 0) $('respawn-t').textContent = Math.ceil(b.dead);
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;

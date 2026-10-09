@@ -36,3 +36,11 @@ i czy dziecko z wczesnymi objawami nie kończy się zbyt szybko.
 ## Inne liczby
 
 Pozostałe wartości (kolonie, leki, badania, pożywienie, rodzaje patogenów) opisuje sekcja „Decyzje projektowe” w `CLAUDE.md`.
+
+## Ukrywanie informacji (od v0.36.0)
+
+| Wartość | Gdzie | Liczba | Uzasadnienie |
+| --- | --- | --- | --- |
+| czułość posiewu, mikroskopu, echa, USG | `doctor.tests.*.sens` | 0,85 | co szósty–siódmy wynik fałszywie ujemny: opłaca się powtórzyć badanie, ale wynik nadal coś znaczy |
+| maskowanie (mutacja 6) | `mutations.mask` | 2 poziomy: objawy −30%, czułość −0,15, CRP −20% na poziom; czułość nie spada poniżej 0,3 | kosztuje punkty mutacji (1, potem 2), więc konkuruje z otoczką i szybkością |
+| sygnały chemiczne (B) | `signals` | 5 życia, odnowienie 30 s, objaw 20 s, masa 0,5 | masa 0,5 wystarcza na objaw „ostrzegawczy” (np. kaszel i duszność w prawym sercu), ale nie na „nasilony” |

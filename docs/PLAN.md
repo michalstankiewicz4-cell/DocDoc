@@ -48,7 +48,7 @@ Nie wszystko musi dziać się w układzie krwionośnym — np. astma i palacz w 
 | --- | --- | --- |
 | ✅ | Wybór języka (v0.35.0) | Przełącznik polski / angielski na ekranie startowym, zapamiętany w przeglądarce; cały interfejs po angielsku. |
 
-## Etap 5. Lekarz widzi mniej, patogen więcej ukrywa
+## Etap 5. Lekarz widzi mniej, patogen więcej ukrywa ✅ v0.36.0
 
 - Lekarz nigdy nie widzi wprost typu patogenu — tylko objawy, wyniki badań i stan pacjenta (to już tak działa; trzeba pilnować w nowych funkcjach).
 - Każde badanie: kosztuje czas i ma określoną skuteczność (czułość) — wynik może być fałszywie ujemny.

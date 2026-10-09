@@ -24,7 +24,7 @@
         ix: 0, iy: 0, hp: B.hp, infection: 0, dead: 0, colonyCd: 0, feeding: false,
         inTissue: false, burrowT: 0, z: 0,
         hidden: 0,                                     // id kolonii, w której ukrył się patogen (0 = nie)
-        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0 }, toxinCd: 0,
+        points: 0, mut: { speed: 0, fever: 0, capsule: 0, toxins: 0, mask: 0 }, toxinCd: 0, signalCd: 0,
         food: 0,                                       // pasek pożywienia (0..100), pełny pozwala się rozmnożyć
         slowT: 0, slowMul: 1, transit: null, hitFlash: 0, contact: false, place: '',
         // oporność na leczenie: każde kolejne użycie tego samego leku działa słabiej
@@ -76,7 +76,8 @@
       },
       valveSide: H.VALVES.map(() => 0),
       coughs: 0,         // licznik kaszlnięć pacjenta (dźwięk u obu graczy)
-      symptoms: { right: 0, left: 0, legs: 0 }   // masa kolonii w obszarach serca (objawy u pacjenta)
+      symptoms: { right: 0, left: 0, legs: 0 },   // masa kolonii w obszarach serca (objawy u pacjenta)
+      fakeSym: null,   // fałszywy objaw od sygnałów chemicznych: { region, t }
     };
   }
 
@@ -145,6 +146,7 @@
       case 'bact.copy': makeCopy(s); return;
       case 'bact.mutate': mutate(s, cmd.what); return;
       case 'bact.toxin': releaseToxins(s); return;
+      case 'bact.signal': emitSignals(s); return;
       case 'bact.burrow': {
         const b = s.bact, Tt = C.tissue;
         if (b.dead || b.transit) return;
@@ -155,7 +157,7 @@
             H.grad(b.x, b.y, g2);
             b.x -= g2[0] * (dd + 0.7); b.y -= g2[1] * (dd + 0.7);
             b.inTissue = false; b.z = 0; b.vx = b.vy = 0;
-            log(s, 'sys', 'Patogen wraca do krwi.');
+            log(s, 'bact', 'Patogen wraca do krwi.');
           }
           return;
         }
@@ -246,19 +248,21 @@
     const b = s.bact;
     const tox = s.toxinT > 0;   // toksyny zakłócają wyniki
     if (kind === 'crp') {
-      const v = (4 + b.infection * 2.4) * (tox ? 1.6 : 1) + (rnd(s) * 2 - 1) * D.tests.crp.noise * (tox ? 3 : 1);
+      const v = (4 + b.infection * 2.4 * (1 - C.mutations.mask.crp * maskLvl(s))) * (tox ? 1.6 : 1) + (rnd(s) * 2 - 1) * D.tests.crp.noise * (tox ? 3 : 1);
       return { value: Math.max(1, Math.round(v)) };
     }
     // posiew wyhodowuje tylko bakterie — przy wirusie wynik jest ujemny
     // posiew liczy też komórki patogenu we krwi: oryginał (jeśli płynie we krwi) i jego kopie
     if (kind === 'culture') {
       const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden ? 1 : 0;
-      return { positive: s.kind === 'bacteria', infection: Math.round(b.infection), cells: inBlood + s.copies.length };
+      const positive = s.kind === 'bacteria' && rnd(s) < sens(s, 'culture');   // fałszywie ujemny z szansą 1 − czułość
+      return { positive, infection: positive ? Math.round(b.infection) : 0, cells: positive ? inBlood + s.copies.length : 0 };
     }
     if (kind === 'echo') {
       // kolonie w mięśniu widać tylko jako niewyraźne zgrubienie ściany w przybliżonym miejscu
       const HB = H.HEART_BOX;   // echo serca widzi tylko serce
-      return { colonies: s.colonies.filter((c) => c.y > HB.minY).map((c) => {
+      const se = sens(s, 'echo');
+      return { colonies: s.colonies.filter((c) => c.y > HB.minY && rnd(s) < se).map((c) => {
         const j = (c.inTissue ? 2.5 : 0) + (tox ? 4 : 0);
         return [Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round(c.size * 100) / 100, c.inTissue ? 1 : 0];
       }) };
@@ -266,14 +270,15 @@
     // USG jamy brzusznej: kolonie pod przeponą (wątroba, nerka, naczynia brzucha)
     if (kind === 'usg') {
       const AB = H.ABDOMEN_BOX, j = tox ? 4 : 0;
-      return { colonies: s.colonies.filter((c) => c.y < AB.maxY).map((c) => [
+      const se = sens(s, 'usg');
+      return { colonies: s.colonies.filter((c) => c.y < AB.maxY && rnd(s) < se).map((c) => [
         Math.round((c.x + (rnd(s) * 2 - 1) * j) * 10) / 10, Math.round((c.y + (rnd(s) * 2 - 1) * j) * 10) / 10,
         Math.round(c.size * 100) / 100, 0, H.organAt(c.x, c.y)]) };
     }
     // mikroskop: rodzaj patogenu, jeśli w próbce krwi są jego komórki (patogen we krwi, kopie albo kolonie na ścianach naczyń)
     if (kind === 'micro') {
       const inBlood = !b.dead && !b.transit && !b.inTissue && !b.hidden;
-      const found = inBlood || s.copies.length > 0 || s.colonies.some((c) => !c.inTissue);
+      const found = (inBlood || s.copies.length > 0 || s.colonies.some((c) => !c.inTissue)) && rnd(s) < sens(s, 'micro');
       return { found, species: found ? s.species : null, n: found ? Math.min(12, 4 + s.copies.length + Math.round(b.infection / 12)) : 0 };
     }
     if (kind === 'abg') {
@@ -375,6 +380,24 @@
     s.patient.cond -= X.patientDamage; s.stats.condByInfection += X.patientDamage;
     s.toxinT = X.distortion;
     s.stats.toxins++;
+  }
+
+  // maskowanie (mutacja 6): objawy słabsze, badania mniej czułe, CRP niższe
+  const maskLvl = (s) => (s.bact.mut && s.bact.mut.mask) || 0;
+  // wzmocnienie objawów: pacjent (dziecko — wcześniej, senior — słabiej) i maskowanie patogenu
+  G.symptomGain = (s) => PT(s).symptom * (1 - C.mutations.mask.symptom * maskLvl(s));
+  // czułość badania (szansa wykrycia), obniżona przez maskowanie
+  const sens = (s, kind) => Math.max(0.3, (D.tests[kind].sens ?? 1) - C.mutations.mask.sens * maskLvl(s));
+  // B: sygnały chemiczne — fałszywy objaw w obszarze, w którym nie ma kolonii
+  function emitSignals(s) {
+    const b = s.bact, X = C.signals;
+    if (b.signalCd > 0 || b.dead || b.hp <= X.hpCost + 1) return;
+    const real = s.symptoms;
+    const free = X.regions.filter((r) => (real[r] || 0) < 0.2);
+    const pool = free.length ? free : X.regions;
+    b.hp -= X.hpCost; b.signalCd = X.cooldown;
+    s.fakeSym = { region: pool[Math.floor(rnd(s) * pool.length)], t: X.duration };
+    s.stats.signals = (s.stats.signals || 0) + 1;
   }
 
   function spawnAntibodies(s, eff) {
@@ -523,10 +546,12 @@
     const feverK = Math.max(0, Math.min(1, (d.temp - 37.2) / (D.fever.temp - 37.2)));
     // objawy z położenia kolonii: masa kolonii w prawym sercu, lewym sercu i przy żyle głównej dolnej
     const sym = s.symptoms;
-    sym.right = sym.left = sym.legs = 0;
-    for (const c of s.colonies) { if (!c.region) c.region = H.regionOf(c.x, c.y); sym[c.region] += c.size; }
+    for (const k in sym) sym[k] = 0;
+    for (const c of s.colonies) { if (!c.region) c.region = H.regionOf(c.x, c.y); sym[c.region] = (sym[c.region] || 0) + c.size; }
+    if (s.fakeSym) { s.fakeSym.t -= dt; if (s.fakeSym.t <= 0) s.fakeSym = null; }
+    if (b.signalCd > 0) b.signalCd = Math.max(0, b.signalCd - dt);
     // kaszel: tym częstszy, im większe zakażenie, zwłaszcza w prawym sercu (krążenie płucne)
-    if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection + C.cough.perRightMass * sym.right * PT(s).symptom) * dt) s.coughs++;
+    if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection + C.cough.perRightMass * (sym.right + (s.fakeSym && s.fakeSym.region === 'right' ? C.signals.mass : 0)) * G.symptomGain(s)) * dt) s.coughs++;
 
     // --- stan pacjenta ---
     {
@@ -635,7 +660,7 @@
           H.grad(b.x, b.y, g2);
           b.x -= g2[0] * (dd + 0.7); b.y -= g2[1] * (dd + 0.7);
           b.inTissue = false; b.z = 0;
-          log(s, 'sys', 'Patogen wraca do krwi.');
+          log(s, 'bact', 'Patogen wraca do krwi.');
         }
       } else {
         F.velocity(b.x, b.y, s.time, s.phase, fv);
@@ -661,7 +686,7 @@
               b.x += g2[0] * (Tt.enterD - dd); b.y += g2[1] * (Tt.enterD - dd);
               b.inTissue = true; b.vx = b.vy = 0;
               s.stats.tissueEntries = (s.stats.tissueEntries || 0) + 1;
-              log(s, 'sys', 'Patogen wniknął w ścianę serca.');
+              log(s, 'bact', 'Patogen wniknął w ścianę serca.');
             }
           }
         } else b.z += (0 - b.z) * Math.min(1, dt * 6);
@@ -689,7 +714,7 @@
       if (!b.inTissue) for (const ex of H.EXITS) if (ex.test(b.x, b.y)) {
         b.transit = { to: ex.to, t: 1.6, total: 1.6 };
         if (ex.to === 'lungs') ST.lungsTrips++; else ST.bodyTrips++;
-        log(s, 'sys', `Patogen płynie: ${H.ROUTES[ex.to].name.toLowerCase()}.`);
+        log(s, 'bact', `Patogen płynie: ${H.ROUTES[ex.to].name.toLowerCase()}.`);
       }
       b.place = b.inTissue ? 'Mięsień sercowy' : H.placeName(b.x, b.y);
       if (b.place && !ST.places.includes(b.place)) ST.places.push(b.place);

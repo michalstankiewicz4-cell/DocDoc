@@ -13,8 +13,10 @@
   DD.symptomMasses = function (s) {
     const m = { right: 0, left: 0, legs: 0, liver: 0, kidney: 0, abdomen: 0 };
     for (const c of s.colonies) { if (!c.region) c.region = DD.Heart.regionOf(c.x, c.y); m[c.region] += c.size || 0; }
-    // objawy u niektórych pacjentów widać wcześniej (dziecko) albo później (senior)
-    const g = (DD.CONFIG.patients[s.ptype] || {}).symptom ?? 1;
+    // fałszywy objaw od sygnałów chemicznych patogenu (badania obrazowe go nie potwierdzą)
+    if (s.fakeSym) m[s.fakeSym.region] += DD.CONFIG.signals.mass;
+    // objawy u niektórych pacjentów widać wcześniej (dziecko) albo później (senior); maskowanie patogenu je osłabia
+    const g = DD.Game.symptomGain(s);
     for (const k in m) m[k] *= g;
     return m;
   };

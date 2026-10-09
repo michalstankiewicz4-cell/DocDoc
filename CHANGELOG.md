@@ -11,6 +11,17 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-10-09
+### Dodane
+- **Czułość badań:** posiew, mikroskop, echo serca i USG wykrywają patogen / ogniska z czułością 85% — wynik bywa fałszywie ujemny.
+- **Maskowanie objawów** (mutacja `6`, 2 poziomy): słabsze objawy, mniej czułe badania, niższe CRP.
+- **Sygnały chemiczne** (`B`): patogen wywołuje na 20 s fałszywy objaw w obszarze bez kolonii (5 życia, odnowienie 30 s). Statystyka „Sygnały chemiczne”.
+### Zmienione
+- Dziennik lekarza nie pokazuje już ruchów patogenu (wnikanie w ścianę, powrót do krwi, przepływ do płuc / ciała).
+### Poprawione
+- Objawy z wątroby, nerki i jamy brzusznej nie sumowały się poprawnie w obliczeniach kaszlu (nie wpływało to na rozgrywkę).
+- Pasek klawiszy patogenu zawija się całymi pozycjami.
+
 ## [0.35.0] - 2026-10-09
 ### Dodane
 - **Język angielski:** przełącznik PL / EN na ekranie startowym (zapamiętany w przeglądarce). Tłumaczony jest cały interfejs: menu, lobby, HUD patogenu, panel lekarza, wyniki badań, dziennik, napisy na urządzeniach, ekran końcowy i statystyki. W grze na 2 osoby każdy gracz widzi swój język.
@@ -320,7 +331,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.35.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.36.0...HEAD
+[0.36.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.32.0...v0.33.0

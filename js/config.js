@@ -33,12 +33,13 @@ DD.CONFIG = {
   doctor: {
     // badania: czas do wyniku i odstęp przed powtórzeniem (s). Wyniki opisują chwilę pobrania.
     tests: {
+      // sens: czułość — szansa, że badanie wykryje to, co jest (posiew, mikroskop: patogen; echo, USG: każde ognisko osobno)
       crp:     { duration: 4,  cooldown: 10, noise: 12 },   // szybkie, przybliżone (szum ±noise mg/l)
-      culture: { duration: 12, cooldown: 20 },              // posiew: dokładna kolonizacja + zdjęcie miejsca
-      echo:    { duration: 8,  cooldown: 25 },              // echo serca: położenie i wielkość kolonii
+      culture: { duration: 12, cooldown: 20, sens: 0.85 },  // posiew: dokładna kolonizacja + zdjęcie miejsca
+      echo:    { duration: 8,  cooldown: 25, sens: 0.85 },  // echo serca: położenie i wielkość kolonii
       abg:     { duration: 18, cooldown: 30 },              // antybiogram: wrażliwość na leczenie (po dodatnim posiewie)
-      micro:   { duration: 6,  cooldown: 15 },              // mikroskop: rodzaj patogenu w próbce krwi
-      usg:     { duration: 8,  cooldown: 25 }               // USG jamy brzusznej: kolonie w wątrobie, nerce i naczyniach brzucha
+      micro:   { duration: 6,  cooldown: 15, sens: 0.85 },  // mikroskop: rodzaj patogenu w próbce krwi
+      usg:     { duration: 8,  cooldown: 25, sens: 0.85 }   // USG jamy brzusznej: kolonie w wątrobie, nerce i naczyniach brzucha
     },
     antibodies: { cooldown: 18, count: 56, life: 45, damage: 12, speed: 4.5, homingRadius: 14 },
     fever:      { cooldown: 30, duration: 20, temp: 39.6, dps: 1.6, infectionMul: 0.5 },
@@ -108,9 +109,12 @@ DD.CONFIG = {
     fever:   { max: 2, step: 0.3 },            // −30% obrażeń od gorączki na poziom
     capsule: { max: 2, step: 0.3 },            // otoczka: −30% obrażeń od przeciwciał na poziom
     toxins:  { max: 1 },                       // odblokowuje toksyny (T)
+    mask:    { max: 2, symptom: 0.3, sens: 0.15, crp: 0.2 },  // maskowanie (6): na poziom −30% objawów, −15 pkt proc. czułości badań, −20% CRP
     cost: [1, 2, 3]                            // koszt kolejnych poziomów
   },
   toxins: { cooldown: 25, hpCost: 10, patientDamage: 6, distortion: 15 },  // T: stan pacjenta −6, badania zakłócone przez 15 s
+  // B: sygnały chemiczne — fałszywy objaw w obszarze bez kolonii (masa udawana w objawach; badania obrazowe go nie potwierdzą)
+  signals: { cooldown: 30, hpCost: 5, duration: 20, mass: 0.5, regions: ['right', 'left', 'legs', 'liver', 'kidney'] },
 
   // pożywienie we krwi: patogen zjada je, wpływając w nie; pełny pasek pożywienia pozwala się rozmnożyć (R)
   food: {
