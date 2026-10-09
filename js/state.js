@@ -104,10 +104,14 @@
 
   // skuteczność leku = 1 - oporność; po podaniu oporność rośnie
   // skutek uboczny dawki leku: natychmiastowy spadek stanu pacjenta
-  function sideEffect(s, key) {
-    const v = (C.patient.sideEffect[key] || 0) * (PT(s).sideFx ?? 1);   // koszt dawki × wrażliwość pacjenta
+  // koszt leczenia / zabiegu dla stanu pacjenta (× wrażliwość pacjenta na leczenie)
+  function chargePatient(s, amount) {
+    const v = amount * (PT(s).sideFx ?? 1);
     s.patient.cond -= v; s.stats.condByTreatment += v;
   }
+  const sideEffect = (s, key) => chargePatient(s, C.patient.sideEffect[key] || 0);
+  // pełne życie patogenu (wirus ma mniej)
+  const maxHp = (s) => (s.kind === 'virus' ? C.virus.hp : B.hp);
   // wylosowany pacjent: mnożniki obu stron (C.patients, opis w docs/BALANS.md)
   const PT = (s) => C.patients[s.ptype] || C.patients.child;
   G.patientOf = PT;
@@ -246,7 +250,7 @@
         const v = H.VALVES.find((x) => x.id === cmd.valve);
         if (!v || !d.unlocked || SU.state === 'running' || SU.cd > 0) return;
         SU.state = 'running'; SU.t = cfg.duration; SU.valve = v.id;
-        { const pc = cfg.patientCost * (PT(s).sideFx ?? 1); s.patient.cond -= pc; s.stats.condByTreatment += pc; }
+        chargePatient(s, cfg.patientCost);
         s.stats.surgeries = (s.stats.surgeries || 0) + 1;
         if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
         log(s, 'doc', `Rozpoczęto operację: ${v.name.toLowerCase()}.`);
@@ -257,7 +261,7 @@
         const PR = d.proc, what = cmd.what, cfg = what === 'legs' ? D.amputation : D.transplant;
         if (!PROC_NAME[what] || !d.unlocked || PR.state === 'running' || PR.done[what]) return;
         PR.state = 'running'; PR.t = cfg.duration; PR.kind = what;
-        { const pc = cfg.patientCost * (PT(s).sideFx ?? 1); s.patient.cond -= pc; s.stats.condByTreatment += pc; }
+        chargePatient(s, cfg.patientCost);
         if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
         log(s, 'doc', `Rozpoczęto zabieg: ${PROC_NAME[what]}.`);
         return;
@@ -324,7 +328,7 @@
     H.grad(b.x, b.y, g2);
     if (b.inTissue) {
       // kolonia w mięśniu: w miejscu patogenu, ukryta przed przeciwciałami
-      s.colonies.push({ id: s.nextColonyId++, x: b.x, y: b.y, nx: g2[0], ny: g2[1], born: s.time, seed: rnd(s), size: K.startSize, inTissue: true });
+      const c = newColony(s, b.x, b.y, g2[0], g2[1], K.startSize); c.inTissue = true; s.colonies.push(c);
     } else {
       const sd = H.sample(b.x, b.y);
       s.colonies.push(newColony(s, b.x - g2[0] * sd, b.y - g2[1] * sd, g2[0], g2[1], K.startSize));
@@ -349,7 +353,6 @@
     if (key === 'chemo' || key === 'radio') return s.kind === 'cancer' ? apoMul(s) : 0;
     return 1;
   }
-  G.susceptibility = susceptibility;
 
   // ---------- BADANIA ----------
   const TEST_NAME = { crp: 'CRP', culture: 'posiew krwi', echo: 'echo serca', abg: 'antybiogram', micro: 'mikroskop', usg: 'USG jamy brzusznej',
@@ -361,7 +364,7 @@
     if (kind === 'biopsy' && !BIOPSY_ORGAN[region]) return;   // biopsja: wybrany narząd
     T.state = 'running'; T.t = cfg.duration; T.sampleT = s.time;
     T.pending = sampleFor(s, kind, region);    // wynik opisuje chwilę pobrania
-    if (cfg.patientCost) { const pc = cfg.patientCost * (PT(s).sideFx ?? 1); s.patient.cond -= pc; s.stats.condByTreatment += pc; }
+    if (cfg.patientCost) chargePatient(s, cfg.patientCost);
     s.stats.tests++; if (s.stats.firstTestAt < 0) s.stats.firstTestAt = s.time;
     log(s, 'doc', kind === 'biopsy' ? `Zlecono badanie: biopsja (${BIOPSY_ORGAN[region]}).` : `Zlecono badanie: ${TEST_NAME[kind]}.`);
   }
@@ -849,7 +852,7 @@
         if (best.inTissue) { b.x = best.x; b.y = best.y; b.inTissue = true; b.z = C.tissue.z; }
         else { b.x = best.x - best.nx * 0.6; b.y = best.y - best.ny * 0.6; b.inTissue = false; b.z = 0; }
         b.vx = b.vy = 0; b.burrowT = 0;
-        b.hp = K.respawnHp * (s.kind === 'virus' ? C.virus.hp / B.hp : 1); b.transit = null;
+        b.hp = K.respawnHp * maxHp(s) / B.hp; b.transit = null;
         best.size -= K.respawnCost * (best.store ? 0.5 : 1);
         if (best.size <= 0.02) { s.colonies.splice(s.colonies.indexOf(best), 1); s.stats.coloniesLost++; }
       }
@@ -860,8 +863,7 @@
       else {
         b.x = hc.x - (hc.inTissue ? 0 : hc.nx * 0.35); b.y = hc.y - (hc.inTissue ? 0 : hc.ny * 0.35);
         b.vx = b.vy = 0; b.contact = !hc.inTissue;
-        const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
-        b.feeding = b.hp < maxHp; if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
+        b.feeding = b.hp < maxHp(s); if (b.feeding) b.hp = Math.min(maxHp(s), b.hp + K.feed * dt);
         if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; s.stats.dmgFever += fd; }
         { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF + D.chemo.dps * effC + radioDps(s, b)) * dt; b.hp -= dd; s.stats.dmgDrugs = (s.stats.dmgDrugs || 0) + dd; }
         s.stats.hiddenTime += dt;
@@ -946,9 +948,8 @@
       });
       if (b.contact) ST.contactTime += dt;
       // żerowanie na tkance odnawia życie
-      const maxHp = s.kind === 'virus' ? C.virus.hp : B.hp;
-      b.feeding = (b.contact || b.inTissue) && b.hp < maxHp;
-      if (b.feeding) b.hp = Math.min(maxHp, b.hp + K.feed * dt);
+      b.feeding = (b.contact || b.inTissue) && b.hp < maxHp(s);
+      if (b.feeding) b.hp = Math.min(maxHp(s), b.hp + K.feed * dt);
       if (feverK > 0) { const fd = D.fever.dps * feverK * d.feverEff * (1 - C.mutations.fever.step * b.mut.fever) * dt; b.hp -= fd; ST.dmgFever += fd; }
       // leki bójcze: β-laktam (bakteria), przeciwwirusowy (wirus)
       { const dd = (D.abxA.dps * effA + D.antiviral.dps * effV + D.antifungal.dps * effF + D.chemo.dps * effC + radioDps(s, b)) * dt; b.hp -= dd; ST.dmgDrugs = (ST.dmgDrugs || 0) + dd; }
@@ -981,7 +982,7 @@
       let gone = f.y > 52 || f.x > 58 || f.y < -56;
       if (!gone && canEat && b.food < 100 && Math.hypot(f.x - b.x, f.y - b.y) < FD.eatRadius) {
         b.food = Math.min(100, b.food + FD.kinds[f.kind]); s.stats.eaten++; gone = true;
-        if (f.kind === 'lipid') b.hp = Math.min(s.kind === 'virus' ? C.virus.hp : B.hp, b.hp + FD.lipidHp);
+        if (f.kind === 'lipid') b.hp = Math.min(maxHp(s), b.hp + FD.lipidHp);
         if (f.kind === 'amino') b.points = (b.points || 0) + FD.aminoPoints;
       }
       if (gone) placeFood(s, f);

@@ -18,6 +18,18 @@
   };
   DD.i18nMiss = new Set();   // teksty bez tłumaczenia (do testów)
   DD.t = (s) => s;
+  // zapis tekstu / HTML tylko przy zmianie wartości (UI odświeża się co klatkę; bez tego każda klatka podmieniałaby węzły,
+  // a przy języku angielskim tłumaczyła je od nowa). Porównujemy z ostatnio zapisaną wartością, nie z treścią po tłumaczeniu.
+  const lastText = new WeakMap(), lastHTML = new WeakMap();
+  DD.setText = function (el, v) {
+    v = String(v);
+    if (!el || lastText.get(el) === v) return;
+    lastText.set(el, v); el.textContent = v;
+  };
+  DD.setHTML = function (el, v) {
+    if (!el || lastHTML.get(el) === v) return;
+    lastHTML.set(el, v); el.innerHTML = v;
+  };
   // przełącznik PL / EN na ekranie startowym
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-lang]').forEach((b) => {
@@ -134,7 +146,6 @@
     let n;
     while ((n = tw.nextNode())) { if (n.nodeType === 3) textNode(n); else attrs(n); }
   }
-  DD.i18nWalk = walk;
 
   function start() {
     document.documentElement.lang = 'en';

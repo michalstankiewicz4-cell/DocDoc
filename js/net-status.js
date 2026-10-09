@@ -31,26 +31,26 @@
 
       // ostrzeżenie: od 2 s ciszy do zerwania (6 s)
       weak.hidden = !(N.connected && q === 'stalled');
-      if (!weak.hidden) $('net-weak-t').textContent = Math.max(0, Math.ceil((6000 - S.silence) / 1000));
+      if (!weak.hidden) DD.setText($('net-weak-t'), Math.max(0, Math.ceil((6000 - S.silence) / 1000)));
 
       acc += dt;
       if (acc < 0.25) return;
       acc = 0;
       badge.dataset.q = q;
-      $('nb-label').textContent = LABEL[q];
-      $('nb-ping').textContent = S.rtt == null ? '— ms' : Math.round(S.rtt) + ' ms';
-      $('nb-rate').textContent = S.snapRate + '/s';
+      DD.setText($('nb-label'), LABEL[q]);
+      DD.setText($('nb-ping'), S.rtt == null ? '— ms' : Math.round(S.rtt) + ' ms');
+      DD.setText($('nb-rate'), S.snapRate + '/s');
 
       if (!open) return;
       const lossBase = S.recvSnaps + S.lostSnaps;
-      $('nd-role').textContent = `${ROLE[N.role]} (${N.mode === 'host' ? 'host, liczy symulację' : 'gość'})`;
-      $('nd-route').textContent = S.route;
-      $('nd-ping').textContent = S.rtt == null ? '—' : Math.round(S.rtt) + ' ms';
-      $('nd-silence').textContent = (S.silence / 1000).toFixed(1).replace('.', ',') + ' s';
-      $('nd-rate').textContent = N.mode === 'host' ? `${S.snapRate}/s wysyłane` : `${S.snapRate}/s odbierane`;
-      $('nd-lost').textContent = N.mode === 'host' ? 'liczy gość' : `${S.lostSnaps} z ${lossBase} (${lossBase ? ((S.lostSnaps / lossBase) * 100).toFixed(1).replace('.', ',') : '0'}%)`;
-      $('nd-sent').textContent = `${kb(S.bytesSent)} w ${S.msgsSent} wiadomościach`;
-      $('nd-recv').textContent = `${kb(S.bytesRecv)} w ${S.msgsRecv} wiadomościach`;
+      DD.setText($('nd-role'), `${ROLE[N.role]} (${N.mode === 'host' ? 'host, liczy symulację' : 'gość'})`);
+      DD.setText($('nd-route'), S.route);
+      DD.setText($('nd-ping'), S.rtt == null ? '—' : Math.round(S.rtt) + ' ms');
+      DD.setText($('nd-silence'), (S.silence / 1000).toFixed(1).replace('.', ',') + ' s');
+      DD.setText($('nd-rate'), N.mode === 'host' ? `${S.snapRate}/s wysyłane` : `${S.snapRate}/s odbierane`);
+      DD.setText($('nd-lost'), N.mode === 'host' ? 'liczy gość' : `${S.lostSnaps} z ${lossBase} (${lossBase ? ((S.lostSnaps / lossBase) * 100).toFixed(1).replace('.', ',') : '0'}%)`);
+      DD.setText($('nd-sent'), `${kb(S.bytesSent)} w ${S.msgsSent} wiadomościach`);
+      DD.setText($('nd-recv'), `${kb(S.bytesRecv)} w ${S.msgsRecv} wiadomościach`);
     }
     return { update };
   };

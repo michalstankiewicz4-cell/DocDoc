@@ -7,10 +7,7 @@
 (function () {
   const C = DD.CONFIG, H = DD.Heart;
 
-  // tory prądu nerki liczone z geometrii: zatoka -> dolne tętnice międzypłatowe -> tętnica łukowata -> górne -> żyła nerkowa
-  const K = H.KIDNEY, deg = Math.PI / 180;
-  const KP = (a) => [K.c[0] + Math.cos(a * deg) * K.arc[0], K.c[1] + Math.sin(a * deg) * K.arc[1]];
-  // (wnętrze nerki i zrazików liczy przepływ potencjalny — patrz POTENTIAL niżej)
+  // wnętrze nerki i zrazików liczy przepływ potencjalny — patrz POTENTIAL niżej
 
   const PATHS = {
     ven: [

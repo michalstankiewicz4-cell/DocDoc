@@ -27,18 +27,18 @@
       t1.magFilter = t1.minFilter = THREE.LinearFilter; t1.needsUpdate = true; return t1;
     }
     tex.internalFormat = 'R16F';
+    return linearClamp(tex);
+  };
+  // tekstura danych: filtrowanie liniowe, bez powtarzania na brzegach
+  function linearClamp(tex) {
     tex.magFilter = THREE.LinearFilter; tex.minFilter = THREE.LinearFilter;
     tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
     tex.needsUpdate = true;
     return tex;
-  };
+  }
   // maski narządów: R wątroba, G nerka (0,5 kora / 1 rdzeń), B pęcherzyk żółciowy, A miedniczka i moczowód
   DD.makeOrganTexture = function () {
-    const tex = new THREE.DataTexture(H.organ, H.NX, H.NY, THREE.RGBAFormat, THREE.UnsignedByteType);
-    tex.magFilter = THREE.LinearFilter; tex.minFilter = THREE.LinearFilter;
-    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-    tex.needsUpdate = true;
-    return tex;
+    return linearClamp(new THREE.DataTexture(H.organ, H.NX, H.NY, THREE.RGBAFormat, THREE.UnsignedByteType));
   };
 
   const COMMON = /* glsl */`

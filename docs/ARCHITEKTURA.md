@@ -6,6 +6,7 @@ Dokument dla programistów. Opisuje budowę kodu i zasady, których trzymamy si�
 
 - **Bez bundlera i modułów ES.** Zwykłe skrypty ładowane w `index.html`, wspólna przestrzeń nazw `window.DD`. Gra działa z pliku (`file://`) i z GitHub Pages.
 - **Język:** interfejs, komentarze i dokumentacja po polsku.
+- **UI co klatkę:** teksty i HTML odświeżane w pętli zapisuj przez `DD.setText(el, v)` / `DD.setHTML(el, v)` — zapisują tylko przy zmianie wartości (mniej pracy przeglądarki i tłumaczenia przy języku angielskim). Kolory z CSS czytaj raz (np. przy zmianie rozmiaru), nie co klatkę.
 - **Stan + komendy:** stan gry zmienia się wyłącznie przez `DD.Game.apply(state, komenda)` i `DD.Game.step(state, dt)`. UI i render tylko czytają stan.
 - **Determinizm:** pole przepływu i szum turbulencji są deterministyczne, a losowość w stanie idzie przez LCG (`state.seed`).
 - **Wersja:** `js/version.js`, zmieniana przez `node tools/bump.js X.Y.Z`. Szczegóły w [CHANGELOG.md](../CHANGELOG.md).
@@ -134,6 +135,7 @@ Kod gry i HTML są po polsku. Przy języku angielskim `i18n.js` tłumaczy w chwi
 
 ## Testy
 
+- **Sprawdzanie kodu:** `eslint` (reguły: `no-undef`, `no-unused-vars`, `no-unused-expressions`) przed wydaniem; losowe komendy obu stron przez 4 minuty gry dla każdego rodzaju patogenu, pacjenta i narządu (szukanie wyjątków i NaN).
 - **Logika w Node:** `global.window = global`, potem `require` plików `config`, `heart-shape`, `flow`, `state`, `tissue-cells`; `DD.Heart.init()`, `DD.Flow.init()`, a dalej `DD.Game.create()`, `apply()` i `step()`.
 - **Przeglądarka:** Playwright + Chromium; bez GPU render jest programowy i bardzo wolny, więc czas gry płynie wolniej niż w rzeczywistości. Test sieci wymaga dwóch osobnych przeglądarek (karta w tle ma wstrzymane `requestAnimationFrame`).
 

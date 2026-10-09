@@ -227,7 +227,6 @@
 
   // ---------- host: wysyłanie stanu ----------
   const r2 = (v) => Math.round(v * 100) / 100;
-  const TEST = ['idle', 'running', 'done'];
   const FOODK = ['glucose', 'amino', 'lipid'];
   const ROUTE_IDS = ['lungs', 'body', 'legs', 'gut'];
   function encode(s) {
@@ -295,7 +294,7 @@
       // rytm serca i prąd od hosta (w zakończeniu zwalniają)
       s.hr = snap.hr ?? 1; s.flowMul = snap.fm ?? 1; F.scale = s.flowMul;
       s.ending = snap.en ? { win: snap.en[0] === 1 ? 'doctor' : 'bacteria', t: snap.en[1] } : null;
-      if (snap.ph != null) s.phaseBase = snap.ph, s.phaseAt = snap.t;
+      if (snap.ph != null) { s.phaseBase = snap.ph; s.phaseAt = snap.t; }
       const b = s.bact, v = snap.b, d0 = s.doctor;
       const far = Math.hypot(v[0] - b.x, v[1] - b.y) > 4;
       b.x = far ? v[0] : b.x + (v[0] - b.x) * k;

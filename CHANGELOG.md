@@ -11,6 +11,14 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.44.2] - 2026-10-09
+### Zmienione (porządki w kodzie, bez zmian w zasadach gry)
+- Panel lekarza i HUD zapisują teksty tylko przy zmianie (`DD.setText` / `DD.setHTML`) — mniej pracy przeglądarki co klatkę, zwłaszcza po angielsku (wcześniej każda klatka tłumaczyła te same napisy od nowa). Kolory EKG czytane z CSS raz, a nie w każdej klatce.
+- DRY: wspólne funkcje obrazów medycznych (dopasowanie i tło echa, USG, tomografii, rezonansu), koszt leczenia dla pacjenta, pełne życie patogenu, nowa kolonia, nazwa patogenu, tekstury danych.
+- Usunięte nieużywane zmienne, funkcje i hooki testowe; usunięte nieużywane reguły CSS (stare bloki podglądu i wyników), scalone zdublowane reguły (`.half-doc`, `*`).
+### Sprawdzone
+- `eslint` bez błędów i ostrzeżeń; 330 losowych rund (każdy patogen × pacjent × narząd, po 4 minuty gry) bez wyjątków i wartości NaN; gra w przeglądarce po polsku i angielsku bez błędów.
+
 ## [0.44.1] - 2026-10-09
 ### Dokumentacja
 - `docs/TODO.md`: lista na przyszłość — tryby PvE i PvAI, operacje, eksploracja całego organizmu, kolejne patogeny, propozycje czekające na decyzję, sprawy techniczne.
@@ -396,7 +404,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.1...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.2...HEAD
+[0.44.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.1...v0.44.2
 [0.44.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.0...v0.44.1
 [0.44.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.42.0...v0.43.0

@@ -164,33 +164,39 @@
       $('lamps').appendChild(li); lampEls[t.kind] = li;
     }
 
+    // wspólne dla obrazów medycznych: dopasowanie prostokąta świata do płótna w×h (z marginesami) i pieczenie tła w skali szarości.
+    // shade(d, organ, rnd) zwraca jasność 0–255 dla punktu wewnątrz prostokąta (d = SDF), outside — poza nim.
+    function fitBox(box, w, h) {
+      const sc = Math.min(w / (box.maxX - box.minX), h / (box.maxY - box.minY));
+      const ox = (w - (box.maxX - box.minX) * sc) / 2, oy = (h - (box.maxY - box.minY) * sc) / 2;
+      return { sc, toX: (x) => ox + (x - box.minX) * sc, toY: (y) => oy + (box.maxY - y) * sc,
+        fromI: (i) => box.minX + (i + 0.5 - ox) / sc, fromJ: (j) => box.maxY - (j + 0.5 - oy) / sc };
+    }
+    function bakeGray(box, w, h, fit, shade, outside) {
+      const H = DD.Heart, bg = document.createElement('canvas'); bg.width = w; bg.height = h;
+      const b = bg.getContext('2d'), img = b.createImageData(w, h);
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+        const x = fit.fromI(i), y = fit.fromJ(j), k = (j * w + i) * 4, r = Math.random();
+        const v = x >= box.minX && x <= box.maxX && y >= box.minY && y <= box.maxY ? shade(H.sample(x, y), H.organAt(x, y), r) : outside(r);
+        img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
+      }
+      b.putImageData(img, 0, 0);
+      return bg;
+    }
+    const isParenchyma = (o) => o === 'liver' || o === 'kidney';
+
     // obraz USG (echo serca albo jama brzuszna): wycinek wachlarza, ściany z SDF jasne, kolonie jako jasne ogniska
     function makeUS(canvas, box, w, h) {
-      const H = DD.Heart, ctx0 = canvas.getContext('2d');
+      const ctx0 = canvas.getContext('2d'), fit = fitBox(box, w, h), { sc, toX, toY } = fit;
       let bg = null;
       return function draw(res) {
         const pr = Math.min(2, window.devicePixelRatio || 1);
         canvas.width = w * pr; canvas.height = h * pr; canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
         const ctx = ctx0; ctx.setTransform(pr, 0, 0, pr, 0, 0);
-        const sc = Math.min(w / (box.maxX - box.minX), h / (box.maxY - box.minY));
-        const ox = (w - (box.maxX - box.minX) * sc) / 2, oy = (h - (box.maxY - box.minY) * sc) / 2;
-        const toX = (x) => ox + (x - box.minX) * sc, toY = (y) => oy + (box.maxY - y) * sc;
-        if (!bg) {
-          bg = document.createElement('canvas'); bg.width = w; bg.height = h;
-          const b = bg.getContext('2d'), img = b.createImageData(w, h);
-          for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
-            const x = box.minX + (i + 0.5 - ox) / sc, y = box.maxY - (j + 0.5 - oy) / sc;
-            const k = (j * w + i) * 4, speck = Math.random();
-            let v = 12 + speck * 10;
-            if (x >= box.minX && x <= box.maxX && y >= box.minY && y <= box.maxY) {
-              const d = H.sample(x, y), o = H.organAt(x, y);
-              // krew ciemna, ściany jasne (echogeniczne), miąższ narządów średnio szary, ziarno plamkowe jak w USG
-              v = d < 0 ? 18 + speck * 18 : d < 1.2 ? 150 + speck * 90 : (o === 'liver' || o === 'kidney') ? 70 + speck * 60 : d < 8 ? 120 + speck * 90 - d * 6 : 30 + speck * 25;
-            }
-            img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
-          }
-          b.putImageData(img, 0, 0);
-        }
+        // krew ciemna, ściany jasne (echogeniczne), miąższ narządów średnio szary, ziarno plamkowe jak w USG
+        if (!bg) bg = bakeGray(box, w, h, fit,
+          (d, o, r) => (d < 0 ? 18 + r * 18 : d < 1.2 ? 150 + r * 90 : isParenchyma(o) ? 70 + r * 60 : d < 8 ? 120 + r * 90 - d * 6 : 30 + r * 25),
+          (r) => 12 + r * 10);
         ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
         ctx.save();
         ctx.beginPath(); ctx.moveTo(w / 2, -30); ctx.arc(w / 2, -30, h * 1.2, Math.PI * 0.16, Math.PI * 0.84); ctx.closePath(); ctx.clip();
@@ -215,32 +221,17 @@
     // Rezonans: krew ciemna (brak sygnału z płynącej krwi), tkanki jasne, ognisko z pierścieniem wielkości.
     function makeBody(canvasId, mode) {
       const canvas = $(canvasId), W0 = DD.CONFIG.world, w = 180, h = 380;
-      const box = { minX: W0.minX, maxX: W0.maxX, minY: W0.minY, maxY: W0.maxY };
+      const box = { minX: W0.minX, maxX: W0.maxX, minY: W0.minY, maxY: W0.maxY }, fit = fitBox(box, w, h), { toX, toY } = fit;
+      // tomografia: krew z kontrastem jasna, ściany szare, miąższ średni, tło ciemne; rezonans odwrotnie (krew bez sygnału)
+      const shade = mode === 'mri'
+        ? (d, o, r) => { const n = r * 6; return d < 0 ? 18 + n : d < 1.2 ? 120 + n : isParenchyma(o) ? 175 + n : d < 7 ? 150 + n - d * 4 : 90 + n; }
+        : (d, o, r) => { const n = r * 6; return d < 0 ? 205 + n : d < 1.2 ? 150 + n : isParenchyma(o) ? 112 + n : d < 7 ? 92 + n - d * 3 : 46 + n; };
       let bg = null;
       return function draw(res) {
-        const H = DD.Heart, pr = Math.min(2, window.devicePixelRatio || 1);
+        const pr = Math.min(2, window.devicePixelRatio || 1);
         canvas.width = w * pr; canvas.height = h * pr; canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
         const ctx = canvas.getContext('2d'); ctx.setTransform(pr, 0, 0, pr, 0, 0);
-        const sc = Math.min(w / (box.maxX - box.minX), h / (box.maxY - box.minY));
-        const ox = (w - (box.maxX - box.minX) * sc) / 2, oy = (h - (box.maxY - box.minY) * sc) / 2;
-        const toX = (x) => ox + (x - box.minX) * sc, toY = (y) => oy + (box.maxY - y) * sc;
-        if (!bg) {
-          bg = document.createElement('canvas'); bg.width = w; bg.height = h;
-          const b = bg.getContext('2d'), img = b.createImageData(w, h);
-          for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
-            const x = box.minX + (i + 0.5 - ox) / sc, y = box.maxY - (j + 0.5 - oy) / sc, k = (j * w + i) * 4;
-            let v = 6;
-            if (x >= box.minX && x <= box.maxX && y >= box.minY && y <= box.maxY) {
-              const d = H.sample(x, y), o = H.organAt(x, y), n = Math.random() * 6;
-              const organ = o === 'liver' || o === 'kidney';
-              v = mode === 'mri'
-                ? (d < 0 ? 18 + n : d < 1.2 ? 120 + n : organ ? 175 + n : d < 7 ? 150 + n - d * 4 : 90 + n)
-                : (d < 0 ? 205 + n : d < 1.2 ? 150 + n : organ ? 112 + n : d < 7 ? 92 + n - d * 3 : 46 + n);
-            }
-            img.data[k] = img.data[k + 1] = img.data[k + 2] = Math.max(0, Math.min(255, v)); img.data[k + 3] = 255;
-          }
-          b.putImageData(img, 0, 0);
-        }
+        if (!bg) bg = bakeGray(box, w, h, fit, shade, () => 6);
         ctx.drawImage(bg, 0, 0);
         for (const [x, y, size, inT] of res.colonies) {
           const px = toX(x), py = toY(y), r = 2 + size * 3;
@@ -434,14 +425,14 @@
     function microText() {
       const r = micro.res, sp = r && r.found && C.species[r.species];
       if (micro.found && sp) {
-        $('res-micro-v').textContent = sp.name;
+        DD.setText($('res-micro-v'), sp.name);
         $('res-micro-l').innerHTML = `<i>${sp.latin}</i>. ${sp.micro} <b>${sp.treat}</b>`;
       } else if (micro.done) {
-        $('res-micro-v').textContent = 'Brak drobnoustrojów w próbce';
-        $('res-micro-l').textContent = 'Przeszukano preparat. Patogen nie płynął we krwi w chwili pobrania (mógł być w mięśniu albo ukryty).';
+        DD.setText($('res-micro-v'), 'Brak drobnoustrojów w próbce');
+        DD.setText($('res-micro-l'), 'Przeszukano preparat. Patogen nie płynął we krwi w chwili pobrania (mógł być w mięśniu albo ukryty).');
       } else {
-        $('res-micro-v').textContent = 'Szukaj patogenu';
-        $('res-micro-l').textContent = 'Przesuwaj preparat myszą albo strzałkami (po kliknięciu w obraz), aż drobnoustrój znajdzie się w środku pola widzenia.';
+        DD.setText($('res-micro-v'), 'Szukaj patogenu');
+        DD.setText($('res-micro-l'), 'Przesuwaj preparat myszą albo strzałkami (po kliknięciu w obraz), aż drobnoustrój znajdzie się w środku pola widzenia.');
       }
     }
     // po każdym przesunięciu: czy w środku jest drobnoustrój, ile preparatu już obejrzano
@@ -458,8 +449,6 @@
       micro.py = Math.max(0, Math.min(SH - MH, micro.py + dy));
       microCheck(); drawMicroView();
     }
-    DD.microDebug = micro;
-    DD.microPan = (dx, dy) => microPan(dx, dy);
     function showMicro(res, seed, sampleT) {
       const key = seed;
       if (micro.key === key) return;
@@ -498,6 +487,7 @@
 
     // EKG
     const ecg = $('ecg'), ctx = ecg.getContext('2d');
+    const ecgCol = { grid: '#d6e2dd', trace: '#11795a' };
     const trace = new Float32Array(400); let head = 0, lastPhase = 0;
     // pobudzenia przedwczesne (szeroki QRS), gdy kolonie siedzą w lewym sercu — objaw dla lekarza
     let beat = 0, prevP = 0, ectopicChance = 0;
@@ -512,7 +502,13 @@
     }
     function drawEcg(s) {
       const w = ecg.clientWidth, h = ecg.clientHeight, pr = window.devicePixelRatio || 1;
-      if (ecg.width !== Math.round(w * pr)) { ecg.width = Math.round(w * pr); ecg.height = Math.round(h * pr); }
+      if (ecg.width !== Math.round(w * pr)) {
+        ecg.width = Math.round(w * pr); ecg.height = Math.round(h * pr);
+        // kolory siatki i zapisu z CSS (--grid, --trace) — czytane przy zmianie rozmiaru, nie co klatkę
+        const cs = getComputedStyle(ecg);
+        ecgCol.grid = cs.getPropertyValue('--grid').trim() || '#d6e2dd';
+        ecgCol.trace = cs.getPropertyValue('--trace').trim() || '#11795a';
+      }
       ectopicChance = Math.max(0, Math.min(0.6, (DD.symptomMasses(s).left - 0.35) * 0.8));
       // przesuwaj zapis proporcjonalnie do czasu
       let ph = s.phase; if (ph < lastPhase) ph += 1;
@@ -527,13 +523,13 @@
       lastPhase = s.phase;
       ctx.setTransform(pr, 0, 0, pr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      ctx.strokeStyle = getComputedStyle(ecg).getPropertyValue('--grid').trim() || '#d6e2dd';
+      ctx.strokeStyle = ecgCol.grid;
       ctx.lineWidth = 1;
       ctx.beginPath();
       for (let x = 0; x < w; x += 16) { ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, h); }
       for (let y = 0; y < h; y += 16) { ctx.moveTo(0, y + 0.5); ctx.lineTo(w, y + 0.5); }
       ctx.stroke();
-      ctx.strokeStyle = getComputedStyle(ecg).getPropertyValue('--trace').trim() || '#11795a';
+      ctx.strokeStyle = ecgCol.trace;
       ctx.lineWidth = 2; ctx.lineJoin = 'round';
       ctx.beginPath();
       const n = trace.length;
@@ -636,43 +632,43 @@
         }
       }
       if (T.micro && T.micro.res) {
-        $('res-micro').hidden = false; $('res-micro').querySelector('.res-time').textContent = 'pobranie ' + mmss(T.micro.sampleT);
+        $('res-micro').hidden = false; DD.setText($('res-micro').querySelector('.res-time'), 'pobranie ' + mmss(T.micro.sampleT));
         showMicro(T.micro.res, T.micro.sampleT + 1, T.micro.sampleT);
       } else $('res-micro').hidden = true;
-      const time = (el, t) => { el.querySelector('.res-time').textContent = 'pobranie ' + mmss(t.sampleT); };
+      const time = (el, t) => { DD.setText(el.querySelector('.res-time'), 'pobranie ' + mmss(t.sampleT)); };
       if (T.usg && T.usg.res) {
         $('res-usg').hidden = false; time($('res-usg'), T.usg);
         drawUsg(T.usg.res);
         const C0 = T.usg.res.colonies, nL = C0.filter((c) => c[4] === 'liver').length, nK = C0.filter((c) => c[4] === 'kidney').length, nO = C0.length - nL - nK;
-        $('res-usg-l').textContent = C0.length ? `Ogniska w wątrobie: ${nL}, w nerce: ${nK}, w naczyniach brzucha: ${nO}` : 'Bez widocznych zmian';
+        DD.setText($('res-usg-l'), C0.length ? `Ogniska w wątrobie: ${nL}, w nerce: ${nK}, w naczyniach brzucha: ${nO}` : 'Bez widocznych zmian');
       } else $('res-usg').hidden = true;
       if (T.crp.res) {
         $('res-crp').hidden = false; time($('res-crp'), T.crp);
         const v = T.crp.res.value;
-        $('res-crp-v').textContent = v;
-        $('res-crp-l').textContent = v < 10 ? 'W normie' : v < 50 ? 'Podwyższone' : v < 150 ? 'Wysokie' : 'Bardzo wysokie';
+        DD.setText($('res-crp-v'), v);
+        DD.setText($('res-crp-l'), v < 10 ? 'W normie' : v < 50 ? 'Podwyższone' : v < 150 ? 'Wysokie' : 'Bardzo wysokie');
       } else $('res-crp').hidden = true;
       if (T.culture.res) {
         $('res-culture').hidden = false; time($('res-culture'), T.culture);
         const r = T.culture.res;
-        $('res-culture-v').textContent = r.positive ? `Dodatni, kolonizacja ${r.infection}%, komórki we krwi: ${r.cells ?? 0}` : 'Ujemny';
+        DD.setText($('res-culture-v'), r.positive ? `Dodatni, kolonizacja ${r.infection}%, komórki we krwi: ${r.cells ?? 0}` : 'Ujemny');
       } else $('res-culture').hidden = true;
       if (T.echo.res) {
         $('res-echo').hidden = false; time($('res-echo'), T.echo);
         drawEcho(T.echo.res);
         const nT = T.echo.res.colonies.filter((c) => c[3]).length, nW = T.echo.res.colonies.length - nT;
-        $('res-echo-l').textContent = (nW || nT) ? `Ogniska na ścianach: ${nW}` + (nT ? `. Niewyraźne zgrubienia ściany: ${nT}` : '') : 'Bez widocznych zmian';
+        DD.setText($('res-echo-l'), (nW || nT) ? `Ogniska na ścianach: ${nW}` + (nT ? `. Niewyraźne zgrubienia ściany: ${nT}` : '') : 'Bez widocznych zmian');
       } else $('res-echo').hidden = true;
       if (T.cbc && T.cbc.res) {
         $('res-cbc').hidden = false; time($('res-cbc'), T.cbc);
         const r = T.cbc.res;
-        $('res-cbc-v').textContent = String(r.wbc).replace('.', ',');
-        $('res-cbc-l').textContent = (r.wbc > 10 ? 'Leukocytoza, ' : 'Leukocyty w normie, ') + ({ norm: 'rozmaz prawidłowy', neutro: 'przewaga neutrofili', lympho: 'przewaga limfocytów' })[r.diff];
+        DD.setText($('res-cbc-v'), String(r.wbc).replace('.', ','));
+        DD.setText($('res-cbc-l'), (r.wbc > 10 ? 'Leukocytoza, ' : 'Leukocyty w normie, ') + ({ norm: 'rozmaz prawidłowy', neutro: 'przewaga neutrofili', lympho: 'przewaga limfocytów' })[r.diff]);
       } else $('res-cbc').hidden = true;
       if (T.pcr && T.pcr.res) {
         $('res-pcr').hidden = false; time($('res-pcr'), T.pcr);
         const sp = T.pcr.res.found && C.species[T.pcr.res.species];
-        $('res-pcr-v').textContent = sp ? sp.name : 'Ujemny';
+        DD.setText($('res-pcr-v'), sp ? sp.name : 'Ujemny');
         $('res-pcr-l').innerHTML = sp ? `<i>${sp.latin}</i>. <b>${sp.treat}</b>` : 'Nie wykryto materiału genetycznego patogenu we krwi.';
       } else $('res-pcr').hidden = true;
       if (T.urine && T.urine.res) {
@@ -687,33 +683,33 @@
         drawCt(T.ct.res);
         const C0 = T.ct.res.colonies, n = (o) => C0.filter((c) => c[4] === o).length, nM = C0.filter((c) => c[3]).length;
         const nH = n('heart'), nL = n('liver'), nK = n('kidney'), nO = C0.length - nH - nL - nK;
-        $('res-ct-l').textContent = C0.length ? `Ogniska w sercu: ${nH} (w mięśniu: ${nM}), w wątrobie: ${nL}, w nerce: ${nK}, w naczyniach: ${nO}` : 'Bez widocznych zmian';
+        DD.setText($('res-ct-l'), C0.length ? `Ogniska w sercu: ${nH} (w mięśniu: ${nM}), w wątrobie: ${nL}, w nerce: ${nK}, w naczyniach: ${nO}` : 'Bez widocznych zmian');
       } else $('res-ct').hidden = true;
       if (T.markers && T.markers.res) {
         $('res-markers').hidden = false; time($('res-markers'), T.markers);
         const v = T.markers.res.value;
-        $('res-markers-v').textContent = String(v).replace('.', ',');
-        $('res-markers-l').textContent = v < 5 ? 'W normie' : v < 15 ? 'Podwyższone' : 'Bardzo wysokie';
+        DD.setText($('res-markers-v'), String(v).replace('.', ','));
+        DD.setText($('res-markers-l'), v < 5 ? 'W normie' : v < 15 ? 'Podwyższone' : 'Bardzo wysokie');
       } else if ($('res-markers')) $('res-markers').hidden = true;
       if (T.xray && T.xray.res) {
         $('res-xray').hidden = false; time($('res-xray'), T.xray);
         const r = T.xray.res; drawXray(r);
-        $('res-xray-l').textContent = !r.bigHeart && !r.nodules ? 'Bez widocznych zmian'
-          : [r.bigHeart ? 'Powiększona sylwetka serca' : '', r.nodules ? `guzki w płucach: ${r.nodules}` : ''].filter(Boolean).join(', ');
+        DD.setText($('res-xray-l'), !r.bigHeart && !r.nodules ? 'Bez widocznych zmian'
+          : [r.bigHeart ? 'Powiększona sylwetka serca' : '', r.nodules ? `guzki w płucach: ${r.nodules}` : ''].filter(Boolean).join(', '));
       } else $('res-xray').hidden = true;
       if (T.mri && T.mri.res) {
         $('res-mri').hidden = false; time($('res-mri'), T.mri);
         drawMri(T.mri.res);
         const C0 = T.mri.res.colonies, ST = C.cancer.stages;
         const sm = C0.filter((c) => c[2] < ST[0]).length, md = C0.filter((c) => c[2] >= ST[0] && c[2] < ST[1]).length, lg = C0.length - sm - md;
-        $('res-mri-l').textContent = C0.length ? `Ognisk: ${C0.length} (w mięśniu: ${C0.filter((c) => c[3]).length}). Małe ${sm}, średnie ${md}, duże ${lg}` : 'Bez widocznych zmian';
+        DD.setText($('res-mri-l'), C0.length ? `Ognisk: ${C0.length} (w mięśniu: ${C0.filter((c) => c[3]).length}). Małe ${sm}, średnie ${md}, duże ${lg}` : 'Bez widocznych zmian');
       } else $('res-mri').hidden = true;
       if (T.biopsy && T.biopsy.res) {
         $('res-biopsy').hidden = false; time($('res-biopsy'), T.biopsy);
         const r = T.biopsy.res, ORG = { heart: 'Serce', liver: 'Wątroba', kidney: 'Nerka' };
         const HIS = { bacteria: 'Ropień z bakteriami', virus: 'Zapalenie wirusowe (wtręty w komórkach)', fungus: 'Strzępki grzyba w tkance', cancer: 'Komórki nowotworowe (rak)' };
-        $('res-biopsy-v').textContent = ORG[r.region];
-        $('res-biopsy-l').textContent = r.finding ? HIS[r.finding] : 'Tkanka prawidłowa';
+        DD.setText($('res-biopsy-v'), ORG[r.region]);
+        DD.setText($('res-biopsy-l'), r.finding ? HIS[r.finding] : 'Tkanka prawidłowa');
       } else $('res-biopsy').hidden = true;
       if (T.abg.res) {
         $('res-abg').hidden = false; time($('res-abg'), T.abg);
@@ -748,29 +744,32 @@
       };
     })();
     const KIND_NAME = { bacteria: 'bakteria', virus: 'wirus', fungus: 'grzyb', cancer: 'nowotwór' };
-    const spLabel = (s) => { const sp = C.species[s.species]; return sp ? `${sp.name.charAt(0).toLowerCase() + sp.name.slice(1)} (${sp.latin})` : (KIND_NAME[s.kind] || 'bakteria'); };
+    // nazwa patogenu małą literą (np. „gronkowiec złocisty”), bez gatunku — nazwa rodzaju
+    const kindEls = [...document.querySelectorAll('.js-kind-name')];   // miejsca z nazwą patogenu (stałe)
+    const kindLabel = (s) => { const sp = C.species[s.species]; return sp ? sp.name.charAt(0).toLowerCase() + sp.name.slice(1) : (KIND_NAME[s.kind] || 'bakteria'); };
+    const spLabel = (s) => { const sp = C.species[s.species]; return sp ? `${kindLabel(s)} (${sp.latin})` : kindLabel(s); };
     function update(s) {
       const d = s.doctor, b = s.bact;
       drawEcg(s);
       const fever = d.feverT > 0;
-      $('v-hr').textContent = Math.round(C.bpm * (s.hr ?? 1));
-      $('v-temp').textContent = fmt(d.temp);
+      DD.setText($('v-hr'), Math.round(C.bpm * (s.hr ?? 1)));
+      DD.setText($('v-temp'), fmt(d.temp));
       $('vital-temp').dataset.state = d.temp > 38 ? 'high' : d.temp > 37.2 ? 'warm' : 'ok';
       if (d.estInfection == null) {
-        $('v-inf').textContent = '—';
-        $('v-inf-note').textContent = 'zleć badanie';
+        DD.setText($('v-inf'), '—');
+        DD.setText($('v-inf-note'), 'zleć badanie');
       } else {
-        $('v-inf').textContent = (d.estExact ? '' : '≈') + d.estInfection + '%';
-        $('v-inf-note').textContent = (d.estExact ? 'posiew, ' : 'z CRP, ') + 'stan sprzed ' + mmss(s.time - (d.estT ?? s.time));
+        DD.setText($('v-inf'), (d.estExact ? '' : '≈') + d.estInfection + '%');
+        DD.setText($('v-inf-note'), (d.estExact ? 'posiew, ' : 'z CRP, ') + 'stan sprzed ' + mmss(s.time - (d.estT ?? s.time)));
       }
       const cond = Math.max(0, s.patient.cond);
-      $('v-cond').textContent = Math.ceil(cond);
+      DD.setText($('v-cond'), Math.ceil(cond));
       $('vital-cond').dataset.state = cond < 30 ? 'high' : cond < 65 ? 'warm' : 'ok';
-      $('v-cond-note').textContent = cond < 30 ? 'krytyczny, grozi sepsa' : cond < 65 ? 'pogarsza się' : 'stabilny';
+      DD.setText($('v-cond-note'), cond < 30 ? 'krytyczny, grozi sepsa' : cond < 65 ? 'pogarsza się' : 'stabilny');
       $('h-cond').style.transform = `scaleX(${cond / 100})`;
-      $('h-cond-val').textContent = Math.ceil(cond) + '%';
+      DD.setText($('h-cond-val'), Math.ceil(cond) + '%');
       $('vital-inf').dataset.state = d.estInfection == null ? 'unknown' : d.estInfection > 50 ? 'high' : 'warm';
-      $('clock').textContent = mmss(s.time);
+      DD.setText($('clock'), mmss(s.time));
 
       // badania
       const cultPos = d.tests.culture.res && d.tests.culture.res.positive;
@@ -780,16 +779,16 @@
         const needCulture = t.kind === 'abg' && !cultPos;
         if (T.state === 'running') {
           el.disabled = true; el.dataset.state = 'running';
-          st.textContent = `W toku, wynik za ${Math.ceil(T.t)} s`;
+          DD.setText(st, `W toku, wynik za ${Math.ceil(T.t)} s`);
           bar.style.transform = `scaleX(${1 - T.t / cfg.duration})`;
         } else if (T.cd > 0) {
           el.disabled = true; el.dataset.state = 'cooldown';
-          st.textContent = `Kolejne za ${Math.ceil(T.cd)} s`;
+          DD.setText(st, `Kolejne za ${Math.ceil(T.cd)} s`);
           bar.style.transform = 'scaleX(0)';
         } else {
           el.disabled = !s.running || !!s.over || needCulture;
           el.dataset.state = needCulture ? 'locked' : 'ready';
-          st.textContent = needCulture ? 'Najpierw dodatni posiew' : `Gotowe, wynik po ${cfg.duration} s`;
+          DD.setText(st, needCulture ? 'Najpierw dodatni posiew' : `Gotowe, wynik po ${cfg.duration} s`);
           bar.style.transform = 'scaleX(0)';
         }
         // lampka: zielona = gotowe, bursztynowa = w toku, szara = odnowienie / zablokowane
@@ -800,10 +799,10 @@
         const run = TESTS.filter((t) => d.tests[t.kind].state === 'running').length;
         const rdy = TESTS.filter((t) => testBtns[t.kind].dataset.state === 'ready').length;
         const ts = run ? `${run} w toku` : `${rdy} gotowe`;
-        if ($('sum-tests').textContent !== ts) $('sum-tests').textContent = ts;
+        DD.setText($('sum-tests'), ts);
         const ar = ACTIONS.filter((a) => btns[a.cd].dataset.state === 'ready').length;
         const as = !d.unlocked ? 'po pierwszym wyniku' : `${ar} gotowe`;
-        if ($('sum-actions').textContent !== as) $('sum-actions').textContent = as;
+        DD.setText($('sum-actions'), as);
       }
       renderResults(s);
 
@@ -822,17 +821,17 @@
           el.disabled = !d.unlocked || PR.state === 'running' || !!PR.done[p.what] || !s.running || !!s.over;
           el.dataset.active = PR.state === 'running' && PR.kind === p.what ? '1' : '0';
         }
-        $('proc-state').textContent = PR.state === 'running' ? `Zabieg w toku: jeszcze ${Math.ceil(PR.t)} s` : '';
+        DD.setText($('proc-state'), PR.state === 'running' ? `Zabieg w toku: jeszcze ${Math.ceil(PR.t)} s` : '');
         const rcd = d.cd.radio || 0;
         for (const r of RADIO) {
           const el = radioBtns[r.region];
           el.disabled = !d.unlocked || rcd > 0 || !s.running || !!s.over;
           el.dataset.active = s.radio && s.radio.region === r.region ? '1' : '0';
         }
-        $('radio-state').textContent = s.radio ? `Naświetlanie jeszcze ${Math.ceil(s.radio.t)} s` : rcd > 0 ? `Kolejna za ${Math.ceil(rcd)} s` : '';
-        $('surg-state').textContent = !d.unlocked ? 'Wymaga wyniku badania'
+        DD.setText($('radio-state'), s.radio ? `Naświetlanie jeszcze ${Math.ceil(s.radio.t)} s` : rcd > 0 ? `Kolejna za ${Math.ceil(rcd)} s` : '');
+        DD.setText($('surg-state'), !d.unlocked ? 'Wymaga wyniku badania'
           : SU.state === 'running' ? `Operacja w toku: jeszcze ${Math.ceil(SU.t)} s`
-          : SU.cd > 0 ? `Kolejna za ${Math.ceil(SU.cd)} s` : 'Gotowa';
+          : SU.cd > 0 ? `Kolejna za ${Math.ceil(SU.cd)} s` : 'Gotowa');
       }
 
       for (const a of ACTIONS) {
@@ -844,11 +843,11 @@
         let st = locked ? 'Wymaga wyniku badania' : cd > 0 ? `Gotowe za ${Math.ceil(cd)} s` : 'Gotowe';
         if (a.cd === 'fever' && fever) st = `Trwa jeszcze ${Math.ceil(d.feverT)} s`;
         if (s.drugs[a.cd] && s.drugs[a.cd].t > 0) st = `We krwi jeszcze ${Math.ceil(s.drugs[a.cd].t)} s`;
-        el.querySelector('.action-state').textContent = st;
+        DD.setText(el.querySelector('.action-state'), st);
         const eff = 1 - b.resist[a.cd];
         const effEl = el.querySelector('.action-eff');
         const cost = Math.round((C.patient.sideEffect[a.cd] || 0) * (DD.Game.patientOf(s).sideFx ?? 1));
-        effEl.textContent = `Dawka ${Math.round(eff * 100)}%` + (cost ? `, stan pacjenta −${cost}` : '');
+        DD.setText(effEl, `Dawka ${Math.round(eff * 100)}%` + (cost ? `, stan pacjenta −${cost}` : ''));
         effEl.dataset.level = eff > 0.75 ? 'full' : eff > 0.45 ? 'mid' : 'low';
       }
 
@@ -867,62 +866,62 @@
       }
 
       // HUD patogenu
-      { const sp = C.species[s.species]; const nm = sp ? sp.name.charAt(0).toLowerCase() + sp.name.slice(1) : (KIND_NAME[s.kind] || 'bakteria');
-        document.querySelectorAll('.js-kind-name').forEach((el) => { if (el.textContent !== nm) el.textContent = nm; }); }
+      { const nm = kindLabel(s);
+        kindEls.forEach((el) => DD.setText(el, nm)); }
       // wylosowany pacjent: oznaczenie w HUD i na karcie oraz plansza na początku rundy
       { const P = C.patients[s.ptype];
         if (P) {
-          if ($('h-patient').textContent !== 'Pacjent: ' + P.name) $('h-patient').textContent = 'Pacjent: ' + P.name;
-          if ($('doc-ptype').textContent !== P.name) $('doc-ptype').textContent = P.name;
+          DD.setText($('h-patient'), 'Pacjent: ' + P.name);
+          DD.setText($('doc-ptype'), P.name);
           const rv = $('ptype-reveal'), show = s.running && !s.over && s.time < C.ui.revealTime;
           if (show && rv.dataset.pt !== s.ptype) {
             rv.dataset.pt = s.ptype;
-            $('pr-name').textContent = P.name; $('pr-bact').textContent = P.bact; $('pr-doc').textContent = P.doc;
+            DD.setText($('pr-name'), P.name); DD.setText($('pr-bact'), P.bact); DD.setText($('pr-doc'), P.doc);
           }
           if (rv.hidden === show) rv.hidden = !show;
           if (!show) rv.dataset.pt = '';
         } }
-      $('h-place').textContent = b.transit ? (DD.Heart.ROUTES[b.transit.to] || DD.Heart.ROUTES.body).name : b.place;
+      DD.setText($('h-place'), b.transit ? (DD.Heart.ROUTES[b.transit.to] || DD.Heart.ROUTES.body).name : b.place);
       $('h-hp').style.transform = `scaleX(${b.hp / C.bacteria.hp})`;
-      $('h-hp-val').textContent = Math.ceil(b.hp);
+      DD.setText($('h-hp-val'), Math.ceil(b.hp));
       $('h-inf').style.transform = `scaleX(${b.infection / 100})`;
-      $('h-inf-val').textContent = Math.floor(b.infection) + '%';
+      DD.setText($('h-inf-val'), Math.floor(b.infection) + '%');
       const K = C.colony;
       const canFound = (b.contact || b.inTissue) && !b.transit && !b.dead;
       $('h-contact').hidden = !canFound;
       if (canFound) {
         const colTxt = b.colonyCd > 0 ? `Kolonia możliwa za ${Math.ceil(b.colonyCd)} s.` : b.hp > K.cost * DD.Game.patientOf(s).colonyCost + 1 ? `E zakłada kolonię (−${Math.round(K.cost * DD.Game.patientOf(s).colonyCost)} życia).` : 'Za mało życia na kolonię.';
         if (b.inTissue) {
-          $('h-contact').textContent = 'W mięśniu sercowym: przeciwciała cię tu nie dosięgną, leki działają słabiej. ' + colTxt + ' Do krwi wracasz, podpływając do ściany naczynia albo klawiszem Q.';
+          DD.setText($('h-contact'), 'W mięśniu sercowym: przeciwciała cię tu nie dosięgną, leki działają słabiej. ' + colTxt + ' Do krwi wracasz, podpływając do ściany naczynia albo klawiszem Q.');
         } else if (b.burrowT > 0) {
-          $('h-contact').textContent = `Wnikanie w ścianę: ${b.burrowT.toFixed(1).replace('.', ',')} s. Nie odpływaj od ściany. Q przerywa.`;
+          DD.setText($('h-contact'), `Wnikanie w ścianę: ${b.burrowT.toFixed(1).replace('.', ',')} s. Nie odpływaj od ściany. Q przerywa.`);
         } else {
-          $('h-contact').textContent = (b.feeding ? 'Żerujesz na tkance, życie wraca. ' : 'Przy ścianie. ') + colTxt + (DD.Heart.organAt(b.x, b.y) === 'heart' ? ' Q: wnikanie w ścianę.' : '');
+          DD.setText($('h-contact'), (b.feeding ? 'Żerujesz na tkance, życie wraca. ' : 'Przy ścianie. ') + colTxt + (DD.Heart.organAt(b.x, b.y) === 'heart' ? ' Q: wnikanie w ścianę.' : ''));
         }
       }
-      $('s-colonies-n').textContent = s.colonies.length;
+      DD.setText($('s-colonies-n'), s.colonies.length);
       // rak: etap każdego guza wynika z jego wielkości
       if (s.kind === 'cancer') {
         const ST = C.cancer.stages; let sm = 0, md = 0, lg = 0;
         for (const c of s.colonies) { if (c.size < ST[0]) sm++; else if (c.size < ST[1]) md++; else lg++; }
         const t = `małe ${sm} · średnie ${md} · duże ${lg}`;
-        if ($('s-tumors').textContent !== t) $('s-tumors').textContent = t;
+        DD.setText($('s-tumors'), t);
       }
       $('s-tumors').hidden = s.kind !== 'cancer';
       // pożywienie i kopie
       const food = b.food || 0, ncop = (s.copies || []).length;
       $('h-food').style.transform = `scaleX(${food / 100})`;
-      $('h-food-val').textContent = Math.floor(food);
-      $('s-copies-n').textContent = ncop; $('s-copies-max').textContent = C.copies.max;
+      DD.setText($('h-food-val'), Math.floor(food));
+      DD.setText($('s-copies-n'), ncop); DD.setText($('s-copies-max'), C.copies.max);
       // mutacje i zdolności
       const MC = C.mutations;
-      $('mut-pts').textContent = (b.points || 0).toFixed(1).replace('.', ',');
+      DD.setText($('mut-pts'), (b.points || 0).toFixed(1).replace('.', ','));
       for (const m of MUTS) {
         // grzyb: klawisze 7, 8, 9, 0 mają inne mutacje (C.fungus.mutNames)
         const key = DD.Game.mutKey(s, m.what), nm = (s.kind === 'fungus' && C.fungus.mutNames[m.what]) || (s.kind === 'cancer' && C.cancer.mutNames[m.what]) || m.name;
         const lvl = (b.mut && b.mut[key]) || 0, max = MC[key].max, cost = MC.cost[lvl];
         const el = mutBtns[m.what];
-        const nmEl = el.querySelector('span'); if (nmEl.dataset.nm !== nm) { nmEl.dataset.nm = nm; nmEl.textContent = nm; }
+        const nmEl = el.querySelector('span'); if (nmEl.dataset.nm !== nm) { nmEl.dataset.nm = nm; DD.setText(nmEl, nm); }
         // kropki poziomów i koszt w osobnych węzłach (koszt tłumaczy się jako „N pkt”)
         const lv = el.querySelector('.mut-lvl'), key2 = lvl + '/' + max + '/' + cost;
         if (lv.dataset.k !== key2) { lv.dataset.k = key2; lv.innerHTML = '●'.repeat(lvl) + '○'.repeat(max - lvl) + (lvl < max ? `<span class="mut-cost">${cost} pkt</span>` : ''); }
@@ -941,25 +940,25 @@
         else if (b.signalCd > 0) ab.push(`Sygnały chemiczne za ${Math.ceil(b.signalCd)} s.`);
         else ab.push(`B: sygnały chemiczne (fałszywy objaw, −${X.hpCost} życia).`); }
       if (b.mut && b.mut.toxins) ab.push(b.toxinCd > 0 ? `Toksyny za ${Math.ceil(b.toxinCd)} s.` : `T: toksyny (−${C.toxins.hpCost} życia, stan pacjenta −${C.toxins.patientDamage}, zakłócają badania).`);
-      $('mut-ability').innerHTML = ab.map((x) => `<span>${x}</span>`).join(' ');   // osobne węzły (tłumaczenie zdań)
+      DD.setHTML($('mut-ability'), ab.map((x) => `<span>${x}</span>`).join(' '));   // osobne węzły (tłumaczenie zdań)
       $('respawn').hidden = !(b.dead > 0);
-      if (b.dead > 0) $('respawn-t').textContent = Math.ceil(b.dead);
+      if (b.dead > 0) DD.setText($('respawn-t'), Math.ceil(b.dead));
       let stuck = 0; for (const a of s.antibodies) if (a.stuck) stuck++;
       $('s-fever').hidden = !(d.temp > 37.4);
       // leki we krwi widziane przez patogen (z rzeczywistym działaniem)
       const DN = { abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'lek przeciwwirusowy', antifungal: 'lek przeciwgrzybiczy', chemo: 'chemioterapia' };
       const active = Object.keys(DN).filter((k) => s.drugs[k] && s.drugs[k].t > 0);
       $('s-slow').hidden = active.length === 0;
-      $('s-slow').textContent = active.map((k) => `${DN[k]}: ${s.drugs[k].eff > 0.05 ? 'działa ' + Math.round(s.drugs[k].eff * 100) + '%' : 'nie działa'}`).join(', ');
+      DD.setText($('s-slow'), active.map((k) => `${DN[k]}: ${s.drugs[k].eff > 0.05 ? 'działa ' + Math.round(s.drugs[k].eff * 100) + '%' : 'nie działa'}`).join(', '));
       $('s-ab').hidden = stuck === 0;
-      $('s-ab-n').textContent = stuck;
+      DD.setText($('s-ab-n'), stuck);
       $('s-ab-near').hidden = !(s.antibodies.length > stuck && stuck === 0 && s.antibodies.some(a => Math.hypot(a.x - b.x, a.y - b.y) < 12));
       const RN = { antibodies: 'przeciwciała', fever: 'gorączka', abxA: 'β-laktam', abxB: 'makrolid', antiviral: 'przeciwwirusowy', antifungal: 'przeciwgrzybiczy', chemo: 'chemioterapia', radio: 'radioterapia' };
       const res = Object.keys(RN).filter(k => b.resist[k] > 0).map(k => `${RN[k]} ${Math.round(b.resist[k] * 100)}%`);
       $('s-res').hidden = res.length === 0;
-      $('s-res').textContent = 'Oporność: ' + res.join(', ');
+      DD.setText($('s-res'), 'Oporność: ' + res.join(', '));
       $('transit').hidden = !b.transit;
-      if (b.transit) $('transit-text').textContent = (DD.Heart.ROUTES[b.transit.to] || DD.Heart.ROUTES.body).text;
+      if (b.transit) DD.setText($('transit-text'), (DD.Heart.ROUTES[b.transit.to] || DD.Heart.ROUTES.body).text);
 
       // koniec gry
       const end = $('end');
@@ -972,10 +971,10 @@
       } else if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd)) {
         end.hidden = false;
         const kn = KIND_NAME[s.kind] || 'bakteria';
-        $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`;
-        $('end-text').textContent = s.over === 'doctor'
+        DD.setText($('end-title'), s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`);
+        DD.setText($('end-text'), s.over === 'doctor'
           ? `Zakażenie wyleczone po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`
-          : s.kind === 'cancer' ? `Wyniszczenie nowotworowe po ${mmss(s.time)}. Patogen: ${spLabel(s)}.` : `Pacjent w sepsie po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`;
+          : s.kind === 'cancer' ? `Wyniszczenie nowotworowe po ${mmss(s.time)}. Patogen: ${spLabel(s)}.` : `Pacjent w sepsie po ${mmss(s.time)}. Patogen: ${spLabel(s)}.`);
         renderStats(s);
         if (DD.Match) DD.Match.renderEnd();
         $('end-again').focus();

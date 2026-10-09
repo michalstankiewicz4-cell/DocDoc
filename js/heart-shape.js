@@ -206,7 +206,7 @@
     }
   }
   function edt2d(grid, w, h) {
-    const INF = 1e20, n = Math.max(w, h);
+    const n = Math.max(w, h);
     const f = new Float64Array(n), d = new Float64Array(n), v = new Int32Array(n), z = new Float64Array(n + 1);
     for (let x = 0; x < w; x++) {
       for (let y = 0; y < h; y++) f[y] = grid[y * w + x];

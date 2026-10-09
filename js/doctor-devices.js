@@ -128,7 +128,7 @@
       // przyciski pompy (ozdobne)
       for (let i = 0; i < 3; i++) { ctx.fillStyle = i === 1 ? '#7fb8a4' : '#c9d1cd'; rr(ctx, px + 12 + i * 30, py + ph - 30, 24, 16, 5); ctx.fill(); }
       const txt = on ? 'We krwi: ' + inf.map((x) => `${x.name} ${Math.ceil(x.left)} s`).join(', ') : 'Brak leków we krwi';
-      if (txt !== lastPumpText) { lastPumpText = txt; $('pump-text').textContent = txt; }
+      if (txt !== lastPumpText) { lastPumpText = txt; DD.setText($('pump-text'), txt); }
     }
 
     // ---------- sylwetka ----------

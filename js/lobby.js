@@ -5,11 +5,11 @@
 
   function status(text, kind) {
     const el = $('lobby-status');
-    el.textContent = text || '';
+    DD.setText(el, text || '');
     el.dataset.kind = kind || '';
   }
   async function copy(textarea, btn) {
-    const done = () => { const t = btn.textContent; btn.textContent = 'Skopiowano'; setTimeout(() => { btn.textContent = t; }, 1500); };
+    const done = () => { const t = btn.textContent; DD.setText(btn, 'Skopiowano'); setTimeout(() => { DD.setText(btn, t); }, 1500); };
     try { await navigator.clipboard.writeText(textarea.value); done(); }
     catch (e) { textarea.focus(); textarea.select(); status('Kod jest zaznaczony. Skopiuj go skrótem Ctrl+C.', 'info'); }
   }
@@ -82,19 +82,19 @@
           document.body.dataset.net = 'host';
           DD.updateKindPickers();
           DD.showOrganPick(true);
-          $('start-net-status').textContent = `Połączono z drugim graczem. Grasz jako ${ROLE_NAME[N.role]}. Wybierz narząd, żeby zacząć.`;
+          DD.setText($('start-net-status'), `Połączono z drugim graczem. Grasz jako ${ROLE_NAME[N.role]}. Wybierz narząd, żeby zacząć.`);
         } else {
           document.body.dataset.net = 'guest';
           DD.updateKindPickers();
           if (N.role === 'bact') DD.send({ type: 'bact.kind', kind: DD.chosenKind });
-          $('wait-role').textContent = ROLE_NAME[N.role];
+          DD.setText($('wait-role'), ROLE_NAME[N.role]);
           $('wait').hidden = false;
         }
       };
       N.onClosed = (reason) => {
         if (reason === 'left') {
-          $('net-lost-title').textContent = 'Drugi gracz opuścił grę';
-          $('net-lost-text').textContent = 'Drugi gracz zamknął kartę z grą. Żeby zagrać znowu, wróćcie do menu i wymieńcie nowe kody.';
+          DD.setText($('net-lost-title'), 'Drugi gracz opuścił grę');
+          DD.setText($('net-lost-text'), 'Drugi gracz zamknął kartę z grą. Żeby zagrać znowu, wróćcie do menu i wymieńcie nowe kody.');
         }
         $('net-lost').hidden = false;
       };

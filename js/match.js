@@ -47,8 +47,8 @@
     $('end-match-rounds').innerHTML = R.map((r, i) => `<li><b>Runda ${i + 1}</b>: ${r.winner === me() ? 'wygrywasz' : 'wygrywa przeciwnik'} jako ${ROLE[r.role]} (${mmss(r.time)})</li>`).join('')
       || '<li>Wynik rundy jeszcze się zapisuje…</li>';
     const S = summary();
-    $('end-match-verdict').textContent = S.verdict || `Runda ${R.length} z ${M.ROUNDS}. Stan meczu ${S.mine}:${S.theirs}.`;
-    $('end-swap').textContent = R.length >= M.ROUNDS ? 'Nowy mecz (zamiana ról)' : 'Rewanż z zamianą ról';
+    DD.setText($('end-match-verdict'), S.verdict || `Runda ${R.length} z ${M.ROUNDS}. Stan meczu ${S.mine}:${S.theirs}.`);
+    DD.setText($('end-swap'), R.length >= M.ROUNDS ? 'Nowy mecz (zamiana ról)' : 'Rewanż z zamianą ról');
   };
 
   // zamiana ról: gość prosi hosta, host zamienia i informuje gościa
@@ -70,9 +70,9 @@
     if (N.mode === 'host') {
       $('start').hidden = false;
       DD.showOrganPick(true);
-      $('start-net-status').textContent = `Runda ${M.results.length + 1} z ${M.ROUNDS}. Grasz teraz jako ${N.role === 'bact' ? 'patogen' : 'lekarz'}. Wybierz narząd, żeby zacząć.`;
+      DD.setText($('start-net-status'), `Runda ${M.results.length + 1} z ${M.ROUNDS}. Grasz teraz jako ${N.role === 'bact' ? 'patogen' : 'lekarz'}. Wybierz narząd, żeby zacząć.`);
     } else {
-      $('wait-role').textContent = N.role === 'bact' ? 'Patogen' : 'Lekarz';
+      DD.setText($('wait-role'), N.role === 'bact' ? 'Patogen' : 'Lekarz');
       $('wait').hidden = false;
       if (N.role === 'bact') DD.send({ type: 'bact.kind', kind: DD.chosenKind });
     }

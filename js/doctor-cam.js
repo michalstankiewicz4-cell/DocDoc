@@ -78,7 +78,7 @@
     }
 
     // ---------- zdjęcie z chwili pobrania ----------
-    let lastSampleT = -1, photoFor = -1;
+    let photoFor = -1;
     function takePhoto(s) {
       const sampleT = s.doctor.tests.micro.sampleT;
       const pair = findPair(sampleT);

@@ -119,7 +119,6 @@
       bact.add(f); flags.push(f);
     }
     scene.add(bact);
-    A.bact = bact; A.bodyMat = body.material; A.flagMat = flagMat;
 
     // --- wirus: kapsyd (dwudziestościan) z wypustkami białkowymi ---
     const virus = new THREE.Group();

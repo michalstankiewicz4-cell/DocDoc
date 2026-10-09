@@ -98,7 +98,6 @@
     const specks = new THREE.Points(sg, smat);
     specks.frustumCulled = false;
 
-    const win = { cx: 0, cy: 0, hx: 10, hy: 10 };
     const Z0 = -4.4, Z1 = 2.6;
     let active = 0;
 

@@ -6,7 +6,7 @@
   function boot() {
     const $ = (id) => document.getElementById(id);
     const N = DD.Net;
-    document.querySelectorAll('.js-version').forEach((el) => { el.textContent = DD.VERSION; });
+    document.querySelectorAll('.js-version').forEach((el) => { DD.setText(el, DD.VERSION); });
     try {
       DD.Heart.init();
       DD.Flow.init();
@@ -38,11 +38,11 @@
     };
 
     // dźwięk: włączany pierwszym gestem, przełącznik M lub przycisk
-    const soundLabel = () => { $('sound-label').textContent = DD.Audio.on ? 'Dźwięk włączony' : 'Dźwięk wyłączony'; };
+    const soundLabel = () => { DD.setText($('sound-label'), DD.Audio.on ? 'Dźwięk włączony' : 'Dźwięk wyłączony'); };
     soundLabel();
     $('btn-sound').addEventListener('click', () => { DD.Audio.toggle(); soundLabel(); $('btn-sound').blur(); });
     // głośność monitora lekarza (beep, alarmy, linia płaska)
-    const beepShow = () => { const L = DD.Audio.beepLevel; $('beep-lvl').textContent = L ? '▮'.repeat(L) + '▯'.repeat(DD.Audio.BEEP_MAX - L) : '✕'; $('beep-lvl').title = L ? '' : 'Monitor wyciszony'; };
+    const beepShow = () => { const L = DD.Audio.beepLevel; DD.setText($('beep-lvl'), L ? '▮'.repeat(L) + '▯'.repeat(DD.Audio.BEEP_MAX - L) : '✕'); $('beep-lvl').title = L ? '' : 'Monitor wyciszony'; };
     beepShow();
     $('beep-down').addEventListener('click', (e) => { DD.Audio.setBeep(DD.Audio.beepLevel - 1); beepShow(); e.currentTarget.blur(); });
     $('beep-up').addEventListener('click', (e) => { DD.Audio.init(); DD.Audio.setBeep(DD.Audio.beepLevel + 1); beepShow(); e.currentTarget.blur(); });
