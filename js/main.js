@@ -127,8 +127,11 @@
 
       if (N.mode === 'guest') {
         DD.Input.poll();
+        const prevT = state.time;
         N.guestFrame(state, dt);
-        if (state.running && !wasRunning) { $('wait').hidden = true; if (view) { view.tx = state.bact.x; view.ty = state.bact.y; } }
+        // nowa runda: start gry albo cofnięcie czasu (po meczu stan zostaje „running” z poprzedniej rundy)
+        const newRound = state.running && !state.over && (!wasRunning || state.time < prevT - 0.5);
+        if (newRound) { $('wait').hidden = true; $('end').hidden = true; if (view) { view.tx = state.bact.x; view.ty = state.bact.y; } }
         wasRunning = state.running;
       } else {
         simulate(dt, 6);

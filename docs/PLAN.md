@@ -9,7 +9,7 @@ Status: ✅ zrobione, 🔧 w trakcie, ⬜ do zrobienia.
 | | Zadanie | Opis |
 | --- | --- | --- |
 | ✅ | Powrót z mięśnia | Po wejściu w ścianę czasem nie da się wrócić do krwi — błąd do naprawy. |
-| ⬜ | Mecz z zamianą ról | „Rewanż z zamianą ról” nie działa poprawnie — błąd do naprawy. |
+| ✅ | Mecz z zamianą ról | „Rewanż z zamianą ról” nie działa poprawnie — błąd do naprawy. |
 | ⬜ | Pasek przewijania | W stylu gry (ciemny, jak aparatura). |
 | ⬜ | Ekran startowy | Usunąć kafelki z opisem patogenu i lekarza oraz zdanie „Asymetryczna gra…”. |
 | ⬜ | Nazwa „Patient Zero” | Ze spacją w tytule, na ekranie startowym i w dokumentacji. |
