@@ -5,10 +5,10 @@ Zmiany między wersjami: [CHANGELOG.md](../CHANGELOG.md).
 
 ## O co chodzi
 
-Gra toczy się wewnątrz serca pacjenta, pokazanego w przekroju.
+Gra toczy się w układzie krążenia pacjenta pokazanym w przekroju: w sercu, a pod przeponą w wątrobie i nerce.
 
-- **Patogen** (bakteria albo wirus — wybiera gracz patogenu, lekarz tego nie wie) płynie z prądem krwi, przeciska się przez zastawki i zakłada kolonie na ścianach.
-- **Lekarz** nie widzi patogenu wprost. Zleca badania krwi, ogląda opóźniony podgląd i leczy.
+- **Patogen** (jedna z trzech bakterii albo jeden z trzech wirusów — wybiera gracz patogenu, lekarz tego nie wie) płynie z prądem krwi, przeciska się przez zastawki, zakłada kolonie na ścianach, mutuje i rozmnaża się.
+- **Lekarz** nie widzi patogenu wprost. Obserwuje monitor i objawy, zleca badania, szuka patogenu pod mikroskopem i dobiera leczenie.
 
 | Kto | Wygrywa, gdy |
 | --- | --- |
@@ -40,7 +40,7 @@ Każdy gracz na swoim komputerze widzi tylko swoją połowę. Połączenie jest 
 
 Host liczy całą grę, więc gość może odczuwać niewielkie opóźnienie sterowania.
 
-**Mecz:** w grze na 2 osoby rozgrywacie mecz z 2 rund. Po pierwszej rundzie każdy z graczy może nacisnąć „Rewanż z zamianą ról” — gracze zamieniają się rolami i host wybiera narząd do drugiej rundy (nowy patogen wybiera bakterię albo wirusa). Ekran końcowy pokazuje wynik meczu; przy remisie 1:1 wygrywa ten, kto wygrał swoją rundę szybciej.
+**Mecz:** w grze na 2 osoby rozgrywacie mecz z 2 rund. Po pierwszej rundzie każdy z graczy może nacisnąć „Rewanż z zamianą ról” — gracze zamieniają się rolami i host wybiera narząd do drugiej rundy (nowy gracz patogenu wybiera rodzaj patogenu). Ekran końcowy pokazuje wynik meczu; przy remisie 1:1 wygrywa ten, kto wygrał swoją rundę szybciej.
 
 ## Patogen
 
@@ -91,7 +91,7 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
   - **tętnica nerkowa** prowadzi do **nerki**: tętnice międzypłatowe między piramidami, tętnica łukowata na granicy kory i rdzenia, kłębuszki w korze, dalej żyły międzypłatowe i żyła nerkowa do żyły głównej dolnej,
   - dół aorty brzusznej prowadzi przez nogi do żyły głównej dolnej, która płynie w górę przez wątrobę do prawego przedsionka.
   - W jamie brzusznej można zakładać kolonie i żerować, ale nie można wnikać w ścianę (`Q` działa tylko w sercu). Echo serca nie widzi kolonii w jamie brzusznej, ale widzi je USG jamy brzusznej. Kolonie w wątrobie dają żółtaczkę, a w nerce krew w moczu.
-- **Żerowanie:** gdy patogen dotyka ściany serca, odzyskuje życie.
+- **Żerowanie:** gdy patogen dotyka ściany serca albo naczynia, odzyskuje życie.
 - **Kolonie:** przy ścianie `E` zakłada kolonię za 25 punktów życia. Kolonia rośnie sama, a suma rozmiarów kolonii to kolonizacja, która obciąża pacjenta.
   - Antybiotyk wstrzymuje wzrost kolonii, a gorączka go spowalnia.
   - Przeciwciała, które nie mają w pobliżu patogenu, atakują kolonie.
@@ -113,6 +113,8 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
 - **Odrodzenie:** gdy patogen zginie, po 3 s odradza się w swojej największej kolonii, która traci przy tym część masy. Bez kolonii śmierć patogenu kończy grę.
 
 ### Ekran
+- **Lewy górny róg:** rodzaj patogenu i nazwa miejsca, w którym jesteś (np. „Prawa komora”, „Zraziki wątroby”, „Tętnica łukowata”).
+- **Prawy dolny róg:** mutacje, punkty mutacji i dostępne zdolności (ukrycie, toksyny, rozmnożenie).
 - **Lewy dolny róg:** życie, kolonizacja, stan pacjenta, pożywienie, liczba kolonii i kopii oraz aktywne efekty (gorączka, antybiotyk, przyczepione przeciwciała, oporność).
 - **Minimapa** (obecnie ukryta, można ją włączyć w `js/config.js`: `ui.minimap`): serca albo jamy brzusznej (przełącza się sama, gdy patogen przepłynie pod przeponę). PP to prawy przedsionek, PK prawa komora, LP lewy przedsionek, LK lewa komora. Ramka oznacza kadr kamery, zielone kropki to kolonie, przyciemnione kropki to kopie patogenu.
 
@@ -145,7 +147,7 @@ Panel lekarza wygląda jak aparatura na sali intensywnej terapii:
 | `5` | lek przeciwwirusowy |
 | `H` `J` `K` `L` | operacja zastawki: trójdzielnej, mitralnej, pnia płucnego, aorty |
 
-Każdą akcję można też kliknąć w panelu.
+Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
 
 ### Jak grać
 1. **Badania** mogą biec równolegle, a każdy wynik opisuje chwilę pobrania próbki. Pierwszy wynik dowolnego badania odblokowuje leczenie.
@@ -166,10 +168,10 @@ Każdą akcję można też kliknąć w panelu.
    - **Makrolid** (bakteriostatyczny) spowalnia bakterię i wstrzymuje wzrost kolonii.
    - **Lek przeciwwirusowy** osłabia wirusa, spowalnia go i wstrzymuje wzrost jego kolonii.
    - Antybiotyki nie działają na wirusa, a lek przeciwwirusowy na bakterię. Skuteczność zależy od rodzaju patogenu (tabela w „Wybór patogenu”); rodzaj pokazuje mikroskop, a antybiogram wrażliwość z uwzględnieniem oporności nabytej.
-   - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie.
+   - **Jak rozpoznać patogen:** posiew przy bakterii jest dodatni, a przy wirusie ujemny, choć CRP rośnie. Konkretny rodzaj (i podpowiedź leczenia) pokazuje mikroskop.
    - **Operacja zastawki** trwa 10 s i obciąża pacjenta (stan −15). Po zakończeniu usuwa wszystkie ogniska w promieniu kilku milimetrów od wybranej zastawki, także w ścianie, a patogen w pobliżu traci 40 życia. Kolejna operacja jest możliwa po 60 s. Dobrze ją połączyć z echem serca, które pokazuje, gdzie są ogniska.
 3. **Oporność nabyta:** każde kolejne użycie tego samego leczenia działa słabiej (100%, 80%, 60%, 40%, potem stale 20%). Na przycisku widać siłę następnej dawki i jej koszt dla pacjenta. Rzeczywiste działanie zależy jeszcze od rodzaju patogenu i jego naturalnej oporności.
-4. **Sala z pacjentem i objawy:** na górze panelu widać pacjenta na łóżku. Objawy wynikają z tego, gdzie są kolonie:
+4. **Sala z pacjentem i objawy:** kamera w sali pokazuje pacjenta na łóżku, a sylwetka obok podświetla obszary z objawami. Objawy wynikają z tego, gdzie są kolonie:
 
    | Objaw | Co znaczy |
    | --- | --- |
@@ -181,19 +183,23 @@ Każdą akcję można też kliknąć w panelu.
    | gorączka i poty | temperatura od 37,8 °C |
    | bladość, sinica | stan pacjenta poniżej 55% / 25% |
 
-   W czasie badań na stole w sali widać laboratorium (wirówka, szalka z posiewem, antybiogram, USG). Kroplówka kapie, gdy lek jest we krwi. Przy stanie poniżej 30% albo gorączce od 39 °C monitor pulsuje na czerwono i gra alarm.
+   W czasie badań na stole w sali widać laboratorium (wirówka, mikroskop, szalka z posiewem, antybiogram, wózek USG z głowicą na klatce albo na brzuchu). Kroplówka w sali i pompa infuzyjna pokazują leki we krwi. Przy stanie poniżej 30% albo gorączce od 39 °C dioda i ramka monitora świecą na czerwono i gra alarm.
 5. **Mikroskop:** przeciągaj preparat myszą (albo kliknij obraz i używaj strzałek), aż drobnoustrój znajdzie się w środku okularu. Wtedy wokół niego pojawia się zielony pierścień, obok kolorowe zdjęcie patogenu z chwili pobrania, a pod obrazem nazwa rodzaju i podpowiedź leczenia. Po 15 s szukania przy brzegu okularu pojawia się pulsująca strzałka w stronę najbliższego skupiska. Jeśli w chwili pobrania patogenu nie było we krwi (był w mięśniu albo ukryty, bez kopii i kolonii na ścianach naczyń), preparat jest pusty — po przeszukaniu większości preparatu wynik to „Brak drobnoustrojów”.
 6. **Dziennik** zapisuje badania, wyniki i podane leki.
 
 ## Koniec rundy
 
-Po wygranej jednej ze stron ekran końcowy pokazuje statystyki obu graczy: drogę bakterii, najwyższą kolonizację, przejścia przez zastawki, odwiedzone jamy serca, a dla lekarza liczbę badań, czas pierwszego badania i leczenia, użyte leki i zadane obrażenia. „Zagraj jeszcze raz” zaczyna nową rundę.
+Po wygranej jednej ze stron ekran końcowy podaje rodzaj patogenu i statystyki obu graczy:
+- **patogen:** przebyta droga, najwyższa kolonizacja, kolonie założone i zniszczone, odrodzenia, czas przy ścianie, przejścia przez zastawki, wniknięcia w ścianę, mutacje, toksyny, czas w ukryciu, zjedzone pożywienie, kopie (utworzone, zniszczone, obumarłe), przeciwciała zwiedzione przez kopie, przejścia przez krążenie płucne i duże, odwiedzone jamy serca, najmniej życia;
+- **lekarz:** liczba badań, czas pierwszego badania i leczenia, liczba dawek każdego leku, operacje i usunięte nimi ogniska, trafienia przeciwciał oraz obrażenia od leków, przeciwciał i gorączki.
+
+„Zagraj jeszcze raz” zaczyna nową rundę w tym samym narządzie i z tym samym rodzajem patogenu (chyba że gracz patogenu wybierze inny).
 
 ## Dźwięk
 
 - **Patogen** słyszy wszystko jak pod wodą: przytłumione „lub-dub” serca i szum krwi, który narasta w skurczu i w silnym prądzie.
 - **Kaszel pacjenta** słyszą obaj gracze, tym częściej, im większa kolonizacja. Patogen słyszy go głucho od środka, lekarz wyraźnie w sali. To wskazówka dla lekarza, że zakażenie postępuje.
-- **Lekarz** słyszy salę szpitalną: „beep” pulsoksymetru przy każdym uderzeniu serca, alarm monitora (trzy tony co 6 s) przy gorączce od 39 °C i dzwonek, gdy przychodzi wynik badania.
+- **Lekarz** słyszy salę szpitalną: „beep” pulsoksymetru przy każdym uderzeniu serca, alarm monitora (trzy tony co 6 s) przy gorączce od 39 °C, alarm wysokiego priorytetu (pięć szybkich tonów co 3 s) przy stanie pacjenta poniżej 30% i dzwonek, gdy przychodzi wynik badania.
 - W trybie deweloperskim słychać obie warstwy, lekarza ciszej.
 
 Dźwięk włącza się po pierwszym kliknięciu albo klawiszu, bo przeglądarki wcześniej go blokują. `M` wycisza, a wybór zostaje zapamiętany.
@@ -214,3 +220,5 @@ Dźwięk włącza się po pierwszym kliknięciu albo klawiszu, bo przeglądarki 
 | Gra sieciowa nie działa w podglądzie na claude.ai | Podgląd blokuje WebRTC. Grajcie z adresu GitHub Pages. |
 | Po aktualizacji widać starą wersję | Odśwież stronę z pominięciem pamięci podręcznej (`Ctrl+F5`). |
 | Brak dźwięku | Kliknij w grę albo naciśnij klawisz, sprawdź przełącznik `M`. |
+| Strzałki nie przesuwają preparatu w mikroskopie | Najpierw kliknij obraz z mikroskopu (strzałki działają, gdy ma on fokus), albo przeciągaj preparat myszą. |
+| Nie ma minimapy | Jest celowo ukryta; włącza ją `ui.minimap: true` w `js/config.js`. |

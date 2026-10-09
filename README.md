@@ -1,7 +1,9 @@
 # PatientZero
 
-Asymetryczna gra przeglądarkowa na dwie osoby. **Patogen** płynie z krwią przez bijące serce i próbuje zainfekować pacjenta.
-**Lekarz** nie widzi go wprost. Zleca badania, czyta objawy i dobiera leczenie.
+Asymetryczna gra przeglądarkowa na dwie osoby. **Patogen** (jedna z trzech bakterii albo jeden z trzech wirusów) płynie z krwią
+przez bijące serce, wątrobę i nerkę, zakłada kolonie i próbuje doprowadzić pacjenta do sepsy.
+**Lekarz** nie widzi go wprost. Przy aparaturze OIOM-u zleca badania (CRP, posiew, echo serca, USG jamy brzusznej, antybiogram, mikroskop),
+czyta objawy i dobiera leczenie.
 
 **Zagraj:** https://michalstankiewicz4-cell.github.io/PatientZero/
 
@@ -13,9 +15,11 @@ Aktualna wersja jest na ekranie startowym gry i w [CHANGELOG.md](CHANGELOG.md).
 2. Wybierz tryb:
    - **Tryb deweloperski** — jeden gracz, oba ekrany naraz (lewa połowa: patogen, prawa: lekarz).
    - **Gra na 2 osoby** — każdy na swoim komputerze; łączycie się, wymieniając dwa kody przez komunikator.
-3. Wybierz narząd startowy (na razie serce).
+3. Gracz patogenu wybiera rodzaj patogenu (lekarz go nie zna), a potem narząd startowy: serce, nerkę albo wątrobę.
 
-Sterowanie w skrócie: patogen `W` `A` `S` `D`, kółko myszy lekko reguluje przybliżenie; lekarz `B` badanie, `1` `2` `3` leczenie.
+Sterowanie w skrócie:
+- **patogen:** `W` `A` `S` `D` ruch, `E` kolonia, `Q` wnikanie w ścianę serca, `F` ukrycie, `R` rozmnożenie, `7`–`0` mutacje, `T` toksyny, kółko myszy lekko reguluje przybliżenie;
+- **lekarz:** `Z` `X` `C` `G` `V` `N` badania, `1`–`5` leczenie, `H` `J` `K` `L` operacja zastawki (wszystko także z rozwijanych menu w panelu).
 Pełne zasady i sterowanie: [docs/INSTRUKCJA.md](docs/INSTRUKCJA.md).
 
 ## Dokumentacja
@@ -29,5 +33,5 @@ Pełne zasady i sterowanie: [docs/INSTRUKCJA.md](docs/INSTRUKCJA.md).
 
 ## Technologia
 
-Czysty HTML, CSS i JavaScript (bez bundlera), Three.js r128 z cdnjs, Web Audio, WebRTC.
+Czysty HTML, CSS i JavaScript (bez bundlera), Three.js r128 z cdnjs, Web Audio, WebRTC, Canvas 2D (panel lekarza).
 Strona publikuje się sama na GitHub Pages przy każdym wypchnięciu na `main`, a zmiana wersji tworzy tag i wydanie (Release).

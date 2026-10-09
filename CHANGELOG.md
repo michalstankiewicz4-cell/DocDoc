@@ -11,6 +11,13 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.30.2] - 2026-10-09
+### Dokumentacja
+- README: opis gry z wątrobą, nerką i rodzajami patogenów, wybór startu, pełne skróty klawiszy.
+- Instrukcja: nowy opis gry i panelu lekarza, HUD patogenu, objawy z sylwetką, laboratorium z mikroskopem i USG, dwa alarmy monitora, pełna lista statystyk końcowych, „Zagraj jeszcze raz”, nowe pozycje w rozwiązywaniu problemów.
+- Architektura: sekcje o patogenach, panelu lekarza i testach; zaktualizowany opis plików.
+- Plik kontekstu: uporządkowana lista zadań, poprawione nieaktualne decyzje, propozycje czekające na decyzję.
+
 ## [0.30.1] - 2026-10-09
 ### Naprawione
 - Zdjęcie patogenu przy mikroskopie pokazywało zły rodzaj (zawsze pałeczkę okrężnicy albo adenowirusa) — ukryty widok do zdjęć nie dostawał gatunku.
@@ -266,7 +273,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.1...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.2...HEAD
+[0.30.2]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.1...v0.30.2
 [0.30.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.0...v0.30.1
 [0.30.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.1...v0.30.0
 [0.29.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.0...v0.29.1

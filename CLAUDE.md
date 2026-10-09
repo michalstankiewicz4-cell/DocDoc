@@ -75,22 +75,30 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Pacjent na łóżku (grafika dla lekarza), objawy jako wskazówki, animacja laboratorium, alarmy monitora
 - [x] Mecz z zamianą ról
 - [x] Pożywienie we krwi, rozmnożenie, przeciwciała atakują kopie (v0.19.0)
+- [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
 - [x] Rodzaje bakterii i wirusów na start, mikroskop dla lekarza (v0.21.0)
 - [x] Układ krążenia rozszerzony o wątrobę i nerkę (v0.22.0)
+- [x] Bez podglądu z opóźnieniem; zdjęcie przy mikroskopie; szukanie patogenu na preparacie (v0.23.0)
 - [x] Start w nerce (v0.24.0)
 - [x] Objawy: żółtaczka (wątroba), krew w moczu (nerka) (v0.25.0)
 - [x] USG jamy brzusznej (v0.26.0)
 - [x] Zoom prawie stały, delikatna regulacja kółkiem (v0.27.0)
-- [x] Drobne różnice w rozgrywce między rodzajami patogenów (v0.28.0)
+- [x] Drobne różnice w rozgrywce między rodzajami patogenów (v0.28.0), minimapa ukryta (v0.28.1)
 - [x] Start w wątrobie, strzałka-podpowiedź w mikroskopie, zdjęcie po znalezieniu (v0.29.0)
 - [x] Rework ekranu lekarza: aparatura OIOM-u, rozwijane menu, pompa, sylwetka, drukarka (v0.30.0)
-- [x] Bez podglądu z opóźnieniem; zdjęcie przy mikroskopie; szukanie patogenu na preparacie (v0.23.0)
-- [x] Trzy ulepszenia: różne działanie pożywienia, czas życia kopii, komórki we krwi w posiewie (v0.20.0)
+- [x] Uzupełnienie dokumentacji (v0.30.2)
 
 Do zrobienia po testach Michała (nie zmieniać przed jego uwagami):
 - Wygląd kardiomiocytów: wzory w `docs/reference/` (prążkowanie, centralne jądro, wstawki, rozgałęzione włókna, jasne przestrzenie między nimi).
 
 Odrzucone przez Michała: sztuczne etapy zakażenia (przebieg ma wynikać z działań graczy).
+
+Propozycje Claude czekające na decyzję Michała (nie wprowadzać bez prośby):
+- sala w ciemniejszym, nocnym oświetleniu (pasowałaby do panelu OIOM-u),
+- dźwięk drukarki przy nowym wyniku,
+- zwijanie urządzeń w panelu lekarza,
+- klawisz pokazujący i chowający minimapę w trakcie gry,
+- widoczność kopii dla lekarza przy wirusie (np. w CRP), glukoza dająca chwilowe przyspieszenie.
 
 ## Decyzje projektowe do potwierdzenia przez Michała
 
@@ -99,8 +107,8 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Kod zaproszenia nie sprawdza zgodności wersji gry między graczami.
 - Stan pacjenta: liczby w `config.patient` (spadek od kolonizacji, gorączki, koszt dawek, regeneracja poniżej 40% kolonizacji).
 - Kolonie (`config.colony`): koszt 25 życia, wzrost ~45 s do pełnego rozmiaru, odrodzenie w największej kolonii, żerowanie przy ścianie odnawia życie. Przeciwciała atakują kolonie, antybiotyk wstrzymuje ich wzrost.
-- Badania (`config.doctor.tests`): wynik liczony w chwili zlecenia (`pending`), ujawniany po czasie; gość dostaje go dopiero gotowy. `d.test` to alias posiewu (zdjęcie, zgodność).
-- Wirus (`config.virus`): 70 życia, ruch ×0,8, wzrost kolonii ×1,3. Leki: β-laktam (bójczy), makrolid (statyczny), przeciwwirusowy; naturalna oporność bakterii na losową klasę (skuteczność 20%).
+- Badania (`config.doctor.tests`): wynik liczony w chwili zlecenia (`pending`), ujawniany po czasie; gość dostaje go dopiero gotowy. `d.test` to alias posiewu (zgodność). Zdjęcie patogenu należy do mikroskopu.
+- Wirus (`config.virus`): 70 życia, ruch ×0,8, wzrost kolonii ×1,3. Leki: β-laktam (bójczy), makrolid (statyczny), przeciwwirusowy; naturalna oporność bakterii wynika z rodzaju (skuteczność 20%), patrz „Rodzaje patogenów”.
 - Zdjęcie z mikroskopu pokazuje kształt patogenu (zbliżenie 5,5 j.; duch w doctor-cam musi mieć `species`). Podgląd z opóźnieniem usunięty w v0.23.0 na prośbę Michała.
 - Mikroskop (v0.23.0): preparat 720 × 600 px (3 × 3 pola), 3–8 skupisk poza polem startowym, trafienie = drobnoustrój < 34 px od środka; pusty preparat po obejrzeniu 16 z 20 pól.
 - Mięsień (`config.tissue`): pas ściany 1,2 < SDF < 7,2, płaszczyzna ruchu z = 3,3 (powierzchnia przekroju), komórki z `js/tissue-cells.js` (wspólne dla kolizji i renderu). Wykrywanie kolonii w mięśniu: echo (niewyraźnie, ±2,5 j.) i CRP (zawiera całą kolonizację).
@@ -108,7 +116,7 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Operacja zastawki (`config.doctor.surgery`): 10 s, stan −15, promień 5 j., patogen w pobliżu −40 życia, odnowienie 60 s.
 - Mecz: 2 rundy, remis 1:1 rozstrzyga szybsze zwycięstwo; wynik prowadzi host (`js/match.js`).
 - Kaszel: szansa na sekundę rośnie z kolonizacją i masą kolonii w prawym sercu (`config.cough`), tylko dźwięk i obraz, bez wpływu na rozgrywkę.
-- Pożywienie i kopie (`config.food`, `config.copies`): 110 drobin, glukoza +10, aminokwasy +15, lipidy +25; kopia za 100 pożywienia, najwyżej 6.
+- Pożywienie i kopie (`config.food`, `config.copies`): 170 drobin (od v0.22.0; wcześniej 110), glukoza +10, aminokwasy +15, lipidy +25; kopia za 100 pożywienia, najwyżej 6.
   Kopie dryfują z prądem (bez sterowania), nie zakładają kolonii, giną od jednego przeciwciała. Przeciwciało wybiera cel losowo spośród patogenu i kopii w zasięgu.
   Patogen nie je w mięśniu ani w ukryciu.
   Od v0.20.0: lipidy +4 życia, aminokwasy +0,15 pkt mutacji; kopia żyje 40 s (maleje przez ostatnie 4 s);

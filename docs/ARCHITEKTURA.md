@@ -14,9 +14,9 @@ Dokument dla programistów. Opisuje budowę kodu i zasady, których trzymamy si�
 
 ```
 index.html              układ ekranu, nakładki (start, lobby, koniec gry), kolejność skryptów
-css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (jasna karta lekarza)
+css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
 js/version.js           DD.VERSION
-js/config.js            wszystkie liczby balansu i ustawienia (tętno, leki, kamera, podgląd)
+js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species), leki, badania, pożywienie, kopie, kamera, UI
 js/heart-shape.js       geometria serca, wątroby i nerki (SDF, maski narządów, nazwy miejsc, wyjścia z mapy): SDF z elips i naczyń + dokładna transformata odległości
 js/flow.js              pole przepływu (3 pola bazowe mieszane wg fazy cyklu) + curl noise
 js/tissue-cells.js      kardiomiocyty w ścianie serca (proceduralne, deterministyczne): kolizje i render
@@ -26,11 +26,11 @@ js/net.js               WebRTC: kody, kanały, synchronizacja stanu, statystyki 
 js/match.js             mecz z zamianą ról: wyniki rund, zamiana ról, ekran końcowy
 js/net-status.js        wskaźnik połączenia, ostrzeżenie, panel szczegółów
 js/lobby.js             ekran tworzenia i dołączania do gry
-js/minimap.js           minimapa patogenu
+js/minimap.js           minimapa patogenu (dwa widoki: serce, jama brzuszna; domyślnie ukryta, C.ui.minimap)
 js/audio.js             dźwięk (Web Audio, synteza bez plików)
 js/doctor-ui.js         panel lekarza (rozwijane menu zleceń, lampki, drukarka, mikroskop, USG) i HUD patogenu
 js/doctor-devices.js    pompa infuzyjna (leki we krwi) i sylwetka z obszarami objawów (canvas 2D)
-js/patient-room.js      sala z pacjentem (canvas 2D), objawy z położenia kolonii, laboratorium, alarm monitora
+js/patient-room.js      sala z pacjentem (canvas 2D), DD.symptomList (objawy z położenia kolonii), laboratorium, alarm monitora
 js/doctor-cam.js        zdjęcie patogenu w chwili pobrania krwi do mikroskopu (niewidoczny widok 3D)
 js/main.js              pętla gry, tryby (lokalny / host / gość), wybór trybu
 js/render/glsl.js       wspólne shadery: szum, światło mokrej tkanki, pochłanianie we krwi, kaustyki
@@ -68,6 +68,20 @@ Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, w
 - **Przepływ** (`flow.js`): trzy pola bazowe (żylne stałe, rozkurcz, skurcz) budowane z torów prądu, dyfundowane w świetle naczyń i mieszane wg fazy cyklu. Do tego curl noise dla zawirowań. W zrazikach wątroby i w nerce (`POTENTIAL`) pole żylne to przepływ potencjalny: ciśnienie z równania Laplace'a (SOR) między wlotami a wylotami, prędkość = −grad p.
 - **Drogi poza mapą:** `EXITS` (płuca, głowa i ręce, nogi, jelita) → `INLETS`; nazwy w `ROUTES`.
 
+## Patogeny
+
+- **Rodzaje** są w `C.species`: `kind` (`bacteria` / `virus`), nazwa, wrażliwość na leki (`natural` — klasa antybiotyku, na którą bakteria jest oporna; `antiviral` — skuteczność leku przeciwwirusowego), mnożniki `speed`, `growth`, `biofilm` oraz opisy do mikroskopu (`micro`, `treat`).
+- `state.kind` to `bacteria` / `virus`, `state.species` to rodzaj. `Game.speciesOf()` mapuje dawne wartości `bacteria` / `virus` na rodzaj domyślny (`C.defaultSpecies`).
+- **Wygląd 3D:** `actors.js` ma osobną grupę dla każdego rodzaju (`LOOKS`); kopie patogenu to klony tej grupy. Każdy stan, który rysuje patogen (także duch w `doctor-cam.js`), musi mieć `species`.
+
+## Panel lekarza
+
+- **Układ** (`index.html`, `.ward`): siatka 6 kolumn z urządzeniami `.dev` (ciemne `.dev-dark`, jasne `.dev-light`); poniżej 640 px szerokości panelu wszystko w jednej kolumnie (container query).
+- **Konsola zleceń:** przyciski badań, leków i operacji (`doctor-ui.js`) siedzą w rozwijanych listach `.menu-list`; wybór pozycji wysyła komendę i zamyka menu. Lampki (`#lamps`) i podsumowania na przyciskach menu odświeża `update()`.
+- **Objawy:** `DD.symptomList(s)` zwraca `[nazwa, poziom, obszar]`; korzysta z niej lista objawów w sali i sylwetka (`doctor-devices.js`).
+- **Wyniki:** `renderResults()` działa tylko przy nowym wyniku (`resultSeq`). Nowy wydruk trafia na górę `.slips` z animacją `printing`; mikroskop i USG mają własne rysowanie (`showMicro`, `makeUS`).
+- **Mikroskop:** preparat 3 × 3 pola rysowany raz na wynik (`buildSlide`), widok przesuwany myszą albo strzałkami (`microPan`), znalezienie i pusty preparat sprawdza `microCheck`; zdjęcie robi `doctor-cam.js`, a pokazuje je mikroskop dopiero po znalezieniu (`dataset.ready` = czas pobrania).
+
 ## Sieć (`js/net.js`)
 
 - **Połączenie:** WebRTC bez serwera sygnalizacji. Oferta i odpowiedź są kompresowane (`deflate-raw` + base64url) do kodów ~600 znaków. STUN Google tylko do przejścia przez NAT.
@@ -85,6 +99,11 @@ Dodając pole do stanu, które gość ma widzieć, dopisz je w `encode()` i `gue
 - **Światło „endoskopu”** przy kamerze: wrap diffuse, rozpraszanie podpowierzchniowe, dwa płaty odblasku, pochłanianie we krwi.
 - **Komórki** żyją w oknie wokół kamery i są niesione tym samym polem przepływu.
 - **Uniformy wspólne** (`DD.SHARED`) ustawia każdy widok tuż przed własnym renderem, więc dwa widoki (gra i zdjęcie do mikroskopu) mogą działać naraz.
+
+## Testy
+
+- **Logika w Node:** `global.window = global`, potem `require` plików `config`, `heart-shape`, `flow`, `state`, `tissue-cells`; `DD.Heart.init()`, `DD.Flow.init()`, a dalej `DD.Game.create()`, `apply()` i `step()`.
+- **Przeglądarka:** Playwright + Chromium; bez GPU render jest programowy i bardzo wolny, więc czas gry płynie wolniej niż w rzeczywistości. Test sieci wymaga dwóch osobnych przeglądarek (karta w tle ma wstrzymane `requestAnimationFrame`).
 
 ## Jak dodać funkcję
 
