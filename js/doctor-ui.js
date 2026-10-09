@@ -653,6 +653,19 @@
       // HUD patogenu
       { const sp = C.species[s.species]; const nm = sp ? sp.name.charAt(0).toLowerCase() + sp.name.slice(1) : (s.kind === 'virus' ? 'wirus' : 'bakteria');
         document.querySelectorAll('.js-kind-name').forEach((el) => { if (el.textContent !== nm) el.textContent = nm; }); }
+      // wylosowany pacjent: oznaczenie w HUD i na karcie oraz plansza na początku rundy
+      { const P = C.patients[s.ptype];
+        if (P) {
+          if ($('h-patient').textContent !== 'Pacjent: ' + P.name) $('h-patient').textContent = 'Pacjent: ' + P.name;
+          if ($('doc-ptype').textContent !== P.name) $('doc-ptype').textContent = P.name;
+          const rv = $('ptype-reveal'), show = s.running && !s.over && s.time < C.ui.revealTime;
+          if (show && rv.dataset.pt !== s.ptype) {
+            rv.dataset.pt = s.ptype;
+            $('pr-name').textContent = P.name; $('pr-bact').textContent = P.bact; $('pr-doc').textContent = P.doc;
+          }
+          if (rv.hidden === show) rv.hidden = !show;
+          if (!show) rv.dataset.pt = '';
+        } }
       $('h-place').textContent = b.transit ? (DD.Heart.ROUTES[b.transit.to] || DD.Heart.ROUTES.body).name : b.place;
       $('h-hp').style.transform = `scaleX(${b.hp / C.bacteria.hp})`;
       $('h-hp-val').textContent = Math.ceil(b.hp);
@@ -662,7 +675,7 @@
       const canFound = (b.contact || b.inTissue) && !b.transit && !b.dead;
       $('h-contact').hidden = !canFound;
       if (canFound) {
-        const colTxt = b.colonyCd > 0 ? `Kolonia możliwa za ${Math.ceil(b.colonyCd)} s.` : b.hp > K.cost + 1 ? `E zakłada kolonię (−${K.cost} życia).` : 'Za mało życia na kolonię.';
+        const colTxt = b.colonyCd > 0 ? `Kolonia możliwa za ${Math.ceil(b.colonyCd)} s.` : b.hp > K.cost * DD.Game.patientOf(s).colonyCost + 1 ? `E zakłada kolonię (−${Math.round(K.cost * DD.Game.patientOf(s).colonyCost)} życia).` : 'Za mało życia na kolonię.';
         if (b.inTissue) {
           $('h-contact').textContent = 'W mięśniu sercowym: przeciwciała cię tu nie dosięgną, leki działają słabiej. ' + colTxt + ' Do krwi wracasz, podpływając do ściany naczynia albo klawiszem Q.';
         } else if (b.burrowT > 0) {

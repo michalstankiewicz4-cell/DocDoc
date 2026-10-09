@@ -11,6 +11,12 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.34.0] - 2026-10-09
+### Dodane
+- **Losowanie pacjenta:** na początku rundy gra losuje pacjenta — dziecko, senior, sportowiec, diabetyk albo osoba po przeszczepie. Pacjent zmienia szanse obu stron (wzrost i koszt kolonii, objawy, skuteczność leków i przeciwciał, regeneracja, odnowienie badań, ilość pożywienia i glukozy we krwi).
+- Plansza z wylosowanym pacjentem przez kilka sekund na początku rundy (widzą ją obaj gracze), oznaczenie pacjenta w HUD patogenu i przy „Karcie pacjenta”.
+- `docs/BALANS.md` — liczby balansu z uzasadnieniem, `docs/PLAN.md` — plan kolejnych aktualizacji.
+
 ## [0.33.0] - 2026-10-09
 ### Dodane
 - **Tło we krwi:** oprócz czerwonych krwinek płyną z prądem pęcherzyki tlenu, bladofioletowe płytki krwi i z rzadka biała krwinka. Tylko wygląd — nie wchodzą w interakcję z graczem.
@@ -310,7 +316,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.33.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.34.0...HEAD
+[0.34.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.1...v0.32.0
 [0.31.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.0...v0.31.1

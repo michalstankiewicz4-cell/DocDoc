@@ -122,11 +122,29 @@ DD.CONFIG = {
   // kopie patogenu: wabiki dla przeciwciał (płyną z prądem, giną od jednego trafienia)
   copies: { max: 6, cost: 100, swim: 2.5, life: 40, fade: 4 },   // kopia żyje `life` s, w ostatnich `fade` s maleje
 
+  // losowanie pacjenta na początku rundy (środowisko gry). Mnożniki względem normy (1 = bez zmian):
+  // growth — wzrost kolonii, colonyCost — koszt kolonii (życie patogenu), symptom — siła objawów (więcej = wcześniej widać),
+  // drug — skuteczność leków (antybiotyki, przeciwwirusowy, gorączka), ab — skuteczność przeciwciał, regen — regeneracja pacjenta,
+  // drain — utrata stanu od zakażenia, testCd — odnowienie badań, food — ilość pożywienia we krwi, glucose — udział glukozy w pożywieniu.
+  // Uzasadnienie liczb: docs/BALANS.md
+  patients: {
+    child:      { name: 'Dziecko', growth: 1.25, colonyCost: 1, symptom: 1.6, drug: 1, ab: 1, regen: 1.2, drain: 1, testCd: 1, food: 1, glucose: 0.33,
+                  bact: 'Patogen szybciej się rozprzestrzenia (kolonie rosną szybciej).', doc: 'Objawy pojawiają się wcześniej, organizm szybciej się regeneruje.' },
+    senior:     { name: 'Senior', growth: 1.1, colonyCost: 0.7, symptom: 0.75, drug: 0.75, ab: 0.85, regen: 0.6, drain: 1, testCd: 1, food: 0.6, glucose: 0.33,
+                  bact: 'Łatwiejsza kolonizacja (tańsze kolonie), ale mniej pożywienia we krwi.', doc: 'Leczenie działa słabiej, objawy są słabsze, regeneracja wolniejsza.' },
+    athlete:    { name: 'Sportowiec', growth: 0.75, colonyCost: 1.2, symptom: 1, drug: 1, ab: 1.3, regen: 1.8, drain: 0.8, testCd: 1, food: 1, glucose: 0.33,
+                  bact: 'Wolniejsza kolonizacja (kolonie rosną wolniej i kosztują więcej).', doc: 'Silniejsza odporność: przeciwciała działają mocniej, szybsza regeneracja.' },
+    diabetic:   { name: 'Diabetyk', growth: 1.3, colonyCost: 1, symptom: 1, drug: 1, ab: 0.9, regen: 0.4, drain: 1.15, testCd: 1, food: 1.4, glucose: 0.7,
+                  bact: 'Szybszy rozwój infekcji, dużo glukozy we krwi.', doc: 'Wolniejsze gojenie, zakażenie szybciej pogarsza stan pacjenta.' },
+    transplant: { name: 'Po przeszczepie', growth: 1.35, colonyCost: 0.5, symptom: 1, drug: 1, ab: 0.55, regen: 0.8, drain: 1.1, testCd: 0.6, food: 1, glucose: 0.33,
+                  bact: 'Bardzo łatwa kolonizacja (kolonie za pół ceny, szybki wzrost).', doc: 'Osłabiony układ odpornościowy (słabe przeciwciała), ale częstsze badania kontrolne (krótsze odnowienie badań).' }
+  },
+
   // zakończenie rundy: tyle sekund od zwycięstwa do ekranu końcowego (serce zwalnia, prąd ustaje, monitor piszczy i cichnie)
   ending: { duration: 5 },
 
   // minimapa patogenu: ukryta (kod zostaje; true = pokazuj)
-  ui: { minimap: false },
+  ui: { minimap: false, revealTime: 4.5 },
 
   camera: { fov: 40, zoom: 17, zoomMin: 14, zoomMax: 21 },   // zoom kamery patogenu: kółko myszy reguluje go tylko delikatnie
 

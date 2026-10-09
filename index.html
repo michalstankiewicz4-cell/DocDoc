@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.33.0">
+<link rel="stylesheet" href="css/style.css?v=0.34.0">
 </head>
 <body>
 <!-- ekran ładowania: widoczny od razu, znika po zbudowaniu serca i sceny (main.js) -->
@@ -64,6 +64,7 @@
     <div class="hud hud-top">
       <p class="hud-who">Gracz 1, <span class="js-kind-name">bakteria</span></p>
       <p id="h-place" class="hud-place">Żyła główna górna</p>
+      <p id="h-patient" class="hud-patient"></p>
     </div>
 
     <div class="hud hud-map" id="hud-map">
@@ -137,7 +138,7 @@
     <header class="doc-head">
       <div>
         <p class="doc-who">Gracz 2, lekarz</p>
-        <h1 class="doc-title">Karta pacjenta</h1>
+        <h1 class="doc-title">Karta pacjenta <span id="doc-ptype" class="doc-ptype"></span></h1>
       </div>
       <p class="doc-clock"><span>Od przyjęcia</span> <time id="clock">0:00</time></p>
     </header>
@@ -289,6 +290,16 @@
 </main>
 
 <!-- Ekran startowy -->
+<!-- plansza z wylosowanym pacjentem (kilka sekund na początku rundy, widzą ją obaj gracze) -->
+<div id="ptype-reveal" class="ptype-reveal" hidden aria-live="polite">
+  <p class="pr-kicker">Wylosowany pacjent</p>
+  <p id="pr-name" class="pr-name"></p>
+  <div class="pr-cols">
+    <p><b>Patogen</b><span id="pr-bact"></span></p>
+    <p><b>Lekarz</b><span id="pr-doc"></span></p>
+  </div>
+</div>
+
 <div id="start" class="overlay">
   <div class="overlay-card">
     <h1 class="logo">Patient Zero</h1>
@@ -484,30 +495,30 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.33.0"></script>
-<script src="js/config.js?v=0.33.0"></script>
-<script src="js/heart-shape.js?v=0.33.0"></script>
-<script src="js/flow.js?v=0.33.0"></script>
-<script src="js/tissue-cells.js?v=0.33.0"></script>
-<script src="js/state.js?v=0.33.0"></script>
-<script src="js/input.js?v=0.33.0"></script>
-<script src="js/render/glsl.js?v=0.33.0"></script>
-<script src="js/render/tissue.js?v=0.33.0"></script>
-<script src="js/render/cells.js?v=0.33.0"></script>
-<script src="js/render/actors.js?v=0.33.0"></script>
-<script src="js/render/post.js?v=0.33.0"></script>
-<script src="js/render/biome.js?v=0.33.0"></script>
-<script src="js/render/view.js?v=0.33.0"></script>
-<script src="js/minimap.js?v=0.33.0"></script>
-<script src="js/audio.js?v=0.33.0"></script>
-<script src="js/doctor-ui.js?v=0.33.0"></script>
-<script src="js/patient-room.js?v=0.33.0"></script>
-<script src="js/doctor-devices.js?v=0.33.0"></script>
-<script src="js/doctor-cam.js?v=0.33.0"></script>
-<script src="js/net.js?v=0.33.0"></script>
-<script src="js/lobby.js?v=0.33.0"></script>
-<script src="js/match.js?v=0.33.0"></script>
-<script src="js/net-status.js?v=0.33.0"></script>
-<script src="js/main.js?v=0.33.0"></script>
+<script src="js/version.js?v=0.34.0"></script>
+<script src="js/config.js?v=0.34.0"></script>
+<script src="js/heart-shape.js?v=0.34.0"></script>
+<script src="js/flow.js?v=0.34.0"></script>
+<script src="js/tissue-cells.js?v=0.34.0"></script>
+<script src="js/state.js?v=0.34.0"></script>
+<script src="js/input.js?v=0.34.0"></script>
+<script src="js/render/glsl.js?v=0.34.0"></script>
+<script src="js/render/tissue.js?v=0.34.0"></script>
+<script src="js/render/cells.js?v=0.34.0"></script>
+<script src="js/render/actors.js?v=0.34.0"></script>
+<script src="js/render/post.js?v=0.34.0"></script>
+<script src="js/render/biome.js?v=0.34.0"></script>
+<script src="js/render/view.js?v=0.34.0"></script>
+<script src="js/minimap.js?v=0.34.0"></script>
+<script src="js/audio.js?v=0.34.0"></script>
+<script src="js/doctor-ui.js?v=0.34.0"></script>
+<script src="js/patient-room.js?v=0.34.0"></script>
+<script src="js/doctor-devices.js?v=0.34.0"></script>
+<script src="js/doctor-cam.js?v=0.34.0"></script>
+<script src="js/net.js?v=0.34.0"></script>
+<script src="js/lobby.js?v=0.34.0"></script>
+<script src="js/match.js?v=0.34.0"></script>
+<script src="js/net-status.js?v=0.34.0"></script>
+<script src="js/main.js?v=0.34.0"></script>
 </body>
 </html>

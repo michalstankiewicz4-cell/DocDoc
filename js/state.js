@@ -16,6 +16,7 @@
     return {
       time: 0, phase: 0, contraction: 0,
       hr: 1, flowMul: 1, ending: null,   // tętno i prąd krwi względem normy (spadają w zakończeniu przy sepsie); ending: { win, t }
+      ptype: 'child',    // wylosowany pacjent (C.patients)
       running: false, over: null, organ: null,
       valves: H.VALVES.map(v => ({ id: v.id, open: 0 })),
       bact: {
@@ -94,6 +95,9 @@
     const v = C.patient.sideEffect[key] || 0;
     s.patient.cond -= v; s.stats.condByTreatment += v;
   }
+  // wylosowany pacjent: mnożniki obu stron (C.patients, opis w docs/BALANS.md)
+  const PT = (s) => C.patients[s.ptype] || C.patients.child;
+  G.patientOf = PT;
   function useDrug(s, key) {
     sideEffect(s, key);
     const R = C.resistance, r = s.bact.resist;
@@ -119,9 +123,11 @@
         Object.assign(s, G.create(), { running: true, organ: cmd.organ, kind, species, nextKind });
         { const st = H.START[cmd.organ]; s.bact.x = st.x; s.bact.y = st.y; }
         s.seed = (Math.random() * 4294967296) >>> 0;   // każda runda inna (liczy tylko host)
+        // losowanie pacjenta (cmd.patient wymusza konkretnego, np. w trybie deweloperskim)
+        { const ids = Object.keys(C.patients); s.ptype = C.patients[cmd.patient] ? cmd.patient : ids[Math.floor(rnd(s) * ids.length)]; }
         if (kind === 'virus') { s.bact.hp = C.virus.hp; s.stats.minHp = C.virus.hp; }
         else s.bact.natural = C.species[species].natural;
-        log(s, 'sys', 'Pacjent przyjęty z objawami zakażenia.');
+        log(s, 'sys', `Pacjent przyjęty z objawami zakażenia: ${PT(s).name.toLowerCase()}.`);
         return;
       }
       case 'bact.kind':
@@ -174,13 +180,13 @@
         if (!d.unlocked || d.cd.antibodies > 0) return;
         d.cd.antibodies = D.antibodies.cooldown;
         { const eff = useDrug(s, 'antibodies');
-          spawnAntibodies(s, eff);
+          spawnAntibodies(s, eff * PT(s).ab);
           log(s, 'doc', `Podano immunoglobuliny dożylnie (skuteczność ${pct(eff)}).`); }
         return;
       case 'doc.fever':
         if (!d.unlocked || d.cd.fever > 0) return;
         d.cd.fever = D.fever.cooldown; d.feverT = D.fever.duration;
-        d.feverEff = useDrug(s, 'fever');
+        d.feverEff = useDrug(s, 'fever') * PT(s).drug;
         log(s, 'doc', `Wywołano gorączkę leczniczą (skuteczność ${pct(d.feverEff)}).`);
         return;
       case 'doc.abxA': case 'doc.abxB': case 'doc.antiviral': {
@@ -188,7 +194,7 @@
         if (!d.unlocked || d.cd[key] > 0) return;
         const eff = useDrug(s, key);
         d.cd[key] = D[key].cooldown;
-        s.drugs[key] = { t: D[key].duration, eff: eff * susceptibility(s, key) };
+        s.drugs[key] = { t: D[key].duration, eff: eff * susceptibility(s, key) * PT(s).drug };
         log(s, 'doc', `Podano ${DRUG_NAME[key]} (skuteczność wg dawkowania ${pct(eff)}).`);
         return;
       }
@@ -198,8 +204,8 @@
   // założenie kolonii przy ścianie kosztem życia patogenu
   function foundColony(s) {
     const b = s.bact, K = C.colony;
-    if (b.dead || b.transit || !(b.contact || b.inTissue) || b.colonyCd > 0 || b.hp <= K.cost + 1) return;
-    b.hp -= K.cost; b.colonyCd = K.cooldown;
+    if (b.dead || b.transit || !(b.contact || b.inTissue) || b.colonyCd > 0 || b.hp <= K.cost * PT(s).colonyCost + 1) return;
+    b.hp -= K.cost * PT(s).colonyCost; b.colonyCd = K.cooldown;
     H.grad(b.x, b.y, g2);
     if (b.inTissue) {
       // kolonia w mięśniu: w miejscu patogenu, ukryta przed przeciwciałami
@@ -281,7 +287,7 @@
   }
   function finishTest(s, kind, T) {
     const d = s.doctor;
-    T.state = 'done'; T.cd = D.tests[kind].cooldown; T.res = T.pending; T.pending = null; T.resultT = s.time;
+    T.state = 'done'; T.cd = D.tests[kind].cooldown * PT(s).testCd; T.res = T.pending; T.pending = null; T.resultT = s.time;
     d.resultSeq++;
     const first = !d.unlocked; d.unlocked = true;
     const r = T.res;
@@ -311,7 +317,6 @@
   }
 
   // pożywienie: losowy punkt w świetle naczyń
-  const FOOD_KINDS = ['glucose', 'amino', 'lipid'];
   function placeFood(s, f) {
     const W = C.world;
     for (let t = 0; t < 120; t++) {
@@ -319,7 +324,9 @@
       if (H.sample(f.x, f.y) < -1.0 && f.y < 50) break;
     }
     f.z = (rnd(s) - 0.5) * 1.6;
-    f.kind = FOOD_KINDS[Math.floor(rnd(s) * 3)];
+    // udział glukozy zależy od pacjenta (diabetyk: więcej), reszta po równo aminokwasy i lipidy
+    const gl = PT(s).glucose ?? 1 / 3, r = rnd(s);
+    f.kind = r < gl ? 'glucose' : r < gl + (1 - gl) / 2 ? 'amino' : 'lipid';
     f.age = rnd(s) * C.food.maxAge * 0.5;
     f.id = s.nextId++;
     return f;
@@ -519,14 +526,14 @@
     sym.right = sym.left = sym.legs = 0;
     for (const c of s.colonies) { if (!c.region) c.region = H.regionOf(c.x, c.y); sym[c.region] += c.size; }
     // kaszel: tym częstszy, im większe zakażenie, zwłaszcza w prawym sercu (krążenie płucne)
-    if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection + C.cough.perRightMass * sym.right) * dt) s.coughs++;
+    if (rnd(s) < (C.cough.base + C.cough.perInfection * s.bact.infection + C.cough.perRightMass * sym.right * PT(s).symptom) * dt) s.coughs++;
 
     // --- stan pacjenta ---
     {
       const P = C.patient, ST = s.stats;
-      const byInf = P.infectionDrain * (b.infection / 100) * dt;
+      const byInf = P.infectionDrain * PT(s).drain * (b.infection / 100) * dt;
       const byFever = P.feverDrain * feverK * dt;
-      const regen = P.regen * Math.max(0, 1 - b.infection / P.regenStopsAt) * dt;
+      const regen = P.regen * PT(s).regen * Math.max(0, 1 - b.infection / P.regenStopsAt) * dt;
       s.patient.cond = Math.min(100, s.patient.cond - byInf - byFever + regen);
       ST.condByInfection += byInf; ST.condByTreatment += byFever;
       ST.minCond = Math.min(ST.minCond, s.patient.cond);
@@ -545,7 +552,7 @@
     // --- kolonie: rosną same; leki wstrzymują wzrost, gorączka go spowalnia, β-laktam je kurczy ---
     const K = C.colony;
     const SPc = C.species[s.species] || {};
-    const grow0 = K.growth * (s.kind === 'virus' ? C.virus.growthMul : 1) * (SPc.growth ?? 1)
+    const grow0 = K.growth * PT(s).growth * (s.kind === 'virus' ? C.virus.growthMul : 1) * (SPc.growth ?? 1)
       * (1 - feverK * d.feverEff * (1 - D.fever.infectionMul));
     const pen = C.tissue.drugPenetration;
     let mass = 0;
@@ -692,7 +699,9 @@
     // --- przeciwciała ---
     // --- pożywienie: płynie z prądem, zjadane przez patogen ---
     const FD = C.food;
-    while (s.food.length < FD.count) s.food.push(placeFood(s, {}));
+    const foodN = Math.round(FD.count * PT(s).food);
+    while (s.food.length < foodN) s.food.push(placeFood(s, {}));
+    if (s.food.length > foodN) s.food.length = foodN;
     const canEat = !b.dead && !b.transit && !b.inTissue && !b.hidden;
     for (const f of s.food) {
       // pożywienie, które długo nie zostało zjedzone (np. utknęło w zaułku), pojawia się w innym miejscu

@@ -25,17 +25,17 @@ Status: ✅ zrobione, 🔧 w trakcie, ⬜ do zrobienia.
 | ✅ | Filmy na koniec | Wygrał lekarz → obaj gracze widzą `doctor.mp4`, wygrał patogen → `priest.mp4`. |
 | ✅ | Tło we krwi | Trochę pęcherzyków tlenu i drobnych elementów, które nie wchodzą w interakcję z graczem. |
 
-## Etap 3. Losowanie pacjenta (środowisko gry)
+## Etap 3. Losowanie pacjenta (środowisko gry) ✅ v0.34.0
 
 Na początku rundy gra losuje pacjenta; obaj gracze go widzą. Pacjent zmienia szanse obu stron.
 
 | Pacjent | Patogen | Lekarz |
 | --- | --- | --- |
 | Dziecko | szybciej się rozprzestrzenia | objawy pojawiają się wcześniej (łatwiej wykryć) |
-| Senior | łatwiejsza kolonizacja | leczenie działa wolniej, objawy słabsze |
+| Senior | łatwiejsza kolonizacja, mniej pożywienia we krwi | leczenie działa wolniej, objawy słabsze |
 | Sportowiec | wolniejsza kolonizacja | silniejsza odporność organizmu (lepsza regeneracja) |
 | Diabetyk | szybszy rozwój infekcji, więcej glukozy we krwi | wolniejsze gojenie |
-| Po przeszczepie | bardzo łatwa kolonizacja, mniej pożywienia we krwi | osłabiony układ odpornościowy, częstsze badania kontrolne (krótsze odnowienie badań) |
+| Po przeszczepie | bardzo łatwa kolonizacja | osłabiony układ odpornościowy, częstsze badania kontrolne (krótsze odnowienie badań) |
 
 Liczby i uzasadnienie: [BALANS.md](BALANS.md).
 

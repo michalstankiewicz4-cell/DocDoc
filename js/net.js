@@ -252,7 +252,7 @@
         d.resultTime ?? -1, 0, 0, 0, r2(d.feverT), r2(d.feverEff), r2(d.temp), r2(d.test.sampleT), r2(s.patient.cond)],
       a, c, fo, cp, fd: r2(b.food || 0),
       st: s.over ? s.stats : 0,
-      k: s.kind, sp: s.species, nr: b.natural, rs: b.resist, cdd: d.cd, dg: s.drugs,
+      k: s.kind, sp: s.species, pt: s.ptype, nr: b.natural, rs: b.resist, cdd: d.cd, dg: s.drugs,
       mu: [b.hidden, r2(b.points), b.mut, r2(b.toxinCd), r2(s.toxinT)],
       su: d.surgery,
       // badania bez wyników oczekujących (gość dostaje wynik dopiero, gdy jest gotowy)
@@ -305,7 +305,7 @@
       b.dir += dd * k;
       b.hp = v[5]; b.infection = v[6]; b.slowT = v[7]; b.slowMul = v[8]; b.hitFlash = Math.max(b.hitFlash - dt * 2.5, v[9]);
       b.contact = !!v[10];
-      if (snap.rs) { b.resist = snap.rs; b.natural = snap.nr; s.kind = snap.k; if (snap.sp) s.species = snap.sp; s.drugs = snap.dg; d0.cd = snap.cdd; }
+      if (snap.rs) { b.resist = snap.rs; b.natural = snap.nr; s.kind = snap.k; if (snap.sp) s.species = snap.sp; if (snap.pt) s.ptype = snap.pt; s.drugs = snap.dg; d0.cd = snap.cdd; }
       if (snap.su) s.doctor.surgery = snap.su;
       if (snap.mu) { b.hidden = snap.mu[0]; b.points = snap.mu[1]; b.mut = snap.mu[2]; b.toxinCd = snap.mu[3]; s.toxinT = snap.mu[4]; }
       b.dead = v[14]; b.colonyCd = v[15]; b.feeding = !!v[16]; b.inTissue = !!v[17]; b.burrowT = v[18]; b.z = v[19];

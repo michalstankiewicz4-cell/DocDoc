@@ -19,7 +19,7 @@ img/                    og.jpg (podgląd linku), icon.svg (ikona strony)
 robots.txt, sitemap.xml dla wyszukiwarek
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
 js/version.js           DD.VERSION
-js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species), leki, badania, pożywienie, kopie, kamera, UI
+js/config.js            liczby balansu i ustawienia: świat, tętno, patogeny (C.species), pacjenci (C.patients, opis w docs/BALANS.md), leki, badania, pożywienie, kopie, kamera, UI
 js/heart-shape.js       geometria serca, wątroby i nerki (SDF, maski narządów, nazwy miejsc, wyjścia z mapy): SDF z elips i naczyń + dokładna transformata odległości
 js/flow.js              pole przepływu (3 pola bazowe mieszane wg fazy cyklu) + curl noise
 js/tissue-cells.js      kardiomiocyty w ścianie serca (proceduralne, deterministyczne): kolizje i render

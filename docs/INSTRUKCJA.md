@@ -24,6 +24,20 @@ Wspólny wskaźnik obu graczy (0–100%). Widać go na monitorze lekarza i w HUD
 
 Lekarz musi więc leczyć oszczędnie: zbyt dużo leków też szkodzi pacjentowi.
 
+## Pacjent (losowanie)
+
+Na początku każdej rundy gra losuje pacjenta. Obaj gracze widzą go przez kilka sekund na planszy, a potem w HUD patogenu i przy „Karcie pacjenta” lekarza.
+
+| Pacjent | Patogen | Lekarz |
+| --- | --- | --- |
+| Dziecko | kolonie rosną szybciej | objawy pojawiają się wcześniej, lepsza regeneracja |
+| Senior | tańsze kolonie, ale mniej pożywienia we krwi | leki działają słabiej, objawy słabsze, wolniejsza regeneracja |
+| Sportowiec | kolonie rosną wolniej i kosztują więcej | mocniejsze przeciwciała, szybka regeneracja |
+| Diabetyk | szybszy wzrost kolonii, dużo glukozy we krwi | wolne gojenie, zakażenie szybciej pogarsza stan |
+| Po przeszczepie | kolonie za pół ceny, szybki wzrost | słabe przeciwciała, ale krótsze odnowienie badań |
+
+Dokładne liczby: [BALANS.md](BALANS.md).
+
 ## Tryby gry
 
 ### Tryb deweloperski
