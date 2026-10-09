@@ -146,7 +146,7 @@
     // szum krwi: skurcz + prędkość prądu przy patogenie
     if (hearInside) {
       const b = s.bact, sp = Math.hypot(b.fx || 0, b.fy || 0);
-      const target = s.running && !b.transit ? 0.18 + 0.35 * s.contraction + Math.min(0.5, sp / 40) : 0.12;
+      const target = (s.running && !b.transit ? 0.18 + 0.35 * s.contraction + Math.min(0.5, sp / 40) : 0.12) * (s.flowMul ?? 1);
       A.flowGain.gain.setTargetAtTime(target, A.ctx.currentTime, 0.08);
     } else A.flowGain.gain.setTargetAtTime(0, A.ctx.currentTime, 0.1);
 
@@ -155,7 +155,19 @@
       if (hearRoom) cough(A.room, 900, 1.6, 0.9);
     }
 
-    if (hearRoom && s.running) {
+    // zakończenie przy sepsie: ciągły pisk monitora (asystolia), który powoli cichnie
+    const flatOn = hearRoom && s.ending && s.ending.win === 'bacteria';
+    if (flatOn && !A.flat) {
+      const o = A.ctx.createOscillator(), g = A.ctx.createGain();
+      o.type = 'sine'; o.frequency.value = 960; g.gain.value = 0.0001;
+      o.connect(g); g.connect(A.room); o.start(); A.flat = { o, g };
+    }
+    if (A.flat) {
+      const k = flatOn ? s.ending.t / DD.CONFIG.ending.duration : 0;
+      A.flat.g.gain.setTargetAtTime(0.13 * k * k, A.ctx.currentTime, 0.12);
+      if (!flatOn || k <= 0.001) { const f = A.flat; A.flat = null; f.g.gain.setTargetAtTime(0.0001, A.ctx.currentTime, 0.1); f.o.stop(A.ctx.currentTime + 0.6); }
+    }
+    if (hearRoom && s.running && !s.ending && !s.over) {
       alarmT -= dt;
       if (s.patient.cond < 30 && alarmT <= 0) { criticalAlarm(); alarmT = 3; }
       else if (s.doctor.temp >= 39 && alarmT <= 0) { feverAlarm(); alarmT = 6; }

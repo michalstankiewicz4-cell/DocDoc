@@ -377,10 +377,13 @@
       // przesuwaj zapis proporcjonalnie do czasu
       let ph = s.phase; if (ph < lastPhase) ph += 1;
       const steps = Math.max(1, Math.round((ph - lastPhase) * 160));
+      // gdy serce zwalnia, załamki maleją; po zatrzymaniu zapis biegnie dalej jako linia płaska
+      const amp = Math.min(1, (s.hr ?? 1) * 1.5);
       for (let i = 1; i <= steps; i++) {
         const p = (lastPhase + (ph - lastPhase) * i / steps) % 1;
-        trace[head] = ecgValue(p); head = (head + 1) % trace.length;
+        trace[head] = ecgValue(p) * amp; head = (head + 1) % trace.length;
       }
+      if ((s.hr ?? 1) < 0.3 && s.running) for (let i = 0; i < 2; i++) { trace[head] = 0; head = (head + 1) % trace.length; }
       lastPhase = s.phase;
       ctx.setTransform(pr, 0, 0, pr, 0, 0);
       ctx.clearRect(0, 0, w, h);
@@ -520,12 +523,35 @@
       } else $('res-abg').hidden = true;
     }
 
+    // film na koniec rundy: media/doctor.mp4 (wygrał lekarz) albo media/priest.mp4 (wygrał patogen)
+    const endFilm = (function () {
+      const box = $('end-film'), vid = $('end-film-v');
+      let forStats = null, st = 'none';
+      function finish() { if (st !== 'playing') return; st = 'done'; vid.pause(); box.hidden = true; }
+      vid.addEventListener('ended', finish);
+      vid.addEventListener('error', finish);
+      $('end-film-skip').addEventListener('click', finish);
+      return {
+        state(s) { if (forStats !== s.stats) { forStats = s.stats; st = 'none'; } return st; },
+        play(s) {
+          st = 'playing'; box.hidden = false;
+          const name = s.over === 'doctor' ? 'doctor' : 'priest';
+          // WebM (VP9) dla przeglądarek bez H.264, MP4 dla pozostałych
+          vid.src = vid.canPlayType('video/webm; codecs="vp9, opus"') ? `media/${name}.webm` : `media/${name}.mp4`;
+          vid.currentTime = 0; vid.muted = !(DD.Audio && DD.Audio.on);
+          // dźwięk wymaga wcześniejszego gestu gracza; gdy przeglądarka odmówi, gramy bez dźwięku
+          vid.play().catch(() => { vid.muted = true; vid.play().catch(finish); });
+          setTimeout(finish, 9000);   // zabezpieczenie, gdyby film się nie skończył
+        },
+        reset() { if (st === 'playing') { vid.pause(); box.hidden = true; } st = 'none'; forStats = null; }
+      };
+    })();
     const spLabel = (s) => { const sp = C.species[s.species]; return sp ? `${sp.name.charAt(0).toLowerCase() + sp.name.slice(1)} (${sp.latin})` : (s.kind === 'virus' ? 'wirus' : 'bakteria'); };
     function update(s) {
       const d = s.doctor, b = s.bact;
       drawEcg(s);
       const fever = d.feverT > 0;
-      $('v-hr').textContent = C.bpm;
+      $('v-hr').textContent = Math.round(C.bpm * (s.hr ?? 1));
       $('v-temp').textContent = fmt(d.temp);
       $('vital-temp').dataset.state = d.temp > 38 ? 'high' : d.temp > 37.2 ? 'warm' : 'ok';
       if (d.estInfection == null) {
@@ -691,7 +717,10 @@
       // nowa runda (czas gry się cofnął) odblokowuje ekran końcowy po zamianie ról
       if (DD.Match && s.time < (update._lastT ?? 0) - 0.5) DD.Match.suppressEnd = false;
       update._lastT = s.time;
-      if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd)) {
+      // po zwycięstwie: najpierw film (lekarz albo ksiądz), potem ekran końcowy
+      if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd) && endFilm.state(s) !== 'done') {
+        if (endFilm.state(s) === 'none') endFilm.play(s);
+      } else if (s.over && end.hidden && !(DD.Match && DD.Match.suppressEnd)) {
         end.hidden = false;
         const kn = s.kind === 'virus' ? 'wirus' : 'bakteria';
         $('end-title').textContent = s.over === 'doctor' ? 'Wygrywa lekarz' : `Wygrywa ${kn}`;
@@ -702,7 +731,7 @@
         if (DD.Match) DD.Match.renderEnd();
         $('end-again').focus();
       }
-      if (!s.over) { end.hidden = true; if (DD.Match) DD.Match.suppressEnd = false; }
+      if (!s.over) { end.hidden = true; endFilm.reset(); if (DD.Match) DD.Match.suppressEnd = false; }
     }
     return { update };
   };

@@ -11,6 +11,13 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-10-09
+### Dodane
+- **Zakończenie rundy (~5 s):** po zwycięstwie rozgrywka staje; przy sepsie serce zwalnia do zatrzymania, prąd krwi ustaje (patogen to widzi i słyszy), tętno na monitorze spada do 0, EKG przechodzi w linię płaską, a u lekarza ciągły pisk monitora powoli cichnie.
+- **Film na koniec:** wygrana lekarza — `media/doctor`, wygrana patogenu — `media/priest`; widzą go obaj gracze, można pominąć. Pliki MP4 i WebM (dla przeglądarek bez H.264).
+### Zmienione
+- Statystyki na ekranie końcowym są zwinięte; rozwija je przycisk „Statystyki rundy”.
+
 ## [0.31.1] - 2026-10-09
 ### Dodane
 - **Wyszukiwarki i udostępnianie linku:** opis strony, słowa kluczowe (m.in. biology, doctor, game, hospitality, medicine, vibecoding, webrtc), adres kanoniczny, podgląd przy udostępnianiu (Open Graph, Twitter) z obrazkiem `img/og.jpg`, dane strukturalne (schema.org VideoGame), ikona strony, `robots.txt` i `sitemap.xml`.
@@ -299,7 +306,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.1...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.32.0...HEAD
+[0.32.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.1...v0.32.0
 [0.31.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.0...v0.31.1
 [0.31.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.5...v0.31.0
 [0.30.5]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.4...v0.30.5

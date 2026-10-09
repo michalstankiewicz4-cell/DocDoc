@@ -699,3 +699,13 @@ body[data-role="doc"] .half-doc {
 @keyframes loader-trace { to { stroke-dashoffset: -320; } }
 .loader-text { margin: 0; font-size: 14px; color: rgba(247, 233, 228, 0.65); }
 @media (prefers-reduced-motion: reduce) { .loader-ecg path { animation: none; stroke-dashoffset: 0; } }
+
+/* ---------- zakończenie rundy: film i zwijane statystyki ---------- */
+.end-film { position: fixed; inset: 0; z-index: 40; background: #000; display: grid; place-items: center; }
+.end-film video { width: 100%; height: 100%; object-fit: contain; }
+.end-film-skip {
+  position: absolute; right: 20px; bottom: 20px; padding: 8px 16px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.45); color: #fff; font-weight: 700;
+}
+.end-details > summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+.end-details[open] > summary { margin-bottom: 10px; }

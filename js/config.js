@@ -122,6 +122,9 @@ DD.CONFIG = {
   // kopie patogenu: wabiki dla przeciwciał (płyną z prądem, giną od jednego trafienia)
   copies: { max: 6, cost: 100, swim: 2.5, life: 40, fade: 4 },   // kopia żyje `life` s, w ostatnich `fade` s maleje
 
+  // zakończenie rundy: tyle sekund od zwycięstwa do ekranu końcowego (serce zwalnia, prąd ustaje, monitor piszczy i cichnie)
+  ending: { duration: 5 },
+
   // minimapa patogenu: ukryta (kod zostaje; true = pokazuj)
   ui: { minimap: false },
 

@@ -258,7 +258,8 @@
       // badania bez wyników oczekujących (gość dostaje wynik dopiero, gdy jest gotowy)
       dt: Object.fromEntries(Object.entries(d.tests).map(([k, T]) => [k, Object.assign({}, T, { pending: null })])),
       dk: [d.resultSeq, d.estInfection ?? -1, d.estT ?? -1, d.estExact ? 1 : 0],
-      cg: s.coughs
+      cg: s.coughs,
+      ph: Math.round(s.phase * 1000) / 1000, hr: r2(s.hr), fm: r2(s.flowMul), en: s.ending ? [s.ending.win === 'doctor' ? 1 : 2, r2(s.ending.t)] : 0
     };
   }
   let sendAcc = 0, sentLogLen = -1, sentLogT = -1, seq = 0;
@@ -291,6 +292,10 @@
       if (snap.dt) { s.doctor.tests = snap.dt; s.doctor.test = snap.dt.culture; }
       if (snap.dk) { s.doctor.resultSeq = snap.dk[0]; s.doctor.estInfection = snap.dk[1] < 0 ? null : snap.dk[1]; s.doctor.estT = snap.dk[2]; s.doctor.estExact = !!snap.dk[3]; }
       s.coughs = snap.cg || 0;
+      // rytm serca i prąd od hosta (w zakończeniu zwalniają)
+      s.hr = snap.hr ?? 1; s.flowMul = snap.fm ?? 1; F.scale = s.flowMul;
+      s.ending = snap.en ? { win: snap.en[0] === 1 ? 'doctor' : 'bacteria', t: snap.en[1] } : null;
+      if (snap.ph != null) s.phaseBase = snap.ph, s.phaseAt = snap.t;
       const b = s.bact, v = snap.b, d0 = s.doctor;
       const far = Math.hypot(v[0] - b.x, v[1] - b.y) > 4;
       b.x = far ? v[0] : b.x + (v[0] - b.x) * k;
@@ -306,7 +311,7 @@
       b.dead = v[14]; b.colonyCd = v[15]; b.feeding = !!v[16]; b.inTissue = !!v[17]; b.burrowT = v[18]; b.z = v[19];
       b.transit = snap.tr ? { to: ROUTE_IDS[snap.tr[0] - 1] || 'body', t: snap.tr[1], total: snap.tr[2] } : null;
       b.place = H.placeName(b.x, b.y);
-      { const f = F.velocity(b.x, b.y, s.time, (s.time * C.bpm / 60) % 1); b.fx = f[0]; b.fy = f[1]; }
+      { const f = F.velocity(b.x, b.y, s.time, s.phase); b.fx = f[0]; b.fy = f[1]; }
       const d = s.doctor, w = snap.d;
       d.unlocked = !!w[3];
       d.knownInfection = w[4] < 0 ? null : w[4]; d.resultTime = w[5] < 0 ? undefined : w[5];
@@ -348,8 +353,9 @@
       s.time += dt;
     }
     s.log = logCache;
-    s.phase = (s.time * C.bpm / 60) % 1;
-    s.contraction = F.contraction(s.phase);
+    // faza: od ostatniej paczki hosta, przesunięta o czas, który od niej minął
+    s.phase = s.phaseBase != null ? (s.phaseBase + Math.max(0, s.time - s.phaseAt) * C.bpm / 60 * (s.hr ?? 1)) % 1 : (s.time * C.bpm / 60) % 1;
+    s.contraction = F.contraction(s.phase) * Math.min(1, (s.hr ?? 1) * 2);
     H.VALVES.forEach((v, i) => { s.valves[i].open = F.valveOpen(v.type, s.phase); });
     DD.Game.updateValveGeometry(s);
   };

@@ -184,7 +184,7 @@
   const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const pulse = (a, b, x) => (x < a || x > b) ? 0 : Math.sin(Math.PI * (x - a) / (b - a));
 
-  const F = { PATHS };
+  const F = { PATHS, scale: 1 };   // scale: siła prądu (spada do 0, gdy serce staje)
 
   // phase: 0..1. 0–0.12 skurcz przedsionków, 0.14–0.45 skurcz komór, reszta rozkurcz
   F.gains = function (phase) {
@@ -265,7 +265,7 @@
     const wall = Math.min(1, Math.max(0, -d / 1.2));
     vx += (ny - n0) / e * amp * wall;
     vy += -(nx - n0) / e * amp * wall;
-    out[0] = vx; out[1] = vy;
+    out[0] = vx * F.scale; out[1] = vy * F.scale;
     return out;
   };
 

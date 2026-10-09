@@ -14,6 +14,7 @@ Dokument dla programistów. Opisuje budowę kodu i zasady, których trzymamy si�
 
 ```
 index.html              układ ekranu, nakładki (ładowanie, start, lobby, koniec gry), metadane SEO, kolejność skryptów
+media/                  filmy na koniec rundy (doctor, priest; MP4 i WebM)
 img/                    og.jpg (podgląd linku), icon.svg (ikona strony)
 robots.txt, sitemap.xml dla wyszukiwarek
 css/style.css           wygląd: lewa połowa (ciemny świat patogenu), prawa (aparatura OIOM-u lekarza, sekcja „Panel lekarza jako aparatura”)
@@ -83,6 +84,10 @@ Gdy karta hosta jest ukryta, przeglądarka wstrzymuje `requestAnimationFrame`, w
 - **Objawy:** `DD.symptomList(s)` zwraca `[nazwa, poziom, obszar]`; korzysta z niej lista objawów w sali i sylwetka (`doctor-devices.js`).
 - **Wyniki:** `renderResults()` działa tylko przy nowym wyniku (`resultSeq`). Nowy wydruk trafia na górę `.slips` z animacją `printing`; mikroskop i USG mają własne rysowanie (`showMicro`, `makeUS`).
 - **Mikroskop:** preparat 3 × 3 pola rysowany raz na wynik (`buildSlide`), widok przesuwany myszą albo strzałkami (`microPan`), znalezienie i pusty preparat sprawdza `microCheck`; zdjęcie robi `doctor-cam.js`, a pokazuje je mikroskop dopiero po znalezieniu (`dataset.ready` = czas pobrania).
+
+## Zakończenie rundy
+
+Warunek wygranej ustawia `s.ending = { win, t }` (a nie od razu `s.over`). Przez `C.ending.duration` sekund rozgrywka stoi, a przy sepsie spadają `s.hr` (tętno) i `s.flowMul` (prąd; `Flow.scale`). Faza serca jest sumowana (`s.phase += dt · bpm · hr`), więc gość dostaje ją w paczce (`ph`, `hr`, `fm`, `en`). Po czasie `s.over = win`; UI pokazuje film (`endFilm` w `doctor-ui.js`), potem ekran końcowy.
 
 ## Sieć (`js/net.js`)
 

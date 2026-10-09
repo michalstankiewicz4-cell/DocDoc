@@ -189,6 +189,8 @@ Każdą akcję można też wybrać z rozwijanych menu konsoli zleceń.
 
 ## Koniec rundy
 
+Po zwycięstwie gra trwa jeszcze około 5 sekund. Przy sepsie serce zwalnia aż do zatrzymania, prąd krwi ustaje, a monitor lekarza przechodzi w ciągły pisk, który powoli cichnie. Potem obaj gracze widzą krótki film (wygrana lekarza albo wygrana patogenu, można go pominąć), a na końcu podsumowanie. Statystyki rozwija się przyciskiem „Statystyki rundy”.
+
 Po wygranej jednej ze stron ekran końcowy podaje rodzaj patogenu i statystyki obu graczy:
 - **patogen:** przebyta droga, najwyższa kolonizacja, kolonie założone i zniszczone, odrodzenia, czas przy ścianie, przejścia przez zastawki, wniknięcia w ścianę, mutacje, toksyny, czas w ukryciu, zjedzone pożywienie, kopie (utworzone, zniszczone, obumarłe), przeciwciała zwiedzione przez kopie, przejścia przez krążenie płucne i duże, odwiedzone jamy serca, najmniej życia;
 - **lekarz:** liczba badań, czas pierwszego badania i leczenia, liczba dawek każdego leku, operacje i usunięte nimi ogniska, trafienia przeciwciał oraz obrażenia od leków, przeciwciał i gorączki.

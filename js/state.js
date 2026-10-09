@@ -15,6 +15,7 @@
   function createRaw() {
     return {
       time: 0, phase: 0, contraction: 0,
+      hr: 1, flowMul: 1, ending: null,   // tętno i prąd krwi względem normy (spadają w zakończeniu przy sepsie); ending: { win, t }
       running: false, over: null, organ: null,
       valves: H.VALVES.map(v => ({ id: v.id, open: 0 })),
       bact: {
@@ -131,7 +132,7 @@
         s.bact.iy = Math.max(-1, Math.min(1, cmd.y));
         return;
     }
-    if (!s.running || s.over) return;
+    if (!s.running || s.over || s.ending) return;
     switch (cmd.type) {
       case 'bact.colony': foundColony(s); return;
       case 'bact.hide': hideToggle(s); return;
@@ -463,11 +464,22 @@
   G.step = function (s, dt) {
     if (!s.running) return;
     s.time += dt;
-    s.phase = (s.time * C.bpm / 60) % 1;
-    s.contraction = F.contraction(s.phase);
+    // zakończenie: przy sepsie serce zwalnia do zatrzymania, a prąd krwi ustaje
+    if (s.ending) {
+      s.ending.t = Math.max(0, s.ending.t - dt);
+      const k = s.ending.t / C.ending.duration;
+      if (s.ending.win === 'bacteria') { s.hr = k; s.flowMul = k * k; }
+    }
+    s.phase = (s.phase + dt * C.bpm / 60 * s.hr) % 1;
+    F.scale = s.flowMul;
+    s.contraction = F.contraction(s.phase) * Math.min(1, s.hr * 2);
     H.VALVES.forEach((v, i) => { s.valves[i].open = F.valveOpen(v.type, s.phase); });
     updateValveGeometry(s);
     if (s.over) return;
+    if (s.ending) {   // rozgrywka zatrzymana; po upływie czasu pokazujemy wynik
+      if (s.ending.t <= 0) s.over = s.ending.win;
+      return;
+    }
 
     const b = s.bact, d = s.doctor;
 
@@ -789,8 +801,8 @@
       for (let i = s.antibodies.length - 1; i >= 0; i--) if (s.antibodies[i].stuck) s.antibodies.splice(i, 1);
       if (s.colonies.length) b.dead = K.respawnDelay;
     }
-    if (b.hp <= 0 && !s.colonies.length) { s.over = 'doctor'; log(s, 'sys', 'Zakażenie wyleczone: nie ma ani patogenu, ani kolonii. Wygrywa lekarz.'); }
-    else if (s.patient.cond <= 0) { s.patient.cond = 0; s.over = 'bacteria'; log(s, 'sys', 'Sepsa: stan pacjenta krytyczny. Wygrywa patogen.'); }
+    if (b.hp <= 0 && !s.colonies.length) { s.ending = { win: 'doctor', t: C.ending.duration }; log(s, 'sys', 'Zakażenie wyleczone: nie ma ani patogenu, ani kolonii. Wygrywa lekarz.'); }
+    else if (s.patient.cond <= 0) { s.patient.cond = 0; s.ending = { win: 'bacteria', t: C.ending.duration }; log(s, 'sys', 'Sepsa: stan pacjenta krytyczny. Wygrywa patogen.'); }
   };
 
   G.updateValveGeometry = updateValveGeometry;

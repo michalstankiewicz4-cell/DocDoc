@@ -73,13 +73,14 @@
       ctx.lineWidth = 3; ctx.strokeStyle = flash ? '#e0452f' : '#3b4b46'; roundRect(486, 18, 112, 70, 6); ctx.stroke();
       ctx.strokeStyle = '#4fd39a'; ctx.lineWidth = 1.5; ctx.beginPath();
       for (let x = 0; x <= 90; x++) {
-        const ph = ((t * C.bpm / 60) + x / 45) % 1;
-        const y = ph > 0.12 && ph < 0.16 ? (ph < 0.14 ? -14 : 5) : Math.sin(ph * 6.28) * 1.5;
+        const hrK = s.hr ?? 1;
+        const ph = ((t * C.bpm / 60 * hrK) + x / 45) % 1;
+        const y = hrK < 0.05 ? 0 : ph > 0.12 && ph < 0.16 ? (ph < 0.14 ? -14 : 5) : Math.sin(ph * 6.28) * 1.5;   // asystolia: linia płaska
         if (x === 0) ctx.moveTo(497 + x, 46 + y); else ctx.lineTo(497 + x, 46 + y);
       }
       ctx.stroke();
       ctx.fillStyle = flash ? '#ff8a78' : '#bfeedd'; ctx.font = '700 13px "Atkinson Hyperlegible", system-ui, sans-serif';
-      ctx.fillText(`${C.bpm}`, 497, 78); ctx.fillText(`${d.temp.toFixed(1).replace('.', ',')}°`, 535, 78);
+      ctx.fillText(`${Math.round(C.bpm * (s.hr ?? 1))}`, 497, 78); ctx.fillText(`${d.temp.toFixed(1).replace('.', ',')}°`, 535, 78);
       ctx.fillStyle = '#7d8d88'; ctx.fillRect(538, 88, 8, 12);
 
       // stojak kroplówki

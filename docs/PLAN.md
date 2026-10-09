@@ -15,14 +15,14 @@ Status: ✅ zrobione, 🔧 w trakcie, ⬜ do zrobienia.
 | ✅ | Nazwa „Patient Zero” | Ze spacją w tytule, na ekranie startowym i w dokumentacji. |
 | ✅ | Wyszukiwarki (SEO) | Opis strony, słowa kluczowe (m.in. biology, doctor, game, hospitality, medicine, vibecoding, webrtc), podgląd przy udostępnianiu linku. |
 | ✅ | Ekran ładowania | Loader zanim pojawi się ekran startowy (żeby kliknięcie nie trafiało w „martwą” stronę). |
-| ⬜ | Statystyki zwinięte | Na ekranie końcowym widoczne dopiero po rozwinięciu. |
+| ✅ | Statystyki zwinięte | Na ekranie końcowym widoczne dopiero po rozwinięciu. |
 
 ## Etap 2. Klimat i oprawa
 
 | | Zadanie | Opis |
 | --- | --- | --- |
-| ⬜ | Zakończenie gry (~5 s) | U lekarza piszczenie monitora powoli cichnie, u patogenu serce zwalnia i prąd krwi ustaje; dopiero potem podsumowanie. |
-| ⬜ | Filmy na koniec | Wygrał lekarz → obaj gracze widzą `doctor.mp4`, wygrał patogen → `priest.mp4`. |
+| ✅ | Zakończenie gry (~5 s) | U lekarza piszczenie monitora powoli cichnie, u patogenu serce zwalnia i prąd krwi ustaje; dopiero potem podsumowanie. |
+| ✅ | Filmy na koniec | Wygrał lekarz → obaj gracze widzą `doctor.mp4`, wygrał patogen → `priest.mp4`. |
 | ⬜ | Tło we krwi | Trochę pęcherzyków tlenu i drobnych elementów, które nie wchodzą w interakcję z graczem. |
 
 ## Etap 3. Losowanie pacjenta (środowisko gry)
