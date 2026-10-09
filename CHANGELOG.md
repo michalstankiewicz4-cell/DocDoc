@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.44.0] - 2026-10-09
+### Dodane
+- **Kolejni pacjenci w losowaniu:** alergik, palacz, alkoholik, astmatyk, otyłość, ciąża (teraz 11 pacjentów). Nowe mnożniki: koszt leczenia dla pacjenta (alergik, astmatyk, ciąża) i wzrost kolonii w narządzie (palacz — serce, alkoholik — wątroba). Koszt na przyciskach leczenia uwzględnia pacjenta.
+
 ## [0.43.0] - 2026-10-09
 ### Dodane
 - **Przeszczep narządu** (wątroba, nerka) i **amputacja nóg** w menu Zabiegi: każdy zabieg raz na rundę, usuwa wszystkie ogniska w obszarze i rani patogen w nim; mocno obciąża pacjenta. W sali serweta operacyjna i lampa w czasie zabiegu, potem opatrunek na brzuchu albo krótsza kołdra po amputacji. Opis w wiki i statystykach.
@@ -388,7 +392,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.43.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.44.0...HEAD
+[0.44.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.1...v0.42.0
 [0.41.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.0...v0.41.1

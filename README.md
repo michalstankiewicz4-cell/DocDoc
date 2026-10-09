@@ -6,7 +6,7 @@ i próbuje doprowadzić pacjenta do sepsy albo wyniszczenia.
 **Lekarz** nie widzi go wprost. Przy aparaturze OIOM-u zleca badania (CRP, posiew, echo serca, USG, antybiogram, mikroskop,
 morfologia, PCR, badanie moczu, tomografia), czyta objawy — czasem fałszywe — i dobiera leczenie: przeciwciała, gorączkę,
 antybiotyki, leki przeciwwirusowe i przeciwgrzybicze, chemio- i radioterapię, operację zastawki. Pomaga mu wbudowana wiki.
-Na początku rundy gra losuje pacjenta (dziecko, senior, sportowiec, diabetyk, po przeszczepie), co zmienia szanse obu stron.
+Na początku rundy gra losuje pacjenta (jeden z 11: dziecko, senior, sportowiec, diabetyk, po przeszczepie, alergik, palacz, alkoholik, astmatyk, otyłość, ciąża), co zmienia szanse obu stron.
 Gra jest po angielsku i po polsku.
 
 *Browser game for two players: a pathogen in the bloodstream versus a doctor in the ICU — biology, medicine and WebRTC multiplayer.*

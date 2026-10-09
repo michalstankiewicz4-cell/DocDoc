@@ -847,7 +847,7 @@
         el.querySelector('.action-state').textContent = st;
         const eff = 1 - b.resist[a.cd];
         const effEl = el.querySelector('.action-eff');
-        const cost = C.patient.sideEffect[a.cd] || 0;
+        const cost = Math.round((C.patient.sideEffect[a.cd] || 0) * (DD.Game.patientOf(s).sideFx ?? 1));
         effEl.textContent = `Dawka ${Math.round(eff * 100)}%` + (cost ? `, stan pacjenta −${cost}` : '');
         effEl.dataset.level = eff > 0.75 ? 'full' : eff > 0.45 ? 'mid' : 'low';
       }

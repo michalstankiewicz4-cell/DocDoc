@@ -21,6 +21,23 @@ Na początku rundy host losuje pacjenta (równe szanse). Pacjent mnoży wybrane 
 | `food` | ilość pożywienia we krwi (170) | 1 | **0,6** | 1 | **1,4** | 1 |
 | `glucose` | udział glukozy w pożywieniu (reszta po równo aminokwasy / lipidy) | ⅓ | ⅓ | ⅓ | **0,7** | ⅓ |
 
+Kolejni pacjenci (v0.44.0) — nowe mnożniki: `sideFx` (koszt każdego leczenia, zabiegu i biopsji dla stanu pacjenta) i `organGrowth` (wzrost kolonii w danym narządzie):
+
+| Mnożnik | Alergik | Palacz | Alkoholik | Astmatyk | Otyłość | Ciąża |
+| --- | --- | --- | --- | --- | --- | --- |
+| `growth` | 1 | 1,1 | 1 | 1 | 1,1 | 1 |
+| `colonyCost` | 1 | 1 | 0,9 | 1 | 0,85 | 1 |
+| `symptom` | **1,3** | 1,2 | 1 | **1,4** | 0,9 | 1 |
+| `drug` | 1 | 1 | **0,85** | 1 | **0,8** | 1 |
+| `ab` | **1,3** | 0,9 | 0,9 | 1,1 | 1 | **0,8** |
+| `regen` | 1 | 0,7 | 0,7 | 0,9 | 0,8 | 1,1 |
+| `drain` | 1 | 1,1 | 1,1 | 1,1 | 1,1 | 1 |
+| `food` / `glucose` | 1 / ⅓ | 1 / ⅓ | 0,8 / ⅓ | 1 / ⅓ | **1,3 / 0,45** | 1,2 / 0,4 |
+| `sideFx` | **1,6** | 1 | 1 | 1,2 | 1 | **1,8** |
+| `organGrowth` | — | serce ×1,2 | **wątroba ×1,6** | — | — | — |
+
+Palacz i astmatyk dotyczą płuc, których jeszcze nie ma na mapie — na razie działają przez objawy (kaszel, duszność) i serce.
+
 Uzasadnienie (opisy Michała):
 - **Dziecko** — patogen szybciej się rozprzestrzenia, ale objawy pojawiają się wcześniej, więc lekarz szybciej go wykrywa; dobra regeneracja.
 - **Senior** — łatwiejsza kolonizacja i wolniejsze leczenie, objawy słabsze (trudniej rozpoznać). Mniej pożywienia we krwi (prośba o „małą ilość pożywienia u któregoś pacjenta”) — hamuje rozmnażanie, żeby senior nie był zbyt łatwy dla patogenu.

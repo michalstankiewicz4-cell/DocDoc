@@ -35,6 +35,12 @@ Na początku każdej rundy gra losuje pacjenta. Obaj gracze widzą go przez kilk
 | Sportowiec | kolonie rosną wolniej i kosztują więcej | mocniejsze przeciwciała, szybka regeneracja |
 | Diabetyk | szybszy wzrost kolonii, dużo glukozy we krwi | wolne gojenie, zakażenie szybciej pogarsza stan |
 | Po przeszczepie | kolonie za pół ceny, szybki wzrost | słabe przeciwciała, ale krótsze odnowienie badań |
+| Alergik | groźniejsze przeciwciała, wyraźniejsze objawy | mocne przeciwciała, ale leczenie obciąża pacjenta ×1,6 |
+| Palacz | kolonie w sercu rosną szybciej, słabsza odporność | objawy z płuc wyraźniejsze, wolniejsza regeneracja |
+| Alkoholik | kolonie w wątrobie rosną dużo szybciej, tańsze kolonie | leki słabsze, wolniejsza regeneracja |
+| Astmatyk | objawy groźniejsze dla pacjenta | duszność i kaszel wcześnie, leczenie obciąża ×1,2 |
+| Otyłość | więcej pożywienia, tańsze kolonie | leki słabsze, objawy mniej widoczne |
+| Ciąża | słabsze przeciwciała | leki i zabiegi obciążają pacjentkę ×1,8, dobra regeneracja |
 
 Dokładne liczby: [BALANS.md](BALANS.md).
 

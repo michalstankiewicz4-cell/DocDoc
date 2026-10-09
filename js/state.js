@@ -105,7 +105,7 @@
   // skuteczność leku = 1 - oporność; po podaniu oporność rośnie
   // skutek uboczny dawki leku: natychmiastowy spadek stanu pacjenta
   function sideEffect(s, key) {
-    const v = C.patient.sideEffect[key] || 0;
+    const v = (C.patient.sideEffect[key] || 0) * (PT(s).sideFx ?? 1);   // koszt dawki × wrażliwość pacjenta
     s.patient.cond -= v; s.stats.condByTreatment += v;
   }
   // wylosowany pacjent: mnożniki obu stron (C.patients, opis w docs/BALANS.md)
@@ -246,7 +246,7 @@
         const v = H.VALVES.find((x) => x.id === cmd.valve);
         if (!v || !d.unlocked || SU.state === 'running' || SU.cd > 0) return;
         SU.state = 'running'; SU.t = cfg.duration; SU.valve = v.id;
-        s.patient.cond -= cfg.patientCost; s.stats.condByTreatment += cfg.patientCost;
+        { const pc = cfg.patientCost * (PT(s).sideFx ?? 1); s.patient.cond -= pc; s.stats.condByTreatment += pc; }
         s.stats.surgeries = (s.stats.surgeries || 0) + 1;
         if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
         log(s, 'doc', `Rozpoczęto operację: ${v.name.toLowerCase()}.`);
@@ -257,7 +257,7 @@
         const PR = d.proc, what = cmd.what, cfg = what === 'legs' ? D.amputation : D.transplant;
         if (!PROC_NAME[what] || !d.unlocked || PR.state === 'running' || PR.done[what]) return;
         PR.state = 'running'; PR.t = cfg.duration; PR.kind = what;
-        s.patient.cond -= cfg.patientCost; s.stats.condByTreatment += cfg.patientCost;
+        { const pc = cfg.patientCost * (PT(s).sideFx ?? 1); s.patient.cond -= pc; s.stats.condByTreatment += pc; }
         if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
         log(s, 'doc', `Rozpoczęto zabieg: ${PROC_NAME[what]}.`);
         return;
@@ -361,7 +361,7 @@
     if (kind === 'biopsy' && !BIOPSY_ORGAN[region]) return;   // biopsja: wybrany narząd
     T.state = 'running'; T.t = cfg.duration; T.sampleT = s.time;
     T.pending = sampleFor(s, kind, region);    // wynik opisuje chwilę pobrania
-    if (cfg.patientCost) { s.patient.cond -= cfg.patientCost; s.stats.condByTreatment += cfg.patientCost; }
+    if (cfg.patientCost) { const pc = cfg.patientCost * (PT(s).sideFx ?? 1); s.patient.cond -= pc; s.stats.condByTreatment += pc; }
     s.stats.tests++; if (s.stats.firstTestAt < 0) s.stats.firstTestAt = s.time;
     log(s, 'doc', kind === 'biopsy' ? `Zlecono badanie: biopsja (${BIOPSY_ORGAN[region]}).` : `Zlecono badanie: ${TEST_NAME[kind]}.`);
   }
@@ -813,7 +813,8 @@
       const pk = c.inTissue ? pen : 1;   // leki słabiej docierają do kolonii w mięśniu
       const before = c.size;
       const pf = c.store ? C.fungus.storeShrink : 1;   // magazyn zarodników: leki słabiej
-      let gr = grow0 * (1 - halt * pk), sh = (D.abxA.colonyShrink * effA + D.antifungal.colonyShrink * effF) * pk * pf, cap = 1;
+      if (!c.organ) c.organ = H.organAt(c.x, c.y);
+      let gr = grow0 * (1 - halt * pk) * ((PT(s).organGrowth || {})[c.organ] ?? 1), sh = (D.abxA.colonyShrink * effA + D.antifungal.colonyShrink * effF) * pk * pf, cap = 1;
       if (s.kind === 'cancer') {
         // guz: szybsze podziały, bez własnych naczyń zatrzymuje się na smallCap; chemio- i radioterapia go kurczą
         const CA = C.cancer;

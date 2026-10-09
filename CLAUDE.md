@@ -48,7 +48,7 @@ Gotowe (szczegóły w `CHANGELOG.md` i `docs/INSTRUKCJA.md`):
   (`config.species`, wybór ukryty przed lekarzem), kolonie zakładane klawiszem E (kolonie = „życia”), żerowanie,
   wnikanie w mięsień sercowy (Q, biom z kardiomiocytami), ukrycie w kolonii (F), mutacje (7–0 i 6, zależne od rodzaju), toksyny (T),
   sygnały chemiczne — fałszywe objawy (B), pożywienie we krwi i rozmnożenie (R) — kopie są wabikami dla przeciwciał.
-- Losowanie pacjenta (dziecko, senior, sportowiec, diabetyk, po przeszczepie) zmieniające szanse obu stron.
+- Losowanie pacjenta (11 rodzajów: dziecko, senior, sportowiec, diabetyk, po przeszczepie, alergik, palacz, alkoholik, astmatyk, otyłość, ciąża) zmieniające szanse obu stron.
 - Lekarz: sala z pacjentem i objawami z położenia kolonii (czasem fałszywymi), EKG z zaburzeniami rytmu, stan pacjenta, 10 badań z czasem i czułością (CRP, posiew,
   echo serca, USG jamy brzusznej, antybiogram, mikroskop, morfologia, PCR, badanie moczu, tomografia), leczenie (przeciwciała, gorączka, β-laktam, makrolid,
   przeciwwirusowy, przeciwgrzybiczy, chemioterapia), zabiegi (operacja zastawki, radioterapia narządu), oporność nabyta i naturalna,
@@ -104,7 +104,8 @@ Status: [x] zrobione, [ ] do zrobienia.
 - [x] Uzupełnienie całej dokumentacji (v0.41.1)
 - [x] Markery nowotworowe, RTG, rezonans, biopsja (v0.42.0)
 - [x] Przeszczep narządu i amputacja (v0.43.0)
-- [ ] Dalej wg `docs/PLAN.md`: obszary poza krwiobiegiem (płuca), kolejni pacjenci (alergie, palacz, alkoholizm, astma, otyłość, ciąża)
+- [x] Kolejni pacjenci: alergik, palacz, alkoholik, astmatyk, otyłość, ciąża (v0.44.0)
+- [ ] Dalej wg `docs/PLAN.md`: obszary poza krwiobiegiem (płuca)
 - [x] Poprawki: powrót z mięśnia, zamiana ról; pasek przewijania; ekran startowy, loader, nazwa; SEO (v0.30.3–v0.31.1)
 - [x] Zakończenie rundy, filmy, zwijane statystyki (v0.32.0)
 
@@ -166,4 +167,5 @@ Tu zapisuj decyzje, które Claude podjął sam przy realizacji zadań (zgodnie z
 - Nowotwór (v0.41.0): kind 'cancer'; mutacje 7/8/9/0 → divide/apoptosis/angio/meta (`Game.mutKey`); chemioterapia bez skrótu klawiszowego (wszystkie litery zajęte), radioterapia w menu Zabiegi (`doc.radio` z `region`), `s.radio` synchronizowane; posiew/PCR ujemne, mikroskop pokazuje komórki atypowe; przerzuty osiadają jak zarodniki grzyba. Liczby w `docs/BALANS.md`.
 - Badania v0.42.0 (markery, RTG, rezonans, biopsja): bez skrótów klawiszowych (brak wolnych liter), biopsja przez `doc.test` z `region` (przyciski narządów w pozycji menu), koszt dla pacjenta `tests.biopsy.patientCost`. Liczby w `docs/BALANS.md`.
 - Przeszczep i amputacja (v0.43.0): raz na rundę każdy; amputacja dotyczy obszaru 'legs' (żyła główna dolna — przyczyna obrzęku nóg) i patogenu w drodze przez nogi, bo nogi nie są na mapie; liczby w `config.doctor.transplant/amputation`.
+- Pacjenci v0.44.0: liczby dobrałem sam (do zmiany po testach) — tabela w `docs/BALANS.md`; palacz i astmatyk działają przez objawy i serce, bo płuc nie ma jeszcze na mapie.
 - Objawy (`js/patient-room.js`): progi masy kolonii w obszarach z `Heart.regionOf` (prawe serce > 0,2 kaszel, > 0,35 duszność; lewe > 0,35 zaburzenia rytmu; żyła główna dolna > 0,25 obrzęk; wątroba > 0,3 żółtaczka; nerka > 0,3 krew w moczu; > 0,9 objaw nasilony).

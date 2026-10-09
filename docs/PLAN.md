@@ -75,7 +75,8 @@ Część z nich ma sens dopiero przy nowych patogenach (etap 7–8).
 
 1. ✅ Nowe badania: markery nowotworowe, biopsja, RTG, rezonans (v0.42.0).
 2. ✅ Przeszczep narządu (wątroba, nerka) i amputacja (v0.43.0).
-3. ⬜ Obszary poza krwiobiegiem (płuca) i kolejni pacjenci: alergie, palacz, alkoholizm, astma, otyłość, ciąża.
+3. ✅ Kolejni pacjenci: alergik, palacz, alkoholik, astmatyk, otyłość, ciąża (v0.44.0).
+4. ⬜ Obszary poza krwiobiegiem (płuca) — wtedy palacz i astmatyk dostaną zmiany w płucach.
 
 ## Etap 7. Nowy patogen: grzyb ✅ v0.38.0
 

@@ -188,7 +188,20 @@ DD.CONFIG = {
     diabetic:   { name: 'Diabetyk', growth: 1.3, colonyCost: 1, symptom: 1, drug: 1, ab: 0.9, regen: 0.4, drain: 1.15, testCd: 1, food: 1.4, glucose: 0.7,
                   bact: 'Szybszy rozwój infekcji, dużo glukozy we krwi.', doc: 'Wolniejsze gojenie, zakażenie szybciej pogarsza stan pacjenta.' },
     transplant: { name: 'Po przeszczepie', growth: 1.35, colonyCost: 0.5, symptom: 1, drug: 1, ab: 0.55, regen: 0.8, drain: 1.1, testCd: 0.6, food: 1, glucose: 0.33,
-                  bact: 'Bardzo łatwa kolonizacja (kolonie za pół ceny, szybki wzrost).', doc: 'Osłabiony układ odpornościowy (słabe przeciwciała), ale częstsze badania kontrolne (krótsze odnowienie badań).' }
+                  bact: 'Bardzo łatwa kolonizacja (kolonie za pół ceny, szybki wzrost).', doc: 'Osłabiony układ odpornościowy (słabe przeciwciała), ale częstsze badania kontrolne (krótsze odnowienie badań).' },
+    // v0.44.0 — sideFx: mnożnik kosztu leczenia dla stanu pacjenta; organGrowth: wzrost kolonii w danym narządzie
+    allergy:    { name: 'Alergik', growth: 1, colonyCost: 1, symptom: 1.3, drug: 1, ab: 1.3, regen: 1, drain: 1, testCd: 1, food: 1, glucose: 0.33, sideFx: 1.6,
+                  bact: 'Silna odpowiedź odpornościowa: przeciwciała groźniejsze, objawy wyraźniejsze.', doc: 'Mocne przeciwciała i wyraźne objawy, ale każde leczenie bardziej obciąża pacjenta (reakcje alergiczne).' },
+    smoker:     { name: 'Palacz', growth: 1.1, colonyCost: 1, symptom: 1.2, drug: 1, ab: 0.9, regen: 0.7, drain: 1.1, testCd: 1, food: 1, glucose: 0.33, organGrowth: { heart: 1.2 },
+                  bact: 'Kolonie w sercu rosną szybciej, odporność słabsza.', doc: 'Częsty kaszel (objawy z płuc wyraźniejsze), wolniejsza regeneracja.' },
+    alcoholic:  { name: 'Alkoholik', growth: 1, colonyCost: 0.9, symptom: 1, drug: 0.85, ab: 0.9, regen: 0.7, drain: 1.1, testCd: 1, food: 0.8, glucose: 0.33, organGrowth: { liver: 1.6 },
+                  bact: 'Uszkodzona wątroba: kolonie w wątrobie rosną dużo szybciej, kolonie trochę tańsze.', doc: 'Leki działają słabiej (wątroba gorzej je przetwarza), wolniejsza regeneracja.' },
+    asthma:     { name: 'Astmatyk', growth: 1, colonyCost: 1, symptom: 1.4, drug: 1, ab: 1.1, regen: 0.9, drain: 1.1, testCd: 1, food: 1, glucose: 0.33, sideFx: 1.2,
+                  bact: 'Każdy objaw z płuc i serca jest groźniejszy dla pacjenta.', doc: 'Duszność i kaszel pojawiają się wcześnie; leczenie trochę bardziej obciąża.' },
+    obese:      { name: 'Otyłość', growth: 1.1, colonyCost: 0.85, symptom: 0.9, drug: 0.8, ab: 1, regen: 0.8, drain: 1.1, testCd: 1, food: 1.3, glucose: 0.45,
+                  bact: 'Więcej pożywienia we krwi, tańsze kolonie.', doc: 'Leki rozkładają się w większej masie ciała (słabsze), objawy mniej widoczne.' },
+    pregnant:   { name: 'Ciąża', growth: 1, colonyCost: 1, symptom: 1, drug: 1, ab: 0.8, regen: 1.1, drain: 1, testCd: 1, food: 1.2, glucose: 0.4, sideFx: 1.8,
+                  bact: 'Odporność wyciszona (tolerancja ciąży): przeciwciała słabsze.', doc: 'Leki i zabiegi znacznie bardziej obciążają pacjentkę; organizm dobrze się regeneruje.' }
   },
 
   // zakończenie rundy: tyle sekund od zwycięstwa do ekranu końcowego (serce zwalnia, prąd ustaje, monitor piszczy i cichnie)
