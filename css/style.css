@@ -677,3 +677,21 @@ body[data-role="doc"] .half-doc {
   .rec, .lamp[data-state="running"] .lamp-dot, .half-doc .monitor[data-alarm="on"] .led, .slip.printing, .led-print.on { animation: none; }
 }
 .slip #res-culture-v { font-size: 20px; line-height: 1.25; }
+
+/* ---------- pasek przewijania w stylu gry (v0.30.5) ----------
+   Wąski, ciemny jak obudowy aparatury; uchwyt w kolorze krwi, przy najechaniu jaśniejszy. */
+* { scrollbar-width: thin; scrollbar-color: #7a2a2c rgba(10, 16, 18, 0.6); }
+.half-doc, .half-doc * { scrollbar-color: #4c5b61 #141b1e; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: rgba(10, 16, 18, 0.6); }
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8a3033, #5e1b1d); border-radius: 999px;
+  border: 2px solid rgba(10, 16, 18, 0.6);
+}
+*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #a83a3d, #702124); }
+.half-doc::-webkit-scrollbar-track, .half-doc *::-webkit-scrollbar-track { background: #141b1e; }
+.half-doc::-webkit-scrollbar-thumb, .half-doc *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #56666c, #3c494e); border-color: #141b1e;
+}
+.half-doc::-webkit-scrollbar-thumb:hover, .half-doc *::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #6c7e85, #4c5b61); }
+*::-webkit-scrollbar-corner { background: transparent; }
