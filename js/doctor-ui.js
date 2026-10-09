@@ -320,14 +320,14 @@
     }
     DD.microDebug = micro;
     DD.microPan = (dx, dy) => microPan(dx, dy);
-    function showMicro(res, seed) {
+    function showMicro(res, seed, sampleT) {
       const key = seed;
       if (micro.key === key) return;
       micro.key = key; micro.res = res;
       micro.slide = buildSlide(res, seed);
       micro.px = (SW - MW) / 2; micro.py = (SH - MH) / 2;
       micro.found = false; micro.done = false; micro.seen = new Set(); micro.flash = 0;
-      micro.start = performance.now(); micro.hint = false; micro.sampleT = seed - 1;
+      micro.start = performance.now(); micro.hint = false; micro.sampleT = sampleT;
       microCheck(); microText(); drawMicroView();
     }
     {
@@ -485,7 +485,7 @@
       }
       if (T.micro && T.micro.res) {
         $('res-micro').hidden = false; $('res-micro').querySelector('.res-time').textContent = 'pobranie ' + mmss(T.micro.sampleT);
-        showMicro(T.micro.res, T.micro.sampleT + 1);
+        showMicro(T.micro.res, T.micro.sampleT + 1, T.micro.sampleT);
       } else $('res-micro').hidden = true;
       const time = (el, t) => { el.querySelector('.res-time').textContent = 'pobranie ' + mmss(t.sampleT); };
       if (T.usg && T.usg.res) {

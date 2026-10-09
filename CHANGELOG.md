@@ -11,6 +11,13 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.30.1] - 2026-10-09
+### Naprawione
+- Zdjęcie patogenu przy mikroskopie pokazywało zły rodzaj (zawsze pałeczkę okrężnicy albo adenowirusa) — ukryty widok do zdjęć nie dostawał gatunku.
+- Zdjęcie czasem w ogóle się nie pojawiało po znalezieniu patogenu (błąd zaokrąglenia czasu pobrania).
+### Zmienione
+- Zdjęcie jest mocniej przybliżone na patogen.
+
 ## [0.30.0] - 2026-10-09
 ### Zmienione
 - **Nowy ekran lekarza w stylu aparatury OIOM-u:** ciemne obudowy urządzeń, ekrany w kolorach kanałów monitora, zwężony krój cyfr (Barlow Semi Condensed).
@@ -259,7 +266,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.1...HEAD
+[0.30.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.0...v0.30.1
 [0.30.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.1...v0.30.0
 [0.29.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.28.1...v0.29.0

@@ -72,6 +72,7 @@
       g.food = e0.fo;
       g.colonies = live.colonies.filter((c) => c.born <= g.time);
       g.kind = live.kind;
+      g.species = live.species;   // wygląd konkretnego gatunku (bez tego zdjęcie pokazywało gatunek domyślny)
       g.doctor.temp = e0.temp;
       return g;
     }
@@ -85,7 +86,7 @@
       fig.hidden = true; fig.dataset.ready = '';   // pokazuje je mikroskop po znalezieniu patogenu
       if (!pair) return;
       const g = buildGhost({ e0: pair.e0, e1: pair.e0, k: 0 }, s);
-      view.zoom = 9;   // zbliżenie na patogen
+      view.zoom = 5.5;   // zbliżenie na patogen
       view.frame(g, 1 / 60, { snap: true });
       // drugi kadr: krwinki już rozmieszczone wokół miejsca zdjęcia
       view.frame(g, 1 / 60, { snap: true });
