@@ -3,13 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PatientZero</title>
+<title>Patient Zero — gra przeglądarkowa: patogen kontra lekarz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=0.30.5">
+<link rel="stylesheet" href="css/style.css?v=0.31.0">
 </head>
 <body>
+<!-- ekran ładowania: widoczny od razu, znika po zbudowaniu serca i sceny (main.js) -->
+<div id="loader" class="loader" role="status" aria-live="polite">
+  <p class="loader-title">Patient Zero</p>
+  <svg class="loader-ecg" viewBox="0 0 240 60" aria-hidden="true"><path d="M0 34 H70 L80 30 L88 34 H100 L106 10 L114 54 L120 34 H150 L160 26 L170 34 H240"/></svg>
+  <p class="loader-text">Ładowanie…</p>
+</div>
 <main class="split">
 
   <!-- LEWA POŁOWA: gracz 1, bakteria -->
@@ -246,22 +252,9 @@
 <!-- Ekran startowy -->
 <div id="start" class="overlay">
   <div class="overlay-card">
-    <h1 class="logo">PatientZero</h1>
+    <h1 class="logo">Patient Zero</h1>
     <p class="version-tag">wersja <span class="js-version"></span></p>
-    <p class="lead local-only">Asymetryczna gra: patogen próbuje zainfekować pacjenta, lekarz próbuje go wyleczyć.</p>
     <p id="start-net-status" class="net-ready"></p>
-    <div class="roles">
-      <div class="role role-bact">
-        <h2>Patogen: bakteria albo wirus</h2>
-        <p>Płyń z prądem krwi, zakładaj kolonie na ścianach serca i doprowadź pacjenta do sepsy.</p>
-        <p class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ruch, <kbd>E</kbd> kolonia</p>
-      </div>
-      <div class="role role-doc">
-        <h2>Lekarz</h2>
-        <p>Rozpoznaj patogen badaniami i dobierz leczenie. Wygrywasz, gdy nie zostanie ani patogen, ani kolonia.</p>
-        <p class="keys"><kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>G</kbd><kbd>V</kbd><kbd>N</kbd> badania, <kbd>1</kbd>–<kbd>5</kbd> leczenie</p>
-      </div>
-    </div>
     <div id="mode-pick" class="modes">
       <section class="mode mode-dev" aria-labelledby="m-dev">
         <h2 id="m-dev">Tryb deweloperski</h2>
@@ -443,30 +436,30 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/version.js?v=0.30.5"></script>
-<script src="js/config.js?v=0.30.5"></script>
-<script src="js/heart-shape.js?v=0.30.5"></script>
-<script src="js/flow.js?v=0.30.5"></script>
-<script src="js/tissue-cells.js?v=0.30.5"></script>
-<script src="js/state.js?v=0.30.5"></script>
-<script src="js/input.js?v=0.30.5"></script>
-<script src="js/render/glsl.js?v=0.30.5"></script>
-<script src="js/render/tissue.js?v=0.30.5"></script>
-<script src="js/render/cells.js?v=0.30.5"></script>
-<script src="js/render/actors.js?v=0.30.5"></script>
-<script src="js/render/post.js?v=0.30.5"></script>
-<script src="js/render/biome.js?v=0.30.5"></script>
-<script src="js/render/view.js?v=0.30.5"></script>
-<script src="js/minimap.js?v=0.30.5"></script>
-<script src="js/audio.js?v=0.30.5"></script>
-<script src="js/doctor-ui.js?v=0.30.5"></script>
-<script src="js/patient-room.js?v=0.30.5"></script>
-<script src="js/doctor-devices.js?v=0.30.5"></script>
-<script src="js/doctor-cam.js?v=0.30.5"></script>
-<script src="js/net.js?v=0.30.5"></script>
-<script src="js/lobby.js?v=0.30.5"></script>
-<script src="js/match.js?v=0.30.5"></script>
-<script src="js/net-status.js?v=0.30.5"></script>
-<script src="js/main.js?v=0.30.5"></script>
+<script src="js/version.js?v=0.31.0"></script>
+<script src="js/config.js?v=0.31.0"></script>
+<script src="js/heart-shape.js?v=0.31.0"></script>
+<script src="js/flow.js?v=0.31.0"></script>
+<script src="js/tissue-cells.js?v=0.31.0"></script>
+<script src="js/state.js?v=0.31.0"></script>
+<script src="js/input.js?v=0.31.0"></script>
+<script src="js/render/glsl.js?v=0.31.0"></script>
+<script src="js/render/tissue.js?v=0.31.0"></script>
+<script src="js/render/cells.js?v=0.31.0"></script>
+<script src="js/render/actors.js?v=0.31.0"></script>
+<script src="js/render/post.js?v=0.31.0"></script>
+<script src="js/render/biome.js?v=0.31.0"></script>
+<script src="js/render/view.js?v=0.31.0"></script>
+<script src="js/minimap.js?v=0.31.0"></script>
+<script src="js/audio.js?v=0.31.0"></script>
+<script src="js/doctor-ui.js?v=0.31.0"></script>
+<script src="js/patient-room.js?v=0.31.0"></script>
+<script src="js/doctor-devices.js?v=0.31.0"></script>
+<script src="js/doctor-cam.js?v=0.31.0"></script>
+<script src="js/net.js?v=0.31.0"></script>
+<script src="js/lobby.js?v=0.31.0"></script>
+<script src="js/match.js?v=0.31.0"></script>
+<script src="js/net-status.js?v=0.31.0"></script>
+<script src="js/main.js?v=0.31.0"></script>
 </body>
 </html>

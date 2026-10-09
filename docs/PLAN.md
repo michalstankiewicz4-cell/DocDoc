@@ -11,10 +11,10 @@ Status: ✅ zrobione, 🔧 w trakcie, ⬜ do zrobienia.
 | ✅ | Powrót z mięśnia | Po wejściu w ścianę czasem nie da się wrócić do krwi — błąd do naprawy. |
 | ✅ | Mecz z zamianą ról | „Rewanż z zamianą ról” nie działa poprawnie — błąd do naprawy. |
 | ✅ | Pasek przewijania | W stylu gry (ciemny, jak aparatura). |
-| ⬜ | Ekran startowy | Usunąć kafelki z opisem patogenu i lekarza oraz zdanie „Asymetryczna gra…”. |
-| ⬜ | Nazwa „Patient Zero” | Ze spacją w tytule, na ekranie startowym i w dokumentacji. |
+| ✅ | Ekran startowy | Usunąć kafelki z opisem patogenu i lekarza oraz zdanie „Asymetryczna gra…”. |
+| ✅ | Nazwa „Patient Zero” | Ze spacją w tytule, na ekranie startowym i w dokumentacji. |
 | ⬜ | Wyszukiwarki (SEO) | Opis strony, słowa kluczowe (m.in. biology, doctor, game, hospitality, medicine, vibecoding, webrtc), podgląd przy udostępnianiu linku. |
-| ⬜ | Ekran ładowania | Loader zanim pojawi się ekran startowy (żeby kliknięcie nie trafiało w „martwą” stronę). |
+| ✅ | Ekran ładowania | Loader zanim pojawi się ekran startowy (żeby kliknięcie nie trafiało w „martwą” stronę). |
 | ⬜ | Statystyki zwinięte | Na ekranie końcowym widoczne dopiero po rozwinięciu. |
 
 ## Etap 2. Klimat i oprawa

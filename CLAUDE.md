@@ -1,11 +1,11 @@
-# Kontekst projektu PatientZero (dla Claude)
+# Kontekst projektu Patient Zero (dla Claude)
 
 Ten plik pozwala wznowić pracę w nowej rozmowie bez utraty kontekstu. **Przeczytaj go w całości przed zmianami**
 i aktualizuj sekcje „Stan” i „Lista zadań” po każdym wydaniu.
 
 ## Projekt
 
-- **Gra:** PatientZero (wcześniej DocDoc). Asymetryczna gra przeglądarkowa na 2 osoby: patogen w ciele pacjenta kontra lekarz.
+- **Gra:** Patient Zero (ze spacją; repo nazywa się PatientZero, wcześniej DocDoc). Asymetryczna gra przeglądarkowa na 2 osoby: patogen w ciele pacjenta kontra lekarz.
 - **Autor:** Michał (Warszawa). Rozmawiamy po polsku.
 - **Repo:** https://github.com/michalstankiewicz4-cell/PatientZero (dawniej `DocDoc`, GitHub przekierowuje stary adres).
 - **Gra online:** https://michalstankiewicz4-cell.github.io/PatientZero/ (GitHub Pages, wdrożenie automatyczne po pushu na `main`).

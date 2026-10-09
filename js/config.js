@@ -1,4 +1,4 @@
-// PatientZero — konfiguracja prototypu v0
+// Patient Zero — konfiguracja prototypu v0
 // Wszystkie liczby balansu w jednym miejscu, żeby łatwo je stroić.
 window.DD = window.DD || {};
 

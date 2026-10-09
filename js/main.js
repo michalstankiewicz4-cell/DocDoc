@@ -153,6 +153,8 @@
     }
     requestAnimationFrame(frame);
     DD.debug = { get state() { return state; }, view };
+    // ekran ładowania znika, gdy wszystko jest gotowe
+    { const L = document.getElementById('loader'); if (L) { L.classList.add('done'); setTimeout(() => L.remove(), 600); } }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

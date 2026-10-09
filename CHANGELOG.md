@@ -11,6 +11,13 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-10-09
+### Zmienione
+- Ekran startowy bez kafelków z opisem patogenu i lekarza oraz bez zdania wprowadzającego — od razu wybór trybu.
+- Nazwa gry pisana ze spacją: **Patient Zero** (tytuł strony, ekran startowy, dokumentacja).
+### Dodane
+- Ekran ładowania (tytuł i bijące EKG) widoczny od pierwszej chwili, aż gra zbuduje serce i scenę — kliknięcia nie trafiają już w niegotową stronę.
+
 ## [0.30.5] - 2026-10-09
 ### Zmienione
 - Paski przewijania w stylu gry: wąskie i ciemne, uchwyt w kolorze krwi na ekranach startowych, a w panelu lekarza grafitowy jak obudowy aparatury.
@@ -287,7 +294,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.5...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.31.0...HEAD
+[0.31.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.5...v0.31.0
 [0.30.5]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.4...v0.30.5
 [0.30.4]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.3...v0.30.4
 [0.30.3]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.30.2...v0.30.3

@@ -1,4 +1,4 @@
-# PatientZero
+# Patient Zero
 <img width="1893" height="1198" alt="image" src="https://github.com/user-attachments/assets/50346180-d10a-4ee9-8088-bdcba57ebb2f" />
 Asymetryczna gra przeglądarkowa na dwie osoby. **Patogen** (jedna z trzech bakterii albo jeden z trzech wirusów) płynie z krwią
 przez bijące serce, wątrobę i nerkę, zakłada kolonie i próbuje doprowadzić pacjenta do sepsy.
