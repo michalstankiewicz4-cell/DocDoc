@@ -100,6 +100,7 @@ Te różnice dochodzą do różnic między bakteriami a wirusami z tabeli wyżej
   - przeciwciała cię nie dosięgną, a antybiotyki i lek przeciwwirusowy działają o połowę słabiej,
   - patogen stale żeruje, a `E` zakłada **ukrytą kolonię** — echo pokazuje ją tylko jako niewyraźne zgrubienie ściany,
   - do krwi wracasz, podpływając do ściany naczynia albo klawiszem `Q` (gdy naczynie jest blisko); przy samej ścianie zawsze jest wolny pas bez komórek.
+- **Tło:** oprócz czerwonych krwinek we krwi płyną pęcherzyki tlenu, bladofioletowe płytki krwi i z rzadka biała krwinka — to tylko tło, nie da się ich zjeść i nie przeszkadzają.
 - **Pożywienie:** we krwi płyną z prądem drobiny pożywienia: glukoza (białe kryształki, +10), aminokwasy (bursztynowe kuleczki, +15) i lipidy (żółte kropelki, +25). Patogen zjada je, wpływając w nie (we krwi, nie w mięśniu ani w ukryciu). Pasek „Pożywienie” ma 100 punktów. Lipidy dodatkowo leczą (+4 życia), a aminokwasy dają punkty mutacji (+0,15).
 - **Rozmnożenie** (`R`, przy pełnym pasku): powstaje kopia patogenu, która wygląda tak samo jak on i dryfuje z prądem krwi. Najwyżej 6 kopii naraz. Kopie nie zakładają kolonii i nie są sterowane. Kopia żyje 40 s; w ostatnich sekundach maleje i obumiera.
   - Przeciwciało w pobliżu wybiera cel losowo spośród patogenu i jego kopii, więc kopie odciągają część przeciwciał. Trafiona kopia ginie razem z przeciwciałem.

@@ -38,7 +38,7 @@ js/doctor-cam.js        zdjęcie patogenu w chwili pobrania krwi do mikroskopu (
 js/main.js              pętla gry, tryby (lokalny / host / gość), wybór trybu
 js/render/glsl.js       wspólne shadery: szum, światło mokrej tkanki, pochłanianie we krwi, kaustyki
 js/render/tissue.js     tkanka: gęsta siatka przemieszczana z tekstury SDF
-js/render/cells.js      krwinki (instancing, kształt Evansa–Funga) i drobiny osocza
+js/render/cells.js      krwinki (instancing, kształt Evansa–Funga), drobiny osocza i elementy tła (pęcherzyki, płytki, białe krwinki — C.cells.extras)
 js/render/actors.js     patogen (osobna grupa 3D dla każdego rodzaju z C.species) i jego kopie, pożywienie, przeciwciała, kolonie, zastawki, struny, mięśnie brodawkowate
 js/render/biome.js      biom mięśnia: kardiomiocyty (prążkowanie, jądra, wstawki), kolagen
 js/render/post.js       post-processing: bloom, głębia ostrości, aberracja, ACES, winieta, ziarno

@@ -182,6 +182,52 @@
       sg.attributes.position.needsUpdate = true;
     }
 
-    return { mesh, specks, update, speckMat: smat };
+    // ---------- elementy tła: pęcherzyki tlenu, płytki krwi, białe krwinki (tylko wygląd) ----------
+    const EX = C.cells.extras, extras = [];
+    function pool(geo, matOpts, n, o) {
+      if (!n || !DD.surfMat) return;
+      const m = new THREE.InstancedMesh(geo, DD.surfMat(matOpts), n);
+      m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.frustumCulled = false; m.count = 0;
+      extras.push(Object.assign({ m, n, P: new Float32Array(n * 3), R: new Float32Array(n), placed: false }, o));
+    }
+    pool(new THREE.SphereGeometry(0.16, 14, 10), { albedo: 0xdff4ff, sssCol: 0xbfe8ff, sss: 0.4, rough: 0.05, wet: 1.0, rim: 3.2, rimCol: 0xffffff, emit: 0x16303a, alpha: 0.42, depthWrite: false },
+      Math.round(EX.bubbles * (maxOverride ? 0.5 : 1)), { kind: 'bubble', scale: [1, 1, 1], speed: 1.08, size: [0.5, 1.4] });
+    pool(new THREE.SphereGeometry(0.13, 12, 8), { albedo: 0xcdb4dc, sssCol: 0xe6ccff, sss: 0.7, rough: 0.35, wet: 0.6, rim: 0.8, rimCol: 0xf0e2ff, emit: 0x160e1e, grain: 0.6 },
+      Math.round(EX.platelets * (maxOverride ? 0.5 : 1)), { kind: 'platelet', scale: [1.4, 1, 0.45], speed: 1.0, size: [0.7, 1.3] });
+    pool(new THREE.IcosahedronGeometry(0.62, 3), { albedo: 0xe9e2ee, sssCol: 0xd6c8ff, sss: 0.9, rough: 0.4, wet: 0.7, rim: 1.4, rimCol: 0xf4ecff, emit: 0x14101c, grain: 0.9 },
+      EX.leukocytes, { kind: 'leuko', scale: [1, 1, 0.9], speed: 0.6, size: [0.9, 1.1] });
+    const exM = new THREE.Matrix4(), exQ = new THREE.Quaternion(), exE = new THREE.Euler(), exP = new THREE.Vector3(), exS = new THREE.Vector3();
+    function updateExtras(dt, state, cx, cy, hx, hy) {
+      const t = state.time, ph = state.phase;
+      for (const X of extras) {
+        if (!X.placed) { for (let i = 0; i < X.n; i++) { place(i, cx, cy, hx, hy, X.P, 3); X.R[i] = X.size[0] + Math.random() * (X.size[1] - X.size[0]); } X.placed = true; }
+        for (let i = 0; i < X.n; i++) {
+          let x = X.P[i * 3], y = X.P[i * 3 + 1], z = X.P[i * 3 + 2];
+          F.velocity(x, y, t, ph, fv);
+          x += fv[0] * dt * X.speed; y += fv[1] * dt * X.speed;
+          z += Math.sin(t * 0.9 + i * 1.7) * 0.2 * dt;
+          if (x < cx - hx) x += 2 * hx; else if (x > cx + hx) x -= 2 * hx;
+          if (y < cy - hy) y += 2 * hy; else if (y > cy + hy) y -= 2 * hy;
+          if (H.sample(x, y) > -0.4 || y > 53) { place(i, cx, cy, hx, hy, X.P, 3); continue; }
+          X.P[i * 3] = x; X.P[i * 3 + 1] = y; X.P[i * 3 + 2] = z;
+          exP.set(x, y, z);
+          exE.set(t * 0.3 + i, t * 0.2 + i * 2.1, 0); exQ.setFromEuler(exE);
+          const r = X.R[i] * (X.kind === 'bubble' ? 1 + 0.05 * Math.sin(t * 3 + i) : 1);
+          exS.set(X.scale[0] * r, X.scale[1] * r, X.scale[2] * r);
+          exM.compose(exP, exQ, exS); X.m.setMatrixAt(i, exM);
+        }
+        X.m.count = X.n; X.m.instanceMatrix.needsUpdate = true;
+      }
+    }
+    const baseUpdate = update;
+    function updateAll(dt, state, cx, cy, viewH, aspect) {
+      baseUpdate(dt, state, cx, cy, viewH, aspect);
+      const hy = viewH * 0.6 + 2.5, hx = viewH * aspect * 0.6 + 2.5;
+      if (Math.hypot(cx - (updateAll.cx ?? cx), cy - (updateAll.cy ?? cy)) > Math.max(hx, hy)) for (const X of extras) X.placed = false;
+      updateAll.cx = cx; updateAll.cy = cy;
+      updateExtras(dt, state, cx, cy, hx, hy);
+    }
+
+    return { mesh, specks, update: updateAll, speckMat: smat, extras: extras.map((X) => X.m) };
   };
 })();

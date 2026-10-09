@@ -23,7 +23,7 @@ Status: ✅ zrobione, 🔧 w trakcie, ⬜ do zrobienia.
 | --- | --- | --- |
 | ✅ | Zakończenie gry (~5 s) | U lekarza piszczenie monitora powoli cichnie, u patogenu serce zwalnia i prąd krwi ustaje; dopiero potem podsumowanie. |
 | ✅ | Filmy na koniec | Wygrał lekarz → obaj gracze widzą `doctor.mp4`, wygrał patogen → `priest.mp4`. |
-| ⬜ | Tło we krwi | Trochę pęcherzyków tlenu i drobnych elementów, które nie wchodzą w interakcję z graczem. |
+| ✅ | Tło we krwi | Trochę pęcherzyków tlenu i drobnych elementów, które nie wchodzą w interakcję z graczem. |
 
 ## Etap 3. Losowanie pacjenta (środowisko gry)
 

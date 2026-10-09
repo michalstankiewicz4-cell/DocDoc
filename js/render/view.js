@@ -18,6 +18,7 @@
     scene.add(tissue);
     const cells = DD.createCells(opts.maxCells);
     scene.add(cells.mesh); scene.add(cells.specks);
+    for (const m of cells.extras || []) scene.add(m);
     const actors = DD.createActors(scene, state);
     const biome = DD.createBiome(scene);
     const post = DD.createPost(renderer);

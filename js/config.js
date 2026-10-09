@@ -130,5 +130,7 @@ DD.CONFIG = {
 
   camera: { fov: 40, zoom: 17, zoomMin: 14, zoomMax: 21 },   // zoom kamery patogenu: kółko myszy reguluje go tylko delikatnie
 
-  cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400 }
+  cells: { maxRBC: 2600, density: 0.05, plasmaSpecks: 1400,
+    // elementy tła (tylko wygląd, bez wpływu na grę): liczba w oknie kamery
+    extras: { bubbles: 26, platelets: 34, leukocytes: 2 } }
 };
