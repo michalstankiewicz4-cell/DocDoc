@@ -50,6 +50,8 @@
         },
         resultSeq: 0,
         surgery: { state: 'idle', t: 0, cd: 0, valve: null },
+        // przeszczep / amputacja: jeden zabieg naraz; done: wykonane (raz na rundę każdy)
+        proc: { state: 'idle', t: 0, kind: null, done: {} },
         unlocked: false, knownInfection: null, knownHp: null,
         cd: { antibodies: 0, fever: 0, abxA: 0, abxB: 0, antiviral: 0, antifungal: 0, chemo: 0, radio: 0 },
         feverT: 0, feverEff: 1, temp: 36.6
@@ -250,6 +252,16 @@
         log(s, 'doc', `Rozpoczęto operację: ${v.name.toLowerCase()}.`);
         return;
       }
+      case 'doc.proc': {
+        // przeszczep wątroby / nerki albo amputacja nóg
+        const PR = d.proc, what = cmd.what, cfg = what === 'legs' ? D.amputation : D.transplant;
+        if (!PROC_NAME[what] || !d.unlocked || PR.state === 'running' || PR.done[what]) return;
+        PR.state = 'running'; PR.t = cfg.duration; PR.kind = what;
+        s.patient.cond -= cfg.patientCost; s.stats.condByTreatment += cfg.patientCost;
+        if (s.stats.firstTreatAt < 0) s.stats.firstTreatAt = s.time;
+        log(s, 'doc', `Rozpoczęto zabieg: ${PROC_NAME[what]}.`);
+        return;
+      }
       case 'doc.antibodies':
         if (!d.unlocked || d.cd.antibodies > 0) return;
         d.cd.antibodies = D.antibodies.cooldown;
@@ -354,6 +366,9 @@
     log(s, 'doc', kind === 'biopsy' ? `Zlecono badanie: biopsja (${BIOPSY_ORGAN[region]}).` : `Zlecono badanie: ${TEST_NAME[kind]}.`);
   }
   const BIOPSY_ORGAN = { heart: 'serce', liver: 'wątroba', kidney: 'nerka' };
+  const PROC_NAME = { liver: 'przeszczep wątroby', kidney: 'przeszczep nerki', legs: 'amputacja nóg' };
+  // czy punkt należy do obszaru zabiegu: narząd (wątroba, nerka) albo obszar nóg (żyła główna dolna, objaw obrzęku)
+  const inProcArea = (what, x, y) => (what === 'legs' ? H.regionOf(x, y) === 'legs' : H.organAt(x, y) === what);
   // co pokazuje biopsja tkanki zajętej przez dany rodzaj patogenu
   const HISTO = { bacteria: 'ropień z bakteriami', virus: 'zapalenie wirusowe (wtręty w komórkach)', fungus: 'strzępki grzyba w tkance', cancer: 'komórki nowotworowe (rak)' };
   function sampleFor(s, kind, region) {
@@ -729,6 +744,24 @@
           log(s, 'doc', `Operacja zakończona: ${v.name.toLowerCase()}. Usunięte ogniska: ${removed}.`);
         }
       } else if (SU.cd > 0) SU.cd = Math.max(0, SU.cd - dt);
+    }
+    // przeszczep / amputacja: po zakończeniu usuwa wszystkie ogniska w obszarze, patogen w nim traci dużo życia
+    {
+      const PR = d.proc;
+      if (PR && PR.state === 'running') {
+        PR.t -= dt;
+        if (PR.t <= 0) {
+          const what = PR.kind, cfg = what === 'legs' ? D.amputation : D.transplant;
+          let removed = 0;
+          for (let i = s.colonies.length - 1; i >= 0; i--) if (inProcArea(what, s.colonies[i].x, s.colonies[i].y)) { s.colonies.splice(i, 1); removed++; }
+          s.stats.coloniesLost += removed; s.stats.procRemoved = (s.stats.procRemoved || 0) + removed;
+          const hit = !b.dead && (what === 'legs' ? (b.transit && b.transit.to === 'legs') || inProcArea(what, b.x, b.y) : !b.transit && inProcArea(what, b.x, b.y));
+          if (hit) { b.hp -= cfg.pathogenDamage; b.hitFlash = 1; }
+          PR.state = 'idle'; PR.done[what] = 1;
+          s.stats.procs = (s.stats.procs || 0) + 1;
+          log(s, 'doc', `Zabieg zakończony: ${PROC_NAME[what]}. Usunięte ogniska: ${removed}.`);
+        }
+      }
     }
     if (d.feverT > 0) d.feverT = Math.max(0, d.feverT - dt);
     const targetT = d.feverT > 0 ? D.fever.temp : 36.6;

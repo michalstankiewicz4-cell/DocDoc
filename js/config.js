@@ -59,7 +59,10 @@ DD.CONFIG = {
     radio:      { cooldown: 35, duration: 8, colonyShrink: 0.11, dps: 4 },     // radioterapia: jeden obszar (serce / wątroba / nerka), tylko na nowotwór
     naturalResistance: 0.2,  // skuteczność antybiotyku z klasy, na którą bakteria jest naturalnie oporna
     // operacja zastawki: po `duration` s usuwa kolonie w promieniu `radius` od zastawki
-    surgery: { duration: 10, cooldown: 60, radius: 5, patientCost: 15, pathogenDamage: 40 }
+    surgery: { duration: 10, cooldown: 60, radius: 5, patientCost: 15, pathogenDamage: 40 },
+    // przeszczep narządu (wątroba, nerka) i amputacja nóg: raz na rundę każdy, usuwa wszystkie ogniska w narządzie / obszarze
+    transplant: { duration: 20, patientCost: 25, pathogenDamage: 60 },
+    amputation: { duration: 15, patientCost: 30, pathogenDamage: 80 }
   },
 
   // oporność: każde użycie leku podnosi oporność o perUse (do max); skuteczność = 1 - oporność

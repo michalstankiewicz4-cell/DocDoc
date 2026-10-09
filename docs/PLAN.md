@@ -58,7 +58,7 @@ Nie wszystko musi dziać się w układzie krwionośnym — np. astma i palacz w 
 ## Etap 6. Nowe badania i leczenie
 
 Badania: ✅ morfologia, PCR, badanie moczu, tomografia (v0.37.0); ✅ RTG, rezonans, biopsja, markery nowotworowe (v0.42.0).
-Leczenie: ✅ lek przeciwgrzybiczy (v0.38.0), chemioterapia, radioterapia (v0.41.0); ⬜ amputacja, przeszczep narządu.
+Leczenie: ✅ lek przeciwgrzybiczy (v0.38.0), chemioterapia, radioterapia (v0.41.0), amputacja, przeszczep narządu (v0.43.0).
 Część z nich ma sens dopiero przy nowych patogenach (etap 7–8).
 
 ## Dodatki poza planem (prośby Michała w trakcie)
@@ -74,7 +74,7 @@ Część z nich ma sens dopiero przy nowych patogenach (etap 7–8).
 ## Kolejne kroki (od najszybszego)
 
 1. ✅ Nowe badania: markery nowotworowe, biopsja, RTG, rezonans (v0.42.0).
-2. ⬜ Przeszczep narządu (wątroba, nerka) i amputacja.
+2. ✅ Przeszczep narządu (wątroba, nerka) i amputacja (v0.43.0).
 3. ⬜ Obszary poza krwiobiegiem (płuca) i kolejni pacjenci: alergie, palacz, alkoholizm, astma, otyłość, ciąża.
 
 ## Etap 7. Nowy patogen: grzyb ✅ v0.38.0

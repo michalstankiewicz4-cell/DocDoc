@@ -148,15 +148,29 @@
       // tułów pod kołdrą (klatka unosi się z oddechem), nogi z obrzękiem
       const lift = chest * (2 + rr / 14);
       const legs = 1 + clamp(m.legs, 0, 1.2) * 0.5;
+      const amputated = !!(d.proc && d.proc.done && d.proc.done.legs);   // po amputacji kołdra kończy się na udach
       ctx.fillStyle = '#9fc4bb';
       ctx.beginPath();
       ctx.moveTo(166, 136);
       ctx.bezierCurveTo(190, 104 - lift, 250, 104 - lift, 285, 118);
-      ctx.bezierCurveTo(320, 124, 360, 122 - 6 * legs, 395, 120 - 8 * legs);
-      ctx.bezierCurveTo(412, 118 - 8 * legs, 420, 128, 420, 138);
+      if (amputated) { ctx.bezierCurveTo(305, 121, 322, 119, 334, 122); ctx.bezierCurveTo(342, 124, 344, 132, 342, 138); ctx.lineTo(420, 138); }
+      else {
+        ctx.bezierCurveTo(320, 124, 360, 122 - 6 * legs, 395, 120 - 8 * legs);
+        ctx.bezierCurveTo(412, 118 - 8 * legs, 420, 128, 420, 138);
+      }
       ctx.lineTo(166, 138); ctx.closePath(); ctx.fill();
       ctx.strokeStyle = '#86aea5'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(205, 120 - lift * 0.6); ctx.bezierCurveTo(240, 128, 270, 126, 300, 130); ctx.stroke();
       ctx.fillStyle = skin; ctx.beginPath(); ctx.ellipse(208, 126 - lift * 0.4, 14, 5, -0.2, 0, 6.283); ctx.fill();   // ręka z wenflonem
+      // po przeszczepie: opatrunek na brzuchu; w czasie zabiegu: zielona serweta operacyjna i lampa
+      if (d.proc && d.proc.done && (d.proc.done.liver || d.proc.done.kidney)) {
+        ctx.fillStyle = '#f4f6f2'; roundRect(256, 108, 30, 8, 2); ctx.fill();
+        ctx.strokeStyle = '#c7cfc9'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(260, 112); ctx.lineTo(282, 112); ctx.stroke();
+      }
+      if (d.proc && d.proc.state === 'running') {
+        ctx.fillStyle = 'rgba(70, 140, 110, 0.85)'; roundRect(232, 100, 110, 30, 6); ctx.fill();
+        ctx.fillStyle = 'rgba(255, 250, 220, 0.5)'; ctx.beginPath(); ctx.moveTo(272, 30); ctx.lineTo(300, 30); ctx.lineTo(330, 104); ctx.lineTo(242, 104); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#d8dedb'; roundRect(270, 22, 32, 10, 4); ctx.fill();
+      }
 
       // laboratorium: stół i animacje trwających badań
       ctx.fillStyle = '#c3d0cb'; ctx.fillRect(470, 150, 240, 8); ctx.fillStyle = '#a9b8b3'; ctx.fillRect(480, 158, 6, 42); ctx.fillRect(694, 158, 6, 42);

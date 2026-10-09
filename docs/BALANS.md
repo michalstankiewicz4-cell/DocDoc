@@ -46,6 +46,8 @@ i czy dziecko z wczesnymi objawami nie kończy się zbyt szybko.
 | Chemioterapia | nowotwór | 12 s | 40 s | −9 | 1,6 obrażeń/s, kurczy wszystkie guzy |
 | Radioterapia | nowotwór w jednym narządzie | 8 s | 35 s | −5 | kurczy guzy w narządzie, 4 obrażeń/s |
 | Operacja zastawki | ogniska przy zastawce | 10 s | 60 s | −15 | usuwa ogniska w promieniu 5 j., patogen −40 |
+| Przeszczep wątroby / nerki | wszystkie | 20 s | raz na rundę | −25 | usuwa wszystkie ogniska w narządzie, patogen w nim −60 |
+| Amputacja nóg | wszystkie | 15 s | raz na rundę | −30 | usuwa ogniska przy żyle głównej dolnej, patogen płynący przez nogi −80 |
 
 Oporność nabyta: każda kolejna dawka tego samego leczenia działa o 20 punktów procentowych słabiej, najwyżej do 20% skuteczności (`config.resistance`).
 

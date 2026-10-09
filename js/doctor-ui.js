@@ -133,6 +133,17 @@
       $('radio').appendChild(b); radioBtns[r.region] = b;
     }
 
+    // przeszczep narządu i amputacja (raz na rundę każdy)
+    const PROC = [{ what: 'liver', name: 'Przeszczep wątroby' }, { what: 'kidney', name: 'Przeszczep nerki' }, { what: 'legs', name: 'Amputacja nóg' }];
+    const procBtns = {};
+    for (const p of PROC) {
+      const b = document.createElement('button');
+      b.className = 'surg-btn'; b.type = 'button'; b.setAttribute('role', 'menuitem');
+      b.innerHTML = `${svg('surgery')}<span>${p.name}</span>`;
+      b.addEventListener('click', () => { DD.send({ type: 'doc.proc', what: p.what }); pick(); });
+      $('procs').appendChild(b); procBtns[p.what] = b;
+    }
+
     const testBtns = {}, lampEls = {};
     for (const t of TESTS) {
       const b = document.createElement('button');
@@ -587,6 +598,8 @@
           ['Obrażenia od leków', num(S.dmgDrugs) + ' pkt'],
           ['Operacje zastawek', String(S.surgeries || 0)],
           ['Ogniska usunięte operacją', String(S.surgeryRemoved || 0)],
+          ['Przeszczepy i amputacje', String(S.procs || 0)],
+          ['Ogniska usunięte przeszczepem lub amputacją', String(S.procRemoved || 0)],
           ['Trafienia przeciwciał', String(S.abHits || 0)],
           ['Obrażenia od przeciwciał', num(S.dmgAntibodies) + ' pkt'],
           ['Obrażenia od gorączki', num(S.dmgFever) + ' pkt'],
@@ -803,6 +816,13 @@
           el.disabled = !d.unlocked || busy || !s.running || !!s.over;
           el.dataset.active = SU.state === 'running' && SU.valve === v.valve ? '1' : '0';
         }
+        const PR = d.proc || { state: 'idle', done: {} };
+        for (const p of PROC) {
+          const el = procBtns[p.what];
+          el.disabled = !d.unlocked || PR.state === 'running' || !!PR.done[p.what] || !s.running || !!s.over;
+          el.dataset.active = PR.state === 'running' && PR.kind === p.what ? '1' : '0';
+        }
+        $('proc-state').textContent = PR.state === 'running' ? `Zabieg w toku: jeszcze ${Math.ceil(PR.t)} s` : '';
         const rcd = d.cd.radio || 0;
         for (const r of RADIO) {
           const el = radioBtns[r.region];

@@ -438,6 +438,20 @@ DD.I18N_EN = {
   'Pogłośnij monitor': 'Monitor louder',
   'Monitor wyciszony': 'Monitor muted',
   'Zamknij': 'Close',
+  // ---------- przeszczep, amputacja (v0.43.0) ----------
+  'Przeszczep wątroby': 'Liver transplant',
+  'Przeszczep nerki': 'Kidney transplant',
+  'Amputacja nóg': 'Leg amputation',
+  'przeszczep wątroby': 'liver transplant',
+  'przeszczep nerki': 'kidney transplant',
+  'amputacja nóg': 'leg amputation',
+  'Zabieg w toku: jeszcze {#0} s': 'Procedure in progress: {0} s left',
+  'Rozpoczęto zabieg: {0}.': 'Procedure started: {0}.',
+  'Zabieg zakończony: {0}. Usunięte ogniska: {#1}.': 'Procedure finished: {0}. Foci removed: {1}.',
+  'Przeszczepy i amputacje': 'Transplants and amputations',
+  'Ogniska usunięte przeszczepem lub amputacją': 'Foci removed by transplant or amputation',
+  'Przeszczep narządu (20 s, stan −25) usuwa wszystkie ogniska w wątrobie albo nerce; amputacja nóg (15 s, stan −30) — ogniska przy żyle głównej dolnej i patogen płynący przez nogi. Każdy zabieg raz na rundę.': 'Organ transplant (20 s, condition −25) removes all foci in the liver or kidney; leg amputation (15 s, condition −30) — foci at the inferior vena cava and a pathogen passing through the legs. Each procedure once per round.',
+
   // ---------- badania nowotworu (v0.42.0) ----------
   'Markery': 'Markers',
   'Markery nowotworowe': 'Tumour markers',

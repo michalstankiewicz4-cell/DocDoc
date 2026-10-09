@@ -11,6 +11,10 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 
 ## [Unreleased]
 
+## [0.43.0] - 2026-10-09
+### Dodane
+- **Przeszczep narządu** (wątroba, nerka) i **amputacja nóg** w menu Zabiegi: każdy zabieg raz na rundę, usuwa wszystkie ogniska w obszarze i rani patogen w nim; mocno obciąża pacjenta. W sali serweta operacyjna i lampa w czasie zabiegu, potem opatrunek na brzuchu albo krótsza kołdra po amputacji. Opis w wiki i statystykach.
+
 ## [0.42.0] - 2026-10-09
 ### Dodane
 - **Nowe badania:** markery nowotworowe, RTG klatki piersiowej (zdjęcie z sylwetką serca i guzkami w płucach), rezonans magnetyczny (obraz całego ciała z wielkością ognisk) i biopsja wybranego narządu (rozpoznanie: ropień, zapalenie wirusowe, grzyb, rak; stan pacjenta −3). Dostępne z menu „Badania”, z wydrukami, lampkami, animacjami w sali i opisem w wiki.
@@ -384,7 +388,8 @@ sam tworzy tag `vX.Y.Z` i wydanie (Release) z opisem z tego pliku.
 - Lekarz: EKG, badanie krwi, przeciwciała, gorączka, antybiotyk.
 - Grafika: tkanka z beleczkami, krwinki (instancing), bloom, głębia ostrości, aberracja, ACES.
 
-[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.42.0...HEAD
+[Unreleased]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.43.0...HEAD
+[0.43.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.1...v0.42.0
 [0.41.1]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.41.0...v0.41.1
 [0.41.0]: https://github.com/michalstankiewicz4-cell/PatientZero/compare/v0.40.1...v0.41.0

@@ -254,7 +254,7 @@
       st: s.over ? s.stats : 0,
       k: s.kind, sp: s.species, pt: s.ptype, nr: b.natural, rs: b.resist, cdd: d.cd, dg: s.drugs,
       mu: [b.hidden, r2(b.points), b.mut, r2(b.toxinCd), r2(s.toxinT), r2(b.signalCd), s.fakeSym, s.radio],
-      su: d.surgery,
+      su: d.surgery, pr: d.proc,
       // badania bez wyników oczekujących (gość dostaje wynik dopiero, gdy jest gotowy)
       dt: Object.fromEntries(Object.entries(d.tests).map(([k, T]) => [k, Object.assign({}, T, { pending: null })])),
       dk: [d.resultSeq, d.estInfection ?? -1, d.estT ?? -1, d.estExact ? 1 : 0],
@@ -307,6 +307,7 @@
       b.contact = !!v[10];
       if (snap.rs) { b.resist = snap.rs; b.natural = snap.nr; s.kind = snap.k; if (snap.sp) s.species = snap.sp; if (snap.pt) s.ptype = snap.pt; s.drugs = snap.dg; d0.cd = snap.cdd; }
       if (snap.su) s.doctor.surgery = snap.su;
+      if (snap.pr) s.doctor.proc = snap.pr;
       if (snap.mu) { b.hidden = snap.mu[0]; b.points = snap.mu[1]; b.mut = snap.mu[2]; b.toxinCd = snap.mu[3]; s.toxinT = snap.mu[4]; b.signalCd = snap.mu[5] || 0; s.fakeSym = snap.mu[6] || null; s.radio = snap.mu[7] || null; }
       b.dead = v[14]; b.colonyCd = v[15]; b.feeding = !!v[16]; b.inTissue = !!v[17]; b.burrowT = v[18]; b.z = v[19];
       b.transit = snap.tr ? { to: ROUTE_IDS[snap.tr[0] - 1] || 'body', t: snap.tr[1], total: snap.tr[2] } : null;

@@ -101,6 +101,7 @@ Kolonie raka to guzy: rosną do `C.cancer.smallCap`, a z mutacją `angio` do `ma
 - **Mikroskop:** preparat 3 × 3 pola rysowany raz na wynik (`buildSlide`), widok przesuwany myszą albo strzałkami (`microPan`), znalezienie i pusty preparat sprawdza `microCheck`; zdjęcie robi `doctor-cam.js`, a pokazuje je mikroskop dopiero po znalezieniu (`dataset.ready` = czas pobrania).
 
 - **Wiki** (`wiki.js`): okno nad panelem lekarza; sekcje generowane z `DD.CONFIG`, teksty dwujęzyczne `T(pl, en)`, zdjęcia w `img/wiki/` (robione skryptem Playwright z gry). Nowa mechanika = nowy wpis w wiki.
+- **Przeszczep i amputacja:** komenda `doc.proc` z `what` (`liver` / `kidney` / `legs`), stan w `doctor.proc` (`done` — raz na rundę), synchronizowany w paczce (`pr`); obszar: `organAt` albo `regionOf === 'legs'`.
 - **Głośność monitora:** przyciski na pasku monitora zmieniają `DD.Audio.beepLevel` (0–5); dotyczy beep, alarmów i linii płaskiej.
 
 ## Zakończenie rundy
